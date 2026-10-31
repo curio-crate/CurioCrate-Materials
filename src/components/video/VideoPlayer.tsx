@@ -150,7 +150,7 @@ export function VideoPlayer({ slug, title, cues }: { slug: string; title: string
           {pb && <track kind="captions" src={pb.captions} srcLang="en" label="English" default />}
         </video>
         {!attached && (
-          <button type="button" className={styles.bigPlay} onClick={() => void attach()} disabled={!pb && !error} aria-label={`Play video: ${title}`}>
+          <button type="button" className={styles.bigPlay} onClick={() => void attach()} aria-label={`Play video: ${title}`}>
             <span className={styles.bigPlayIcon} aria-hidden="true">
               <Icon name="video" size={30} />
             </span>
