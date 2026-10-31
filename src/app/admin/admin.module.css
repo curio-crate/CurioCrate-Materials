@@ -1,0 +1,239 @@
+.shell {
+  padding-top: 40px;
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border-faint);
+}
+.who {
+  margin-top: 8px;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-row);
+  border: 1px solid var(--border-faint);
+  background: var(--fill-faint);
+}
+.tab {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-nav);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.tab:hover {
+  color: var(--color-heading);
+}
+.tabOn {
+  color: var(--color-heading);
+  background: var(--fill-chip);
+}
+.title {
+  margin-bottom: 24px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.stat {
+  padding: 18px 20px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-card);
+  background: var(--surface-card);
+}
+.stat dt {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-label);
+}
+.stat dd {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--color-heading);
+}
+.search {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.search .field {
+  flex: 1;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.panel {
+  padding: 28px;
+  border-radius: var(--radius-card);
+  display: grid;
+  gap: 16px;
+}
+.panel h2 {
+  margin-bottom: 4px;
+}
+.form {
+  display: grid;
+  gap: 16px;
+}
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.qtyRow {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 12px;
+  align-items: center;
+}
+.inline {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.inline input {
+  min-height: 36px;
+  width: 160px;
+}
+.status_active {
+  color: var(--color-accent);
+}
+.status_redeemed {
+  color: var(--lum-glow);
+}
+.status_void {
+  color: var(--color-danger);
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.05em;
+  color: var(--color-heading);
+  white-space: nowrap;
+}
+.kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 18px;
+  font-size: var(--text-md);
+}
+.kv dt {
+  color: var(--color-text-muted);
+}
+.kv dd {
+  margin: 0;
+  color: var(--color-heading);
+}
+.section {
+  margin-top: 40px;
+}
+.section > h2 {
+  margin-bottom: 16px;
+}
+.empty {
+  padding: 24px;
+  color: var(--color-text-muted);
+}
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.formRow3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Files studio */
+.drop {
+  display: grid;
+  gap: 10px;
+  padding: 28px;
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--border-outline);
+  background: var(--fill-faint);
+  text-align: center;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.dropOver {
+  border-color: var(--color-accent);
+  background: var(--fill-hover);
+}
+.dropTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  color: var(--color-heading);
+}
+.queue {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.queueRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-faint);
+  background: var(--surface-card);
+}
+.queueMain {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.queueTitle {
+  color: var(--color-heading);
+  font-weight: 500;
+}
+.queueState {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 1000px) {
+  .grid2,
+  .formRow,
+  .formRow3 {
+    grid-template-columns: 1fr;
+  }
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

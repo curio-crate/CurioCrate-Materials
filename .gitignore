@@ -1,0 +1,36 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+/test-results
+/playwright-report
+/blob-report
+/test-results-run.log
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# local data: embedded database and generated media (regenerate with npm run media:generate)
+/.data
+/.media
+
+# large comparison artifacts (side-by-side sheets are kept)
+/design/compare/*.full.png
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# env files (.env.example is committed)
+.env*
+!.env.example
+
+# vercel
+.vercel

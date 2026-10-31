@@ -1,0 +1,185 @@
+.ngss {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+}
+.ngssTag,
+.ngssMore {
+  padding: 3px 8px;
+  border-radius: var(--radius-nav);
+  border: 1px solid var(--border-faint);
+  background: var(--fill-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.5px;
+  color: var(--color-text-soft);
+  white-space: nowrap;
+}
+.ngssMore {
+  color: var(--color-text-muted);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: start;
+  padding: 20px 22px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-card);
+  background: var(--surface-card);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.row:hover {
+  border-color: var(--border-subtle);
+  background: var(--surface-card-2);
+}
+.row:focus-within {
+  border-color: var(--border-strong);
+}
+.rowLocked .typeIcon {
+  opacity: 0.7;
+}
+.typeIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-row);
+  border: 1px solid var(--border-faint);
+  background: var(--fill-active);
+  color: var(--color-accent);
+}
+.t_lab {
+  color: var(--lum-glow);
+  border-color: var(--border-kit-soft);
+  background: var(--tier-kit-bg);
+}
+.t_video {
+  color: var(--pastel2);
+}
+.t_training {
+  color: var(--gold);
+  border-color: var(--tier-sub-border);
+  background: var(--tier-sub-bg);
+}
+.rowBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rowTitle {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-heading);
+}
+/* the whole row is clickable via the title link */
+.rowTitle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.rowTitle:focus-visible {
+  outline: none;
+}
+.row:has(.rowTitle:focus-visible) {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+.rowSummary {
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+.rowFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+.minutes {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+}
+.state {
+  align-self: center;
+  color: var(--color-text-muted);
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.row:hover .state {
+  color: var(--color-accent);
+  transform: translateX(2px);
+}
+
+.locked {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 40px;
+  border-style: dashed;
+  border-color: var(--border-subtle);
+}
+.lockIcon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--fill-active);
+  border: 1px solid var(--border-subtle);
+  color: var(--color-accent);
+  box-shadow: var(--glow-btn);
+}
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+  .state {
+    display: none;
+  }
+}
+
+/* Uploaded HTML/JS lesson: a white "paper" page like a browser default, since lessons are built for that. */
+.interactive {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+.interactiveFrame {
+  width: 100%;
+  height: min(78vh, 760px);
+  min-height: 420px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  background: var(--print-paper);
+}
+.interactiveBar {
+  display: flex;
+  justify-content: flex-end;
+}
+.t_interactive {
+  color: var(--lum-glow);
+  border-color: var(--border-kit-soft);
+  background: var(--tier-kit-bg);
+}

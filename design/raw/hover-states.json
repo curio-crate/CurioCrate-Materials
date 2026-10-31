@@ -1,0 +1,840 @@
+{
+ "navLinks": [
+  {
+   "text": "",
+   "color": "rgb(232, 244, 253)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgb(232, 244, 253)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "all",
+   "hover": {
+    "text": "",
+    "color": "rgb(232, 244, 253)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(232, 244, 253)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "all"
+   }
+  },
+  {
+   "text": "DISCOVER",
+   "color": "rgb(240, 247, 255)",
+   "bg": "rgba(168, 212, 240, 0.08)",
+   "border": "rgba(168, 212, 240, 0.15)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "DISCOVER",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(168, 212, 240, 0.08)",
+    "border": "rgba(168, 212, 240, 0.15)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  },
+  {
+   "text": "KITS\n▾",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(0, 0, 0, 0)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "KITS\n▾",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(0, 0, 0, 0)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  },
+  {
+   "text": "LUMINOL FORENSICS KIT",
+   "color": "rgb(168, 212, 240)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgb(168, 212, 240)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "LUMINOL FORENSICS KIT",
+    "color": "rgb(168, 212, 240)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(168, 212, 240)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "TRY THE DEMO",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "TRY THE DEMO",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "FUNDING PROGRESS",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "FUNDING PROGRESS",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "NEWSLETTER",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(0, 0, 0, 0)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "NEWSLETTER",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(0, 0, 0, 0)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  },
+  {
+   "text": "INITIATIVES\n▾",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(0, 0, 0, 0)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "INITIATIVES\n▾",
+    "color": "rgba(240, 247, 255, 0.992)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(0, 0, 0, 0)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  },
+  {
+   "text": "HANDS-ON TEACHING",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "HANDS-ON TEACHING",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "STEM ADVOCACY PROJECT",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "STEM ADVOCACY PROJECT",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "KIT RESEARCH INTERNSHIP",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "KIT RESEARCH INTERNSHIP",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "ABOUT US\n▾",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(0, 0, 0, 0)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "ABOUT US\n▾",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(0, 0, 0, 0)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  },
+  {
+   "text": "OUR CHAPTERS",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "OUR CHAPTERS",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "GALLERY",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "GALLERY",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "TEAM",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "TEAM",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "CONTACT US",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "CONTACT US",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "EN",
+   "color": "rgb(240, 247, 255)",
+   "bg": "rgba(168, 212, 240, 0.16)",
+   "border": "rgb(240, 247, 255)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "EN",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(168, 212, 240, 0.16)",
+    "border": "rgb(240, 247, 255)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "ES",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.2s",
+   "hover": {
+    "text": "ES",
+    "color": "rgba(197, 227, 247, 0.55)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgba(197, 227, 247, 0.55)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.2s"
+   }
+  },
+  {
+   "text": "BECOME A MEMBER",
+   "color": "rgb(168, 212, 240)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(168, 212, 240, 0.25)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "BECOME A MEMBER",
+    "color": "rgb(168, 212, 240)",
+    "bg": "rgba(168, 212, 240, 0.1)",
+    "border": "rgba(168, 212, 240, 0.25)",
+    "shadow": "rgba(168, 212, 240, 0.15) 0px 0px 20px 0px",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  },
+  {
+   "text": "DONATE",
+   "color": "rgb(6, 16, 31)",
+   "bg": "rgb(168, 212, 240)",
+   "border": "rgb(168, 212, 240)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.3s",
+   "hover": {
+    "text": "DONATE",
+    "color": "rgb(6, 16, 31)",
+    "bg": "rgb(168, 212, 240)",
+    "border": "rgb(168, 212, 240)",
+    "shadow": "rgba(168, 212, 240, 0.15) 0px 0px 20px 0px",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.3s"
+   }
+  }
+ ],
+ "heroCtas": [
+  {
+   "text": "Help us make our first science kit →",
+   "color": "rgb(240, 247, 255)",
+   "bg": "rgba(3, 5, 15, 0.65)",
+   "border": "rgb(240, 247, 255)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "all",
+   "hover": {
+    "text": "Help us make our first science kit →",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(3, 5, 15, 0.65)",
+    "border": "rgb(240, 247, 255)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "all"
+   }
+  },
+  {
+   "text": "OUR INITIATIVES",
+   "color": "rgb(240, 247, 255)",
+   "bg": "rgba(168, 212, 240, 0.12)",
+   "border": "rgba(168, 212, 240, 0.5)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.35s",
+   "hover": {
+    "text": "OUR INITIATIVES",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(168, 212, 240, 0.2)",
+    "border": "rgba(168, 212, 240, 0.5)",
+    "shadow": "rgba(168, 212, 240, 0.2) 0px 0px 24px 0px",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.35s"
+   }
+  },
+  {
+   "text": "VIEW GALLERY",
+   "color": "rgba(197, 227, 247, 0.7)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(168, 212, 240, 0.22)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.35s",
+   "hover": {
+    "text": "VIEW GALLERY",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(168, 212, 240, 0.2)",
+    "border": "rgba(168, 212, 240, 0.65)",
+    "shadow": "rgba(168, 212, 240, 0.2) 0px 0px 24px 0px",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.35s"
+   }
+  },
+  {
+   "text": "OUR MISSION",
+   "color": "rgba(197, 227, 247, 0.7)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(168, 212, 240, 0.22)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.35s",
+   "hover": {
+    "text": "OUR MISSION",
+    "color": "rgb(240, 247, 255)",
+    "bg": "rgba(168, 212, 240, 0.2)",
+    "border": "rgba(168, 212, 240, 0.65)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.35s"
+   }
+  },
+  {
+   "text": "",
+   "color": "rgb(232, 244, 253)",
+   "bg": "rgba(255, 255, 255, 0.28)",
+   "border": "rgb(232, 244, 253)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.4s",
+   "hover": {
+    "text": "",
+    "color": "rgb(232, 244, 253)",
+    "bg": "rgba(168, 212, 240, 0.9)",
+    "border": "rgb(232, 244, 253)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.4s"
+   }
+  },
+  {
+   "text": "",
+   "color": "rgb(232, 244, 253)",
+   "bg": "rgba(255, 255, 255, 0.28)",
+   "border": "rgb(232, 244, 253)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.4s",
+   "hover": {
+    "text": "",
+    "color": "rgb(232, 244, 253)",
+    "bg": "rgba(255, 255, 255, 0.28)",
+    "border": "rgb(232, 244, 253)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.4s"
+   }
+  },
+  {
+   "text": "",
+   "color": "rgb(232, 244, 253)",
+   "bg": "rgba(255, 255, 255, 0.28)",
+   "border": "rgb(232, 244, 253)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.4s",
+   "hover": {
+    "text": "",
+    "color": "rgb(232, 244, 253)",
+    "bg": "rgba(255, 255, 255, 0.28)",
+    "border": "rgb(232, 244, 253)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.4s"
+   }
+  },
+  {
+   "text": "",
+   "color": "rgb(232, 244, 253)",
+   "bg": "rgba(255, 255, 255, 0.28)",
+   "border": "rgb(232, 244, 253)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.4s",
+   "hover": {
+    "text": "",
+    "color": "rgb(232, 244, 253)",
+    "bg": "rgba(255, 255, 255, 0.28)",
+    "border": "rgb(232, 244, 253)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.4s"
+   }
+  },
+  {
+   "text": "",
+   "color": "rgb(232, 244, 253)",
+   "bg": "rgba(255, 255, 255, 0.28)",
+   "border": "rgb(232, 244, 253)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "0.4s",
+   "hover": {
+    "text": "",
+    "color": "rgb(232, 244, 253)",
+    "bg": "rgba(255, 255, 255, 0.28)",
+    "border": "rgb(232, 244, 253)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "0.4s"
+   }
+  }
+ ],
+ "footerLinks": [
+  {
+   "text": "Kits",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "color 0.2s",
+   "hover": {
+    "text": "Kits",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(197, 227, 247)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "color 0.2s"
+   }
+  },
+  {
+   "text": "Our Chapters",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "color 0.2s",
+   "hover": {
+    "text": "Our Chapters",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(197, 227, 247)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "color 0.2s"
+   }
+  },
+  {
+   "text": "Mission",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "color 0.2s",
+   "hover": {
+    "text": "Mission",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(197, 227, 247)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "color 0.2s"
+   }
+  },
+  {
+   "text": "Gallery",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "color 0.2s",
+   "hover": {
+    "text": "Gallery",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(197, 227, 247)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "color 0.2s"
+   }
+  },
+  {
+   "text": "Team",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "color 0.2s",
+   "hover": {
+    "text": "Team",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(197, 227, 247)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "color 0.2s"
+   }
+  },
+  {
+   "text": "Contact Us",
+   "color": "rgba(197, 227, 247, 0.55)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "border": "rgba(197, 227, 247, 0.55)",
+   "shadow": "none",
+   "transform": "none",
+   "deco": "none",
+   "opacity": "1",
+   "transition": "color 0.2s",
+   "hover": {
+    "text": "Contact Us",
+    "color": "rgb(197, 227, 247)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(197, 227, 247)",
+    "shadow": "none",
+    "transform": "none",
+    "deco": "none",
+    "opacity": "1",
+    "transition": "color 0.2s"
+   }
+  }
+ ],
+ "dropdowns": [
+  [
+   {
+    "tag": "DIV",
+    "bg": "rgba(6, 13, 31, 0.95)",
+    "border": "1px solid rgba(168, 212, 240, 0.12)",
+    "radius": "12px",
+    "shadow": "rgba(0, 0, 0, 0.4) 0px 16px 48px 0px",
+    "padding": "8px",
+    "backdrop": "blur(24px)",
+    "w": 240
+   }
+  ],
+  [
+   {
+    "tag": "DIV",
+    "bg": "rgba(6, 13, 31, 0.95)",
+    "border": "1px solid rgba(168, 212, 240, 0.12)",
+    "radius": "12px",
+    "shadow": "rgba(0, 0, 0, 0.4) 0px 16px 48px 0px",
+    "padding": "8px",
+    "backdrop": "blur(24px)",
+    "w": 248
+   }
+  ],
+  [
+   {
+    "tag": "DIV",
+    "bg": "rgba(6, 13, 31, 0.95)",
+    "border": "1px solid rgba(168, 212, 240, 0.12)",
+    "radius": "12px",
+    "shadow": "rgba(0, 0, 0, 0.4) 0px 16px 48px 0px",
+    "padding": "8px",
+    "backdrop": "blur(24px)",
+    "w": 160
+   }
+  ]
+ ],
+ "scrolledNav": {
+  "bg": "rgba(0, 0, 0, 0)",
+  "backdrop": "blur(18px)",
+  "border": "0px solid rgb(232, 244, 253)",
+  "padding": "18px 36px",
+  "height": 94,
+  "position": "fixed",
+  "shadow": "none",
+  "transition": "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s"
+ },
+ "topNav": {
+  "bg": "rgba(0, 0, 0, 0)",
+  "backdrop": "none",
+  "border": "0px solid rgb(232, 244, 253)",
+  "padding": "18px 36px",
+  "height": 94,
+  "position": "fixed"
+ },
+ "logo": {
+  "src": "https://curiocrate.org/images/cclogofull5.png",
+  "w": 179.234375,
+  "h": 58,
+  "filter": "drop-shadow(rgba(168, 212, 240, 0.5) 0px 0px 10px)"
+ }
+}

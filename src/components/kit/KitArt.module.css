@@ -1,0 +1,126 @@
+.art {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  fill: var(--color-text-muted);
+}
+
+/* Luminol tubes */
+.tubeGlow {
+  fill: var(--lum-glow);
+  filter: blur(14px);
+}
+.lumHalo {
+  fill: var(--lum-glow);
+  opacity: 0.08;
+  filter: blur(18px);
+}
+.cap {
+  fill: var(--lum-surface-2);
+  stroke: var(--border-kit-strong);
+}
+.capLabel {
+  fill: var(--lum-paper);
+  opacity: 0.85;
+}
+.tube {
+  fill: var(--fill-faint);
+  stroke: var(--border-kit-strong);
+  stroke-width: 1.2;
+}
+.liquid {
+  fill: var(--lum-glow);
+}
+
+/* Circuit */
+.wire {
+  fill: none;
+  stroke: var(--lab-wire);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+.battery {
+  fill: var(--lab-battery);
+  stroke: var(--border-strong);
+}
+.batteryTip {
+  fill: var(--lab-metal);
+}
+.batteryText {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--cream);
+  letter-spacing: 1px;
+}
+.bulbHalo {
+  fill: var(--lab-bulb-glow);
+  filter: blur(16px);
+}
+.bulb {
+  fill: var(--lab-bulb-on);
+  opacity: 0.92;
+}
+.filament {
+  fill: none;
+  stroke: var(--lum-paper-ink);
+  stroke-width: 2;
+}
+.base {
+  fill: var(--lab-metal);
+}
+.node {
+  fill: var(--cream);
+}
+.switch {
+  stroke: var(--cream);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Water filter */
+.waterHalo {
+  fill: var(--lab-water);
+  opacity: 0.14;
+  filter: blur(18px);
+}
+.dirty {
+  fill: var(--lab-water-dirty);
+}
+.column {
+  fill: var(--fill-faint);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.cotton {
+  fill: var(--lab-cotton);
+  opacity: 0.85;
+}
+.charcoal {
+  fill: var(--lab-charcoal);
+}
+.sand {
+  fill: var(--lab-sand);
+  opacity: 0.9;
+}
+.gravel {
+  fill: var(--lab-gravel);
+}
+.drip {
+  stroke: var(--lab-water);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.glass {
+  fill: var(--fill-faint);
+  stroke: var(--border-strong);
+}
+.clean {
+  fill: var(--lab-water);
+}

@@ -1,0 +1,45 @@
+{
+ "vars": {
+  ":root, :host --font-sans": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+  ":root, :host --font-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
+  ":root, :host --spacing": ".25rem",
+  ":root, :host --ease-in-out": "cubic-bezier(.4, 0, .2, 1)",
+  ":root, :host --default-transition-duration": ".15s",
+  ":root, :host --default-transition-timing-function": "cubic-bezier(.4, 0, .2, 1)",
+  ":root, :host --default-font-family": "var(--font-sans)",
+  ":root, :host --default-mono-font-family": "var(--font-mono)",
+  ":root --void": "#03050f",
+  ":root --deep": "#060d1f",
+  ":root --mid": "#0f2044",
+  ":root --navy": "#162a5c",
+  ":root --pastel1": "#a8d4f0",
+  ":root --pastel2": "#c5e3f7",
+  ":root --pastel3": "#dff0fb",
+  ":root --cream": "#f0f7ff",
+  ":root --glow": "#a8d4f059",
+  ":root --glow2": "#a8d4f014",
+  ":root --gold": "#f0c070",
+  ":root --text": "#e8f4fd",
+  ":root --muted": "#c5e3f78c"
+ },
+ "fontFaces": [],
+ "imports": [
+  "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow+Condensed:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap"
+ ],
+ "loadedFonts": [
+  "Barlow Condensed 600 normal",
+  "Barlow Condensed 700 normal",
+  "Cormorant Garamond 300 italic",
+  "Cormorant Garamond 400 italic",
+  "Cormorant Garamond 300 normal",
+  "Cormorant Garamond 400 normal",
+  "JetBrains Mono 400 normal",
+  "Plus Jakarta Sans 400 normal",
+  "Plus Jakarta Sans 600 normal",
+  "Plus Jakarta Sans 700 normal"
+ ],
+ "fontLinks": [
+  "icon https://curiocrate.org/images/cclogosmall.png",
+  "stylesheet https://curiocrate.org/assets/index-DZcDZhH6.css"
+ ]
+}

@@ -1,0 +1,212 @@
+.lab {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.stage {
+  position: relative;
+  padding: 20px;
+  border-radius: var(--radius-feature);
+  border: 1px solid var(--border-card);
+  background: var(--color-bg-deep);
+  min-height: 340px;
+}
+.stageDark {
+  background: var(--void);
+}
+.panel {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-card);
+  background: var(--surface-card);
+}
+.group {
+  display: grid;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+}
+.group legend {
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 8px;
+}
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.seg label {
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.seg label:has(input:checked) {
+  background: var(--fill-chip);
+  color: var(--color-heading);
+  border-color: var(--border-strong);
+}
+.seg label:has(input:focus-visible) {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+.status {
+  padding: 12px 14px;
+  border-radius: var(--radius-row);
+  background: var(--fill-active);
+  border: 1px solid var(--border-faint);
+  color: var(--color-heading);
+  min-height: 48px;
+}
+.tubes {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.tubeBtn {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: var(--radius-row);
+  border: 1px solid transparent;
+  color: var(--color-text-muted);
+}
+.tubeBtn[aria-pressed="true"] {
+  border-color: var(--border-kit-strong);
+  background: var(--tier-kit-bg);
+  color: var(--lum-text);
+}
+.svg {
+  width: 100%;
+  height: auto;
+}
+.wire {
+  fill: none;
+  stroke: var(--lab-wire);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.wireLive {
+  stroke: var(--lab-wire-live);
+  stroke-dasharray: 6 10;
+  animation: flow 1s linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+.bulbGlass {
+  fill: var(--lab-bulb-off);
+  stroke: var(--border-strong);
+}
+.bulbGlow {
+  fill: var(--lab-bulb-on);
+}
+.halo {
+  fill: var(--lab-bulb-glow);
+  filter: blur(14px);
+}
+.battery {
+  fill: var(--lab-battery);
+  stroke: var(--border-strong);
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--color-text-muted);
+}
+.tubeGlass {
+  fill: var(--fill-faint);
+  stroke: var(--border-kit-strong);
+}
+.tubeLiquid {
+  fill: var(--lab-luminol);
+}
+.tubeGlow {
+  fill: var(--lab-luminol);
+  filter: blur(16px);
+}
+.table {
+  width: 100%;
+  font-size: var(--text-sm);
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-hair);
+  text-align: left;
+}
+.table th {
+  color: var(--color-label);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 1px;
+}
+.layers {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+.layerRow {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+}
+.layerSwatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+.m_gravel {
+  fill: var(--lab-gravel);
+  background: var(--lab-gravel);
+}
+.m_sand {
+  fill: var(--lab-sand);
+  background: var(--lab-sand);
+}
+.m_charcoal {
+  fill: var(--lab-charcoal);
+  background: var(--lab-charcoal);
+}
+.m_cotton {
+  fill: var(--lab-cotton);
+  background: var(--lab-cotton);
+}
+.water {
+  fill: var(--lab-water);
+}
+.dirty {
+  fill: var(--lab-water-dirty);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pass {
+  color: var(--color-success);
+}
+.fail {
+  color: var(--color-danger);
+}
+@media (max-width: 900px) {
+  .lab {
+    grid-template-columns: 1fr;
+  }
+}

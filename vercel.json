@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run db:migrate && npm run media:generate -- --if-missing && npm run build",
+  "crons": [
+    { "path": "/api/cron/retention", "schedule": "17 3 * * *" }
+  ]
+}

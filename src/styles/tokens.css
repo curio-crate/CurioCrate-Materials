@@ -1,0 +1,198 @@
+/*
+ * Curiocrate theme tokens: the ONLY file allowed to contain literal colors or font names.
+ * Every value is taken from curiocrate.org computed styles; see design/brand.md.
+ * Values marked [a11y] were adjusted to meet WCAG 2.1 AA; see DECISIONS.md.
+ * Enforced by scripts/check-theme.mjs (runs in `npm run lint`).
+ */
+:root {
+  /* ---- Site :root custom properties (verbatim from curiocrate.org) ---- */
+  --void: #03050f;
+  --deep: #060d1f;
+  --mid: #0f2044;
+  --navy: #162a5c;
+  --pastel1: #a8d4f0;
+  --pastel2: #c5e3f7;
+  --pastel3: #dff0fb;
+  --cream: #f0f7ff;
+  --glow: #a8d4f059;
+  --glow2: #a8d4f014;
+  --gold: #f0c070;
+  --text: #e8f4fd;
+  --muted: #c5e3f78c;
+
+  /* ---- Kit-page ("lum") palette from /kits/luminol ---- */
+  --lum-glow: #46e3d3;
+  --lum-ink: #02201d;
+  --lum-text: #e4f3f0;
+  --lum-muted: rgba(214, 238, 233, 0.66);
+  --lum-surface: #041315;
+  --lum-surface-2: #06191c;
+  --lum-surface-3: #020b0c;
+  --lum-chip: rgba(10, 34, 37, 0.72);
+  --lum-paper: #e8d8b0;
+  --lum-paper-ink: #2b2416;
+  --brand-blue: #1b7fe8;
+
+  /* ---- Semantic colors used by components ---- */
+  --color-bg: var(--void);
+  --color-bg-deep: var(--deep);
+  --color-text: var(--text);
+  --color-heading: var(--cream);
+  --color-heading-strong: #ffffff;
+  --color-accent: var(--pastel1);
+  --color-accent-strong: var(--pastel2);
+  --color-on-accent: #06101f;
+  --color-text-muted: rgba(197, 227, 247, 0.62); /* [a11y] site uses .55; .62 keeps AA on raised glass cards */
+  --color-text-soft: rgba(197, 227, 247, 0.78);
+  --color-text-faint: rgba(197, 227, 247, 0.62); /* [a11y] site uses .40 and .25 in places; both fail AA */
+  --color-label: rgba(168, 212, 240, 0.78); /* .label: pastel1 at .7 opacity → raised slightly for 9-10px text */
+  --color-card-title: #ffffff;
+
+  --color-success: var(--lum-glow);
+  --color-on-success: var(--lum-ink);
+  --color-warning: var(--gold);
+  --color-on-warning: #2b2416;
+  --color-danger: #ff9e94; /* not on site; nearest warm tone that passes AA on --void. See DECISIONS */
+  --color-danger-bg: rgba(255, 158, 148, 0.08);
+  --color-danger-border: rgba(255, 158, 148, 0.4);
+
+  /* Tier colors (Free = pastel, Kit owner = kit glow, Subscription = gold) */
+  --tier-free: var(--pastel1);
+  --tier-free-bg: rgba(168, 212, 240, 0.08);
+  --tier-free-border: rgba(168, 212, 240, 0.3);
+  --tier-kit: var(--lum-glow);
+  --tier-kit-bg: rgba(70, 227, 211, 0.08);
+  --tier-kit-border: rgba(70, 227, 211, 0.35);
+  --tier-sub: var(--gold);
+  --tier-sub-bg: rgba(240, 192, 112, 0.08);
+  --tier-sub-border: rgba(240, 192, 112, 0.4);
+
+  /* Borders (pastel1 at the alphas observed on the site) */
+  --border-hair: rgba(168, 212, 240, 0.06);
+  --border-faint: rgba(168, 212, 240, 0.1);
+  --border-card: rgba(168, 212, 240, 0.12);
+  --border-active: rgba(168, 212, 240, 0.15);
+  --border-subtle: rgba(168, 212, 240, 0.22);
+  --border-outline: rgba(168, 212, 240, 0.25);
+  --border-cta: rgba(168, 212, 240, 0.3);
+  --border-strong: rgba(168, 212, 240, 0.5);
+  --border-hover: rgba(168, 212, 240, 0.65);
+  --border-kit: rgba(70, 227, 211, 0.35);
+  --border-kit-soft: rgba(70, 227, 211, 0.16);
+  --border-kit-strong: rgba(70, 227, 211, 0.4);
+  --border-gold-dashed: rgba(240, 192, 112, 0.5);
+
+  /* Fills */
+  --fill-active: rgba(168, 212, 240, 0.08);
+  --fill-hover: rgba(168, 212, 240, 0.1);
+  --fill-glass: rgba(168, 212, 240, 0.12);
+  --fill-glass-hover: rgba(168, 212, 240, 0.2);
+  --fill-chip: rgba(168, 212, 240, 0.16);
+  --fill-faint: rgba(168, 212, 240, 0.03);
+  --surface-card: rgba(8, 16, 42, 0.5);
+  --surface-card-2: rgba(8, 15, 38, 0.6);
+  --surface-raised: rgba(11, 27, 51, 0.55);
+  --surface-dropdown: rgba(6, 13, 31, 0.95);
+  --surface-footer: rgba(3, 5, 15, 0.6);
+  --surface-pill: rgba(3, 5, 15, 0.65);
+  --surface-control: rgba(6, 12, 32, 0.72);
+  --surface-input: rgba(2, 10, 11, 0.6);
+  --surface-input-blue: rgba(6, 13, 31, 0.7);
+  --fill-kit-hover: rgba(70, 227, 211, 0.1);
+  --scrim: rgba(3, 5, 15, 0.82);
+  --star: rgba(232, 244, 253, 0.9);
+
+  /* Glows and shadows */
+  --glow-btn: 0 0 24px rgba(168, 212, 240, 0.2);
+  --glow-nav: 0 0 20px rgba(168, 212, 240, 0.15);
+  --glow-kit: 0 0 28px rgba(70, 227, 211, 0.45);
+  --shadow-dropdown: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-feature: 0 30px 80px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.35);
+  --logo-glow: drop-shadow(0 0 10px rgba(168, 212, 240, 0.5));
+  --drop-lift: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.45));
+  --gradient-kit: radial-gradient(60% 80% at 85% 50%, rgba(70, 227, 211, 0.16) 0%, rgba(4, 19, 21, 0) 70%);
+  --gradient-sky: radial-gradient(70% 55% at 72% 30%, rgba(22, 42, 92, 0.45) 0%, rgba(3, 5, 15, 0) 70%);
+  --gradient-gold: radial-gradient(60% 80% at 85% 50%, rgba(240, 192, 112, 0.12) 0%, rgba(3, 5, 15, 0) 70%);
+  --gradient-fade-bottom: linear-gradient(180deg, rgba(3, 5, 15, 0) 0%, rgba(3, 5, 15, 0.92) 100%);
+
+  /* Lab drawing palette (SVG fills/strokes) */
+  --lab-wire: #a8d4f0;
+  --lab-wire-live: #46e3d3;
+  --lab-metal: #8fa3b8;
+  --lab-bulb-off: rgba(197, 227, 247, 0.18);
+  --lab-bulb-on: #f0c070;
+  --lab-bulb-glow: rgba(240, 192, 112, 0.45);
+  --lab-battery: #162a5c;
+  --lab-water: rgba(63, 160, 230, 0.55);
+  --lab-water-dirty: rgba(150, 120, 70, 0.7);
+  --lab-sand: #d9c08c;
+  --lab-gravel: #8c8170;
+  --lab-charcoal: #2a2f38;
+  --lab-cotton: #eef4fa;
+  --lab-luminol: #46e3d3;
+  --lab-stain: rgba(120, 60, 50, 0.55);
+
+  /* Print (code sheets, printed lessons): light paper for school printers */
+  --print-paper: #ffffff;
+  --print-ink: #0f2044;
+  --print-muted: #4a5a72;
+  --print-rule: #c5d6e6;
+  --print-accent: #1b7fe8;
+
+  /* ---- Typography (Google Fonts, same URL as curiocrate.org) ---- */
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-kit: "Barlow Condensed", "Plus Jakarta Sans", system-ui, sans-serif;
+
+  --text-xs: 0.625rem;   /* 10px  footer meta, lang toggle */
+  --text-nav: 0.6875rem; /* 11px  nav / buttons */
+  --text-sm: 0.8125rem;  /* 13px  small body */
+  --text-base: 1rem;     /* 16px */
+  --text-md: 0.9375rem;  /* 15px */
+  --text-lead: 1.0625rem; /* 17px */
+  --text-lg: 1.375rem;   /* 22px  hero subtitle / small h3 */
+  --text-h3: 2.125rem;   /* 34px */
+  --text-h2: 3.5rem;     /* 56px */
+  --text-h1: 4.5rem;     /* 72px */
+  --text-display: 5.25rem; /* 84px */
+
+  --tracking-nav: 3px;
+  --tracking-label: 4px;
+  --tracking-btn: 2.5px;
+  --tracking-display: -0.02em;
+  --tracking-display-tight: -0.03em;
+
+  /* ---- Shape ---- */
+  --radius-btn: 3px;
+  --radius-nav: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-row: 10px;
+  --radius-dropdown: 12px;
+  --radius-card: 14px;
+  --radius-feature: 18px;
+  --radius-panel: 20px;
+  --radius-pill: 999px;
+
+  /* ---- Layout ---- */
+  --space: 0.25rem;
+  --page-max: 1100px;
+  --page-wide: 1200px;
+  --page-gutter: 40px;
+  --header-h: 94px;
+  --section-y: 120px;
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 0.2s;
+  --dur: 0.3s;
+  --dur-slow: 0.4s;
+
+  /* ---- Focus ---- */
+  --focus-ring: 2px solid var(--pastel1);
+  --focus-offset: 3px;
+
+  color-scheme: dark;
+}

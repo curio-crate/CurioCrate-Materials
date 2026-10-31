@@ -1,0 +1,39 @@
+.chat {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  max-width: 760px;
+  border-radius: var(--radius-card);
+}
+.log {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+.me,
+.curie {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: var(--radius-row);
+  line-height: 1.55;
+  font-size: var(--text-md);
+}
+.me {
+  justify-self: end;
+  background: var(--fill-chip);
+  color: var(--color-heading);
+}
+.curie {
+  justify-self: start;
+  background: var(--tier-kit-bg);
+  border: 1px solid var(--border-kit-soft);
+  color: var(--lum-text);
+}
+.form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}

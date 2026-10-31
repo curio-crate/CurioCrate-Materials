@@ -1,0 +1,89 @@
+/* Mirrors curiocrate.org footer: glass bg, hairline top border, 1100px inner, 4 columns, mono bottom bar. */
+.footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 80px;
+  padding: 56px 40px 40px;
+  background: var(--surface-footer);
+  border-top: 1px solid var(--border-hair);
+  backdrop-filter: blur(20px);
+}
+.inner {
+  max-width: var(--page-max);
+  margin: 0 auto;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+.brandCol {
+  display: flex;
+  flex-direction: column;
+}
+.mark {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+}
+.tagline {
+  max-width: 220px;
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-label);
+  margin-bottom: 20px;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.link {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  transition: color var(--dur-fast);
+}
+.link:hover {
+  color: var(--pastel2);
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-hair);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+.domain {
+  letter-spacing: 1px;
+  text-transform: none;
+}
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .brandCol {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 520px) {
+  .footer {
+    padding: 48px 20px 32px;
+  }
+}
