@@ -6,7 +6,7 @@ import { getOrderWithCodes } from "@/lib/orders";
 const cell = (s: string | null | undefined) => `"${String(s ?? "").replace(/"/g, '""')}"`;
 
 export async function GET(_req: Request, ctx: RouteContext<"/admin/orders/[id]/codes.csv">) {
-  if (!(await isAdmin())) return new Response("Forbidden", { status: 403 });
+  if (!(await isAdmin("codes"))) return new Response("Forbidden", { status: 403 });
   const { id } = await ctx.params;
   const data = await getOrderWithCodes(id);
   if (!data) return new Response("Not found", { status: 404 });

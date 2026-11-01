@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { after, type NextRequest } from "next/server";
-import { requireAdmin } from "@/lib/auth/viewer";
+import { studioActor } from "@/lib/auth/viewer";
 import { attachUploadedFile, attachUploadedPackage, attachUploadedVideo, createFileItemFromUpload, deleteContent, saveContent, type ContentInput } from "@/lib/cms";
 import { titleFromFileName } from "@/lib/files";
 import { json, sameOrigin } from "@/lib/http";
@@ -24,7 +24,8 @@ type Body = {
 // live (handout/manual file, video, or an interactive HTML/JS lesson package).
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return json({ error: "forbidden" }, 403);
-  const actor = await requireAdmin();
+  const actor = await studioActor("lessons");
+  if (!actor) return json({ error: "Your Studio role can't upload." }, 403);
   const b = (await req.json().catch(() => ({}))) as Body;
   const name = String(b.name ?? "").slice(0, 200);
   const key = String(b.key ?? "");

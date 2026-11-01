@@ -97,6 +97,9 @@ export const adminUsers = pgTable(
     id: id(),
     username: text("username").notNull(),
     name: text("name").notNull(),
+    email: text("email"), // people added by email sign in with it (or their username)
+    // admin = everything; product = lessons, materials, kits, codes, schools, teacher access; curriculum = lessons only
+    role: text("role").notNull().default("admin"),
     passwordHash: text("password_hash").notNull(), // scrypt:<saltHex>:<hashHex>
     active: boolean("active").notNull().default(true),
     failedLogins: integer("failed_logins").notNull().default(0),
@@ -105,7 +108,7 @@ export const adminUsers = pgTable(
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
     createdAt: createdAt(),
   },
-  (t) => [uniqueIndex("admin_users_username_idx").on(t.username)],
+  (t) => [uniqueIndex("admin_users_username_idx").on(t.username), uniqueIndex("admin_users_email_idx").on(t.email)],
 );
 
 export const adminSessions = pgTable(
@@ -191,6 +194,8 @@ export const contentItems = pgTable(
     ngss: text("ngss").array().notNull().default(sql`'{}'::text[]`),
     body: jsonb("body").$type<Block[]>().notNull().default([]),
     section: text("section"), // e.g. manual section "A.3"
+    // Lesson materials added in Studio: training_video | demo | manual | teacher_manual | file
+    materialKind: text("material_kind"),
     sortOrder: integer("sort_order").notNull().default(0),
     // Files & media (keys into storage / video provider; never public URLs)
     fileKey: text("file_key"),

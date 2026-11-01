@@ -38,7 +38,7 @@ export async function studioPage(browser: Browser) {
   await page.getByLabel("Username").fill(STUDIO_USER);
   await page.getByLabel("Password").fill(STUDIO_PASSWORD);
   await page.getByRole("button", { name: /sign in to studio/i }).click();
-  await expect(page).toHaveURL(/\/admin\/files/);
+  await expect(page).toHaveURL(/\/admin$/);
   return page;
 }
 

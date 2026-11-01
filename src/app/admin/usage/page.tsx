@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { streamingUsageByOrg } from "@/lib/admin";
 import styles from "../admin.module.css";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Streaming usage" };
 
 export default async function UsagePage() {
+  await requireAdmin("usage");
   const rows = await streamingUsageByOrg();
   const total = rows.reduce((n, r) => n + r.minutes, 0);
   return (

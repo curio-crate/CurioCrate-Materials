@@ -19,6 +19,19 @@ const refH1Families = new Set<string>(Object.values(raw as Record<string, { h1: 
 
 export async function expectBrand(page: Page, label: string) {
   await page.evaluate(() => document.fonts.ready);
+  // Studio is the company workspace: deliberately its own calm frame (no site header/footer), same brand fonts,
+  // CurioCrate blue accent. The curiocrate.org comparison applies to the teacher site only.
+  if (await page.locator(".studio").count()) {
+    const st = await page.evaluate(() => ({
+      body: getComputedStyle(document.querySelector(".studio")!).fontFamily,
+      siteHeader: !!document.querySelector("header nav[aria-label='Main']"),
+      fonts: ["Plus Jakarta Sans", "Cormorant Garamond", "JetBrains Mono"].map((f) => [...document.fonts].some((ff) => ff.family.replace(/"/g, "") === f && ff.status === "loaded")),
+    }));
+    expect(family(st.body), `studio check on ${label}`).toBe("Plus Jakarta Sans");
+    expect(st.siteHeader, `studio check on ${label}: no teacher-site navigation`).toBe(false);
+    expect(st.fonts[0], `studio check on ${label}: body font loaded`).toBe(true);
+    return;
+  }
   const ours = await page.evaluate(() => {
     const cs = (el: Element | null) => {
       if (!el) return null;

@@ -4,13 +4,16 @@ import { fileLibrary } from "@/lib/cms";
 import { fileLabel, formatBytes } from "@/lib/files";
 import styles from "../admin.module.css";
 import { Notice } from "../Notice";
+import { StudioHead } from "../StudioHead";
 import { deleteFileAction } from "./actions";
 import { FileDrop } from "./FileDrop";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Files" };
 
 // Files studio: the Curiocrate team's one place for PDFs and other handouts (worksheets, teacher guides, slides).
 export default async function StudioFiles(props: PageProps<"/admin/files">) {
+  await requireAdmin("library");
   const sp = await props.searchParams;
   const kit = typeof sp.kit === "string" ? sp.kit : "";
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
@@ -20,15 +23,7 @@ export default async function StudioFiles(props: PageProps<"/admin/files">) {
   return (
     <>
       <Notice sp={sp} />
-      <div className={styles.titleRow}>
-        <div>
-          <h1 className="h2">Files</h1>
-          <p className="hint">Kit manuals, PDFs, worksheets, teacher guides and slides. Uploads go straight to cloud storage and are live for teachers right away, following their access setting. Download any file back from the library.</p>
-        </div>
-        <span className="hint">
-          {files.length} file{files.length === 1 ? "" : "s"}
-        </span>
-      </div>
+      <StudioHead title="Materials library" sub={`Every handout, guide and kit manual (${files.length} file${files.length === 1 ? "" : "s"}). Uploads are live for teachers right away, following their access setting.`} />
 
       <FileDrop kits={kits.map((k) => ({ id: k.id, name: k.name }))} lessons={lessons} defaultKit={kit && kit !== "none" ? kit : (kits[0]?.id ?? "")} />
 
@@ -102,17 +97,14 @@ export default async function StudioFiles(props: PageProps<"/admin/files">) {
                   </td>
                   <td className="hint">{f.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
                   <td>
-                    <div className={styles.inline}>
+                    <div className={styles.inline} style={{ flexWrap: "nowrap", justifyContent: "flex-end" }}>
                       {f.fileKey && (
                         <a className="text-link" href={`/api/files/${f.slug}`}>
                           Download
                         </a>
                       )}
                       <Link className="text-link" href={`/admin/content/${f.id}`}>
-                        Edit / replace
-                      </Link>
-                      <Link className="text-link" href={`/lessons/${f.slug}`}>
-                        View
+                        Edit
                       </Link>
                       <form action={deleteFileAction}>
                         <input type="hidden" name="id" value={f.id} />

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { strToU8, zipSync } from "fflate";
 import fs from "node:fs";
 import path from "node:path";
@@ -158,7 +158,7 @@ test("every new page passes the accessibility check and brand comparison", async
   const classPath = new URL(teacher.url()).pathname;
   const anon = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
   await co.goto("/admin/content");
-  const firstEdit = await co.getByRole("link", { name: /edit/i }).nth(1).getAttribute("href");
+  const firstEdit = await co.locator('table a[href^="/admin/content/"]').first().getAttribute("href"); // inside the collapsed "Other kit items"
   const visits = [
     { label: "labs", page: anon, path: "/labs" },
     { label: "join", page: anon, path: "/join" },
@@ -170,7 +170,13 @@ test("every new page passes the accessibility check and brand comparison", async
     { label: "classes", page: teacher, path: "/classes" },
     { label: "class", page: teacher, path: classPath },
     { label: "plans-signed-in", page: teacher, path: "/plans" },
+    { label: "studio-home", page: co, path: "/admin" },
     { label: "studio-content", page: co, path: "/admin/content" },
+    { label: "studio-new-lesson-panel", page: co, path: "/admin/content?new=1" },
+    { label: "studio-kits", page: co, path: "/admin/kits" },
+    { label: "studio-lookup", page: co, path: "/admin/lookup?q=LMN" },
+    { label: "studio-account", page: co, path: "/admin/account" },
+    { label: "studio-library", page: co, path: "/admin/files" },
     { label: "studio-new-lesson", page: co, path: "/admin/content/new?type=instructions" },
     { label: "studio-new-video", page: co, path: "/admin/content/new?type=video" },
     { label: "studio-edit", page: co, path: firstEdit! },
@@ -192,6 +198,43 @@ test("every new page passes the accessibility check and brand comparison", async
   for (const p of [co, teacher, anon]) await p.context().close();
 });
 
+test("Studio roles: Curriculum sees lessons only, Product Officers add codes and schools, only admins manage the team", async ({ browser }) => {
+  const co = await companyPage(browser);
+  const stamp = Date.now().toString(36);
+  for (const [email, role] of [[`cur-${stamp}@curiocrate.org`, "Curriculum"], [`po-${stamp}@curiocrate.org`, "Product Officer"]]) {
+    await co.goto("/admin/team");
+    await co.getByLabel("Email").fill(email);
+    await co.getByLabel("Full name").fill(role);
+    await co.locator(".st-role", { hasText: role }).click();
+    await co.getByLabel("Temporary password").fill("a temporary pass 42");
+    await co.getByRole("button", { name: "Add person" }).click();
+    await expect(co.getByText(/^Added /)).toBeVisible();
+  }
+  const signInAs = async (email: string) => {
+    const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+    await page.goto("/company/login");
+    await page.getByLabel("Email or username").fill(email);
+    await page.getByLabel("Password").fill("a temporary pass 42");
+    await page.getByRole("button", { name: /sign in to studio/i }).click();
+    await expect(page).toHaveURL(/\/admin$/);
+    return page;
+  };
+  const opens = async (page: Page, p: string) => {
+    await page.goto(p);
+    return new URL(page.url()).pathname === p;
+  };
+  const cur = await signInAs(`cur-${stamp}@curiocrate.org`);
+  await expect(cur.getByRole("navigation", { name: "Studio" }).getByRole("link")).toHaveText(["Home", "Lessons"]);
+  expect(await opens(cur, "/admin/content")).toBe(true);
+  for (const p of ["/admin/files", "/admin/orders", "/admin/schools", "/admin/access", "/admin/team", "/admin/audit"]) expect(await opens(cur, p), p).toBe(false);
+  await expect(cur.getByText(/can.t open that page/i)).toBeVisible();
+
+  const po = await signInAs(`po-${stamp}@curiocrate.org`);
+  for (const p of ["/admin/content", "/admin/files", "/admin/kits", "/admin/orders", "/admin/lookup", "/admin/schools", "/admin/access"]) expect(await opens(po, p), p).toBe(true);
+  for (const p of ["/admin/team", "/admin/security", "/admin/usage", "/admin/audit"]) expect(await opens(po, p), p).toBe(false);
+  for (const p of [co, cur, po]) await p.context().close();
+});
+
 test("a teacher's Google sign-in never opens Studio", async ({ browser }) => {
   const teacher = await newSignedInPage(browser, { email: uniqueEmail("nostudio") });
   await teacher.goto("/admin/files");
@@ -207,15 +250,26 @@ test("the team uploads a pre-built JavaScript lesson; it runs in a sandbox for k
     "pole-finder/index.html": strToU8('<!doctype html><title>x</title><p id="out">loading</p><script src="app.js"></script>'),
     "pole-finder/app.js": strToU8('document.getElementById("out").textContent = "JS lesson running"; try { document.cookie; document.getElementById("out").dataset.cookie = "readable"; } catch { document.getElementById("out").dataset.cookie = "blocked"; }'),
   });
+  // One button opens the lesson panel: details, the JavaScript activity, and supplementary materials.
   await co.goto("/admin/content");
-  await co.getByLabel("Kit", { exact: true }).first().selectOption({ label: "Luminol Forensics Kit" });
-  await co.locator("#up-files-package").setInputFiles({ name: "pole-finder.zip", mimeType: "application/zip", buffer: Buffer.from(pkg) });
-  await co.getByLabel("Title for pole-finder.zip").fill(title);
-  await co.getByRole("button", { name: /upload 1 file/i }).click();
-  await expect(co.getByText(/live ✓/i)).toBeVisible({ timeout: 60_000 });
-  await co.getByRole("list", { name: "Files to upload" }).getByRole("link", { name: "Edit" }).click();
-  await co.getByRole("link", { name: /open as a teacher sees it/i }).click();
-  const lessonUrl = new URL(co.url()).pathname;
+  await co.getByRole("button", { name: "Create a new lesson" }).click();
+  const panel = co.getByRole("dialog");
+  await panel.getByLabel("Title").fill(title);
+  await panel.getByLabel("Kit", { exact: true }).selectOption({ label: "Luminol Forensics Kit" });
+  await panel.getByLabel("Choose the lesson activity").setInputFiles({ name: "pole-finder.zip", mimeType: "application/zip", buffer: Buffer.from(pkg) });
+  for (const kind of ["Teacher training", "Teacher manual"]) {
+    const chooser = co.waitForEvent("filechooser");
+    await panel.getByRole("button", { name: kind, exact: true }).click();
+    await (await chooser).setFiles(path.join(".media", "files", "luminol-a0-worksheet.pdf"));
+  }
+  await panel.getByRole("button", { name: "Publish lesson" }).click();
+  await expect(co.getByRole("status").filter({ hasText: /published/i })).toBeVisible({ timeout: 60_000 });
+  await co.getByRole("button", { name: new RegExp(title) }).click();
+  await expect(co.getByRole("dialog").locator(".st-matKind", { hasText: "Teacher training" })).toBeVisible();
+  const lessonUrl = (await co.getByRole("dialog").getByRole("link", { name: "View as teacher" }).getAttribute("href"))!;
+  await co.goto(lessonUrl);
+  await expect(co.getByRole("heading", { name: "Teacher training" })).toBeVisible();
+  await expect(co.getByRole("heading", { name: "Manuals" })).toBeVisible();
   const frame = co.frameLocator('[data-testid="interactive-lesson"]');
   await expect(frame.locator("#out")).toHaveText("JS lesson running", { timeout: 20_000 });
   await expect(frame.locator("#out")).toHaveAttribute("data-cookie", "blocked"); // opaque origin: no access to cookies
@@ -224,7 +278,7 @@ test("the team uploads a pre-built JavaScript lesson; it runs in a sandbox for k
   const teacher = await newSignedInPage(browser, { email: uniqueEmail("jsl") });
   await teacher.goto(lessonUrl);
   await expect(teacher.locator('[data-testid="interactive-lesson"]')).toHaveCount(0);
-  await expect(teacher.getByRole("link", { name: /redeem a kit code/i })).toBeVisible();
+  await expect(teacher.getByRole("main").getByRole("link", { name: /redeem a kit code/i })).toBeVisible();
   for (const p of [co, teacher]) await p.context().close();
 });
 

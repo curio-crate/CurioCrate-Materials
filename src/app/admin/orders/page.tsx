@@ -5,6 +5,7 @@ import { recentOrders } from "@/lib/orders";
 import { createOrderAction } from "../actions";
 import styles from "../admin.module.css";
 import { Notice } from "../Notice";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Orders" };
 
@@ -16,6 +17,7 @@ const SOURCES = [
 ];
 
 export default async function OrdersPage(props: PageProps<"/admin/orders">) {
+  await requireAdmin("codes");
   const sp = await props.searchParams;
   const [orders, kits] = await Promise.all([recentOrders(30), listKits()]);
   return (

@@ -3,10 +3,12 @@ import { searchOrgs } from "@/lib/admin";
 import { createOrgAction } from "../actions";
 import styles from "../admin.module.css";
 import { Notice } from "../Notice";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Schools" };
 
 export default async function SchoolsPage(props: PageProps<"/admin/schools">) {
+  await requireAdmin("schools");
   const sp = await props.searchParams;
   const q = typeof sp.q === "string" ? sp.q : "";
   const rows = await searchOrgs(q);

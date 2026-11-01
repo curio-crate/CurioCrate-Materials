@@ -6,11 +6,13 @@ import { getOrderWithCodes } from "@/lib/orders";
 import { THEME } from "@/styles/tokens";
 import { PrintButton } from "./PrintButton";
 import styles from "./print.module.css";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Code sheet" };
 
 // Printable sheet of code cards (8 per Letter page) to cut out and place inside kit boxes.
 export default async function PrintCodes(props: PageProps<"/admin/orders/[id]/print">) {
+  await requireAdmin("codes");
   const { id } = await props.params;
   const data = await getOrderWithCodes(id);
   if (!data) notFound();

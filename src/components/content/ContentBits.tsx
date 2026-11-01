@@ -9,11 +9,15 @@ export function TierBadge({ tier }: { tier: ContentItem["requiredTier"] }) {
   return <span className={`badge ${cls}`}>{TIER_LABEL[tier]}</span>;
 }
 
+/** NGSS alignment, shown the same way everywhere: a small check-marked "NGSS" label, then the codes. */
 export function NgssTags({ codes, limit }: { codes: string[]; limit?: number }) {
   if (!codes.length) return null;
   const shown = limit ? codes.slice(0, limit) : codes;
   return (
     <ul className={styles.ngss} aria-label="NGSS standards">
+      <li className={styles.ngssLabel} aria-hidden="true">
+        <Icon name="ngss" size={13} /> NGSS
+      </li>
       {shown.map((c) => (
         <li key={c} className={styles.ngssTag} title={NGSS_LABELS[c]}>
           {c}
@@ -48,7 +52,6 @@ export function ContentRow({ item, href, state, kitName }: { item: ContentItem; 
         </Link>
         <p className={styles.rowSummary}>{item.summary}</p>
         <div className={styles.rowFoot}>
-          <TierBadge tier={item.requiredTier} />
           {item.minutes && (
             <span className={styles.minutes}>
               <Icon name="clock" size={14} /> {item.minutes} min
@@ -104,7 +107,7 @@ export function LockedPanel({
         </Link>
         {reason === "needs_kit" && kitSlug && (
           <Link href={`/kits/${kitSlug}`} className="btn">
-            See free samples
+            Back to the kit
           </Link>
         )}
         {reason === "needs_kit" && (

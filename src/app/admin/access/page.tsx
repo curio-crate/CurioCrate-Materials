@@ -5,6 +5,7 @@ import { pendingMembers, teacherAccess } from "@/lib/security";
 import styles from "../admin.module.css";
 import { Notice } from "../Notice";
 import { grantSeatAction, membershipAction, restoreSeatAction, revokeSeatAction, setTierAction, signOutEverywhereAction, transferSeatAction } from "./actions";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Access" };
 
@@ -16,6 +17,7 @@ const TIERS = [
 
 // The access panel: who can open what. Look up a teacher, change their kits, and set each item's access level.
 export default async function AccessPage(props: PageProps<"/admin/access">) {
+  await requireAdmin("teachers");
   const sp = await props.searchParams;
   const email = typeof sp.email === "string" ? sp.email.trim() : "";
   const [found, pending, { kits, items }] = await Promise.all([email ? teacherAccess(email) : null, pendingMembers(), studioContent()]);

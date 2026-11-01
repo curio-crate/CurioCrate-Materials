@@ -6,9 +6,11 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { db } from "@/db";
 import { adminSessions, adminUsers, auditLog, classes, contentItems, entitlements, kits, redemptionCodes, sessions, teachers } from "@/db/schema";
 import { deleteTeacherAccount } from "@/lib/account";
-import { adminLogin, changeOwnPassword, createAdmin, ensureBootstrapAdmin, resetAdminPassword, setAdminActive, type CompanyAdmin } from "@/lib/auth/admin";
+import { adminLogin, changeOwnPassword, createAdmin, ensureBootstrapAdmin, resetAdminPassword, setAdminActive, setAdminRole, type CompanyAdmin } from "@/lib/auth/admin";
+import { asRole, can } from "@/lib/auth/roles";
 import { createSession, MAX_DEVICES } from "@/lib/auth/session";
-import { deleteContent, saveContent, uploadPackage } from "@/lib/cms";
+import { addLessonMaterial, deleteContent, saveContent, updateLessonDetails, uploadPackage } from "@/lib/cms";
+import { isTeacherOnly } from "@/lib/materials";
 import { packageUrl, unpackLesson } from "@/lib/packages";
 import { redeemCode } from "@/lib/redeem";
 import { sharingAlerts, transferSeat } from "@/lib/security";
@@ -30,7 +32,7 @@ afterAll(async () => {
 async function me(username = "CurioCrateAdmin"): Promise<CompanyAdmin> {
   const d = await db();
   const [u] = await d.select().from(adminUsers).where(eq(adminUsers.username, username));
-  return { id: u.id, username: u.username, name: u.name, sessionId: "test" };
+  return { id: u.id, username: u.username, name: u.name, role: asRole(u.role), sessionId: "test" };
 }
 
 describe("Studio accounts (password only)", () => {
@@ -51,33 +53,95 @@ describe("Studio accounts (password only)", () => {
   it("the team can add accounts; passwords are hashed, checked and changeable", async () => {
     expect((await adminLogin("CurioCrateAdmin", "WeLuvCurie@3322", "a1")).ok).toBe(true);
     const owner = await me();
-    expect(await createAdmin(owner, { username: "maria", name: "Maria", password: "short" })).toMatchObject({ ok: false });
-    expect(await createAdmin(owner, { username: "maria", name: "Maria", password: "correct horse battery" })).toMatchObject({ ok: true });
-    expect(await createAdmin(owner, { username: "maria", name: "Maria 2", password: "correct horse battery" })).toMatchObject({ ok: false, error: /taken/ });
+    expect(owner.role).toBe("admin");
+    expect(await createAdmin(owner, { email: "maria@curiocrate.org", name: "Maria", role: "admin", password: "short" })).toMatchObject({ ok: false });
+    expect(await createAdmin(owner, { email: "not-an-email", name: "Maria", role: "admin", password: "correct horse battery" })).toMatchObject({ ok: false });
+    expect(await createAdmin(owner, { email: "maria@curiocrate.org", name: "Maria", role: "superuser", password: "correct horse battery" })).toMatchObject({ ok: false });
+    expect(await createAdmin(owner, { email: "Maria@CurioCrate.org", name: "Maria", role: "admin", password: "correct horse battery" })).toMatchObject({ ok: true });
+    expect(await createAdmin(owner, { email: "maria@curiocrate.org", name: "Maria 2", role: "admin", password: "correct horse battery" })).toMatchObject({ ok: false, error: /already/ });
     const d = await db();
-    const [row] = await d.select().from(adminUsers).where(eq(adminUsers.username, "maria"));
+    const [row] = await d.select().from(adminUsers).where(eq(adminUsers.username, "maria@curiocrate.org"));
     expect(row.passwordHash).toMatch(/^scrypt:[0-9a-f]{32}:[0-9a-f]{128}$/);
-    expect((await adminLogin("maria", "correct horse battery", "a2")).ok).toBe(true);
+    expect(row.email).toBe("maria@curiocrate.org");
+    // Sign in with the email (any case); the username is the email for people added by email.
+    expect((await adminLogin("MARIA@curiocrate.org", "correct horse battery", "a2")).ok).toBe(true);
+    expect((await adminLogin("maria@curiocrate.org", "correct horse battery", "a2")).ok).toBe(true);
 
-    const maria = await me("maria");
+    const maria = await me("maria@curiocrate.org");
     expect(await changeOwnPassword(maria, "wrong", "another long password")).toMatchObject({ ok: false });
     expect(await changeOwnPassword(maria, "correct horse battery", "another long password")).toMatchObject({ ok: true });
-    expect((await adminLogin("maria", "correct horse battery", "a2")).ok).toBe(false);
-    expect((await adminLogin("maria", "another long password", "a2")).ok).toBe(true);
+    expect((await adminLogin("maria@curiocrate.org", "correct horse battery", "a2")).ok).toBe(false);
+    expect((await adminLogin("maria@curiocrate.org", "another long password", "a2")).ok).toBe(true);
   });
 
   it("disabling or resetting an account ends its sessions; the last active account can't be disabled", async () => {
     const owner = await me();
-    const maria = await me("maria");
+    const maria = await me("maria@curiocrate.org");
     const d = await db();
     expect((await d.select().from(adminSessions).where(eq(adminSessions.adminId, maria.id))).length).toBeGreaterThan(0);
     expect(await setAdminActive(owner, maria.id, false)).toMatchObject({ ok: true });
     expect(await d.select().from(adminSessions).where(eq(adminSessions.adminId, maria.id))).toEqual([]);
-    expect(await adminLogin("maria", "another long password", "a3")).toMatchObject({ ok: false, error: /disabled/ });
+    expect(await adminLogin("maria@curiocrate.org", "another long password", "a3")).toMatchObject({ ok: false, error: /disabled/ });
     expect(await setAdminActive(owner, owner.id, false)).toMatchObject({ ok: false });
     await setAdminActive(owner, maria.id, true);
     expect(await resetAdminPassword(owner, maria.id, "reset by the owner ok")).toMatchObject({ ok: true });
-    expect((await adminLogin("maria", "reset by the owner ok", "a3")).ok).toBe(true);
+    expect((await adminLogin("maria@curiocrate.org", "reset by the owner ok", "a3")).ok).toBe(true);
+  });
+});
+
+describe("Studio roles: admin, product officer, curriculum", () => {
+  it("each tier opens only its own areas", () => {
+    expect(["lessons", "library", "kits", "codes", "schools", "teachers", "security", "usage", "audit", "team", "erase"].every((p) => can("admin", p as never))).toBe(true);
+    expect(["lessons", "library", "kits", "codes", "schools", "teachers"].every((p) => can("product", p as never))).toBe(true);
+    expect(["security", "usage", "audit", "team", "erase"].some((p) => can("product", p as never))).toBe(false);
+    expect(can("curriculum", "lessons")).toBe(true);
+    expect(["library", "kits", "codes", "schools", "teachers", "security", "usage", "audit", "team", "erase"].some((p) => can("curriculum", p as never))).toBe(false);
+    expect(asRole("root")).toBe("curriculum"); // unknown values get the least access
+  });
+
+  it("people are added with a role; roles change; Studio always keeps one active admin", async () => {
+    const owner = await me();
+    expect(await createAdmin(owner, { email: "po@curiocrate.org", name: "Pat Product", role: "product", password: "product officer pass" })).toMatchObject({ ok: true });
+    expect(await createAdmin(owner, { email: "cur@curiocrate.org", name: "Cam Curriculum", role: "curriculum", password: "lesson writer pass 7" })).toMatchObject({ ok: true });
+    const po = await me("po@curiocrate.org");
+    expect(po.role).toBe("product");
+    expect((await me("cur@curiocrate.org")).role).toBe("curriculum");
+
+    expect(await setAdminRole(owner, owner.id, "curriculum")).toMatchObject({ ok: false }); // not your own
+    expect(await setAdminRole(owner, po.id, "wizard")).toMatchObject({ ok: false });
+    expect(await setAdminRole(owner, po.id, "curriculum")).toMatchObject({ ok: true });
+    expect((await me("po@curiocrate.org")).role).toBe("curriculum");
+
+    // With the owner as the only active admin, nobody can demote or disable them.
+    const d = await db();
+    const otherAdmins = (await d.select().from(adminUsers)).filter((u) => u.role === "admin" && u.active && u.id !== owner.id);
+    for (const u of otherAdmins) await setAdminActive(owner, u.id, false);
+    expect(await setAdminRole(po, owner.id, "curriculum")).toMatchObject({ ok: false, error: /admin/ });
+    expect(await setAdminActive(po, owner.id, false)).toMatchObject({ ok: false, error: /admin/ });
+    for (const u of otherAdmins) await setAdminActive(owner, u.id, true);
+  });
+});
+
+describe("lesson materials", () => {
+  it("attaches typed materials to a lesson, keeps them in the lesson's kit and tier, and deletes them with it", async () => {
+    const d = await db();
+    const [kit] = await d.select().from(kits);
+    const lesson = await saveContent(studio, null, { kitId: kit.id, parentId: null, type: "interactive", title: "Materials test lesson", summary: "", requiredTier: "kit_owner", section: null, minutes: null, ngss: [], bodyText: "", captionsText: "", labSlug: null });
+    const training = await addLessonMaterial(studio, lesson.id, { kind: "training_video", title: "How to run it", media: "video" });
+    const manual = await addLessonMaterial(studio, lesson.id, { kind: "teacher_manual", title: "Teacher manual", media: "file" });
+    expect(training).toMatchObject({ parentId: lesson.id, type: "video", materialKind: "training_video", kitId: kit.id, requiredTier: "kit_owner", mediaStatus: "uploading" });
+    expect(manual).toMatchObject({ type: "pdf", materialKind: "teacher_manual" });
+    expect(isTeacherOnly(training.materialKind) && isTeacherOnly(manual.materialKind)).toBe(true);
+    expect(isTeacherOnly("demo")).toBe(false);
+
+    await updateLessonDetails(studio, lesson.id, { title: "Renamed lesson", summary: "s", kitId: kit.id, requiredTier: "free", minutes: 30, ngss: ["MS-PS1-2"] });
+    const kids = await d.select().from(contentItems).where(eq(contentItems.parentId, lesson.id));
+    expect(kids.every((k) => k.requiredTier === "free")).toBe(true);
+    const [after] = await d.select().from(contentItems).where(eq(contentItems.id, lesson.id));
+    expect(after).toMatchObject({ title: "Renamed lesson", minutes: 30, ngss: ["MS-PS1-2"] });
+
+    await deleteContent(studio, lesson.id);
+    expect(await d.select().from(contentItems).where(eq(contentItems.parentId, lesson.id))).toEqual([]);
   });
 });
 

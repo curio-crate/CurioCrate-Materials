@@ -1,14 +1,19 @@
+import { Icon } from "@/components/ui/Icon";
 import { getCompanyAdmin, listAdmins, MIN_PASSWORD } from "@/lib/auth/admin";
+import { asRole, ROLE_BLURB, ROLE_LABEL, STUDIO_ROLES } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/viewer";
 import { serviceModes } from "@/lib/env";
 import styles from "../admin.module.css";
 import { Notice } from "../Notice";
-import { changeOwnPasswordAction, createAdminAction, resetPasswordAction, setActiveAction } from "./actions";
+import { StudioHead } from "../StudioHead";
+import { createAdminAction, resetPasswordAction, setActiveAction, setRoleAction } from "./actions";
 
-export const metadata = { title: "Team" };
+export const metadata = { title: "Team & roles" };
 
 const fmt = (d: Date | null) => (d ? d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Never");
 
 export default async function TeamPage(props: PageProps<"/admin/team">) {
+  await requireAdmin("team");
   const sp = await props.searchParams;
   const [me, admins] = await Promise.all([getCompanyAdmin(), listAdmins()]);
   const modes = serviceModes();
@@ -16,77 +21,110 @@ export default async function TeamPage(props: PageProps<"/admin/team">) {
   return (
     <>
       <Notice sp={sp} />
-      <div className={styles.titleRow}>
-        <div>
-          <h1 className="h2">Team &amp; system</h1>
-          <p className="hint">Studio accounts sign in with a username and password only. Teacher Google accounts can never open Studio.</p>
-        </div>
-      </div>
+      <StudioHead title="Team & roles" sub="Add people by email and give them a role. Studio is password-only; teacher Google accounts can never open it." />
 
-      <section className={styles.section} aria-labelledby="accounts-h">
-        <h2 id="accounts-h" className="h3">
-          Studio accounts
-        </h2>
+      <section aria-labelledby="people-h">
+        <div className="st-sectionHead">
+          <h2 id="people-h" className="st-h2">
+            People
+          </h2>
+          <span className="hint">{admins.length} account{admins.length === 1 ? "" : "s"}</span>
+        </div>
         <div className="table-wrap">
           <table className="table">
             <thead>
               <tr>
-                <th scope="col">Username</th>
-                <th scope="col">Name</th>
+                <th scope="col">Person</th>
+                <th scope="col">Role</th>
                 <th scope="col">Last sign-in</th>
                 <th scope="col">Status</th>
-                <th scope="col">Actions</th>
+                <th scope="col">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {admins.map((a) => (
-                <tr key={a.id}>
-                  <td className={styles.mono}>
-                    {a.username}
-                    {a.id === me?.id && <span className="hint"> (you)</span>}
-                  </td>
-                  <td>{a.name}</td>
-                  <td className="hint">{fmt(a.lastLoginAt)}</td>
-                  <td className={a.active ? styles.status_redeemed : styles.status_void}>{!a.active ? "Disabled" : a.lockedUntil && a.lockedUntil > now ? "Locked (too many wrong passwords)" : "Active"}</td>
-                  <td>
-                    <div className={styles.inline}>
-                      {a.id !== me?.id && (
-                        <form action={setActiveAction}>
+              {admins.map((a) => {
+                const mine = a.id === me?.id;
+                const role = asRole(a.role);
+                const locked = a.lockedUntil && a.lockedUntil > now;
+                return (
+                  <tr key={a.id}>
+                    <td>
+                      <strong style={{ color: "var(--st-heading)" }}>{a.name}</strong>
+                      {mine && <span className="hint"> (you)</span>}
+                      <div className="hint">{a.email ?? a.username}</div>
+                    </td>
+                    <td>
+                      {mine ? (
+                        <span className="st-pill">{ROLE_LABEL[role]}</span>
+                      ) : (
+                        <form action={setRoleAction} className={styles.inline}>
                           <input type="hidden" name="id" value={a.id} />
-                          <input type="hidden" name="active" value={a.active ? "0" : "1"} />
-                          <button className={`btn btn-xs ${a.active ? "btn-danger" : ""}`}>{a.active ? "Disable" : "Enable"}</button>
-                        </form>
-                      )}
-                      {a.id !== me?.id && (
-                        <form action={resetPasswordAction} className={styles.inline}>
-                          <input type="hidden" name="id" value={a.id} />
-                          <label className="sr-only" htmlFor={`pw-${a.id}`}>
-                            New password for {a.username}
+                          <label className="sr-only" htmlFor={`role-${a.id}`}>
+                            Role for {a.name}
                           </label>
-                          <input id={`pw-${a.id}`} name="password" type="password" className="input" placeholder="New password" minLength={MIN_PASSWORD} autoComplete="new-password" required />
-                          <button className="btn btn-xs btn-outline">Reset password</button>
+                          <select id={`role-${a.id}`} name="role" defaultValue={role} className="select" style={{ minHeight: 34, width: 170 }}>
+                            {STUDIO_ROLES.map((r) => (
+                              <option key={r} value={r}>
+                                {ROLE_LABEL[r]}
+                              </option>
+                            ))}
+                          </select>
+                          <button className="btn btn-xs">Save</button>
                         </form>
                       )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="hint">{fmt(a.lastLoginAt)}</td>
+                    <td>
+                      <span className={`st-pill ${!a.active ? "st-pill-bad" : locked ? "st-pill-warn" : "st-pill-ok"}`}>{!a.active ? "Disabled" : locked ? "Locked" : "Active"}</span>
+                    </td>
+                    <td>
+                      {!mine && (
+                        <div className={styles.inline} style={{ justifyContent: "flex-end" }}>
+                          <details className="st-details" style={{ margin: 0 }}>
+                            <summary>
+                              Reset password <Icon name="chevron" size={14} />
+                            </summary>
+                            <form action={resetPasswordAction} className={styles.inline}>
+                              <input type="hidden" name="id" value={a.id} />
+                              <label className="sr-only" htmlFor={`pw-${a.id}`}>
+                                New password for {a.name}
+                              </label>
+                              <input id={`pw-${a.id}`} name="password" type="password" className="input" placeholder="New password" minLength={MIN_PASSWORD} autoComplete="new-password" required style={{ minHeight: 34, width: 180 }} />
+                              <button className="btn btn-xs">Reset</button>
+                            </form>
+                          </details>
+                          <form action={setActiveAction}>
+                            <input type="hidden" name="id" value={a.id} />
+                            <input type="hidden" name="active" value={a.active ? "0" : "1"} />
+                            <button className={`btn btn-xs ${a.active ? "btn-danger" : ""}`}>{a.active ? "Disable" : "Enable"}</button>
+                          </form>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </section>
 
-      <div className={styles.grid2}>
-        <form action={createAdminAction} className={`card ${styles.panel} ${styles.form}`} aria-labelledby="add-h">
-          <h2 id="add-h" className="h4">
-            Add a Studio account
-          </h2>
-          <div className={styles.formRow}>
+      <section className="st-section" aria-labelledby="add-h">
+        <form action={createAdminAction} className="st-card stack" style={{ gap: 16 }}>
+          <div>
+            <h2 id="add-h" className="st-h2">
+              Add a person
+            </h2>
+            <p className="hint">They sign in at /company/login with their email and the temporary password, then change it under My account.</p>
+          </div>
+          <div className="st-fields">
             <div className="field">
-              <label className="label" htmlFor="new-username">
-                Username
+              <label className="label" htmlFor="new-email">
+                Email
               </label>
-              <input id="new-username" name="username" className="input" required pattern="[A-Za-z0-9._\-]{3,40}" autoComplete="off" />
+              <input id="new-email" name="email" type="email" className="input" required autoComplete="off" placeholder="name@curiocrate.org" />
             </div>
             <div className="field">
               <label className="label" htmlFor="new-name">
@@ -95,48 +133,44 @@ export default async function TeamPage(props: PageProps<"/admin/team">) {
               <input id="new-name" name="name" className="input" required />
             </div>
           </div>
-          <div className="field">
+          <fieldset style={{ border: 0, padding: 0 }}>
+            <legend className="label" style={{ marginBottom: 8 }}>
+              Role
+            </legend>
+            <div className="st-roles">
+              {STUDIO_ROLES.map((r) => (
+                <label key={r} className="st-role">
+                  <input type="radio" name="role" value={r} defaultChecked={r === "curriculum"} required />
+                  <span className="st-roleName">{ROLE_LABEL[r]}</span>
+                  <span className="st-roleText">{ROLE_BLURB[r]}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <div className="field" style={{ maxWidth: 360 }}>
             <label className="label" htmlFor="new-password">
-              Temporary password (at least {MIN_PASSWORD} characters)
+              Temporary password
             </label>
             <input id="new-password" name="password" type="password" className="input" minLength={MIN_PASSWORD} autoComplete="new-password" required />
+            <span className="hint">At least {MIN_PASSWORD} characters. Share it privately.</span>
           </div>
-          <button className="btn btn-solid btn-sm">Add account</button>
+          <div>
+            <button className="btn btn-solid">
+              <Icon name="plus" size={16} /> Add person
+            </button>
+          </div>
         </form>
+      </section>
 
-        <form action={changeOwnPasswordAction} className={`card ${styles.panel} ${styles.form}`} aria-labelledby="mine-h">
-          <h2 id="mine-h" className="h4">
-            Change my password
+      <section className="st-section" aria-labelledby="sys-h">
+        <div className="st-sectionHead">
+          <h2 id="sys-h" className="st-h2">
+            Where data is stored
           </h2>
-          <div className="field">
-            <label className="label" htmlFor="cur-pw">
-              Current password
-            </label>
-            <input id="cur-pw" name="current" type="password" className="input" autoComplete="current-password" required />
-          </div>
-          <div className={styles.formRow}>
-            <div className="field">
-              <label className="label" htmlFor="next-pw">
-                New password
-              </label>
-              <input id="next-pw" name="next" type="password" className="input" minLength={MIN_PASSWORD} autoComplete="new-password" required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="confirm-pw">
-                Repeat new password
-              </label>
-              <input id="confirm-pw" name="confirm" type="password" className="input" minLength={MIN_PASSWORD} autoComplete="new-password" required />
-            </div>
-          </div>
-          <button className="btn btn-sm">Change password</button>
-        </form>
-      </div>
-
-      <section className={styles.section} aria-labelledby="sys-h">
-        <h2 id="sys-h" className="h3">
-          Where data is stored
-        </h2>
-        <p className="hint">Everything must say “cloud” before launch. A deployed site refuses to start without a cloud database and cloud file storage, so nothing is ever kept on a temporary server disk.</p>
+        </div>
+        <p className="hint" style={{ marginBottom: 12 }}>
+          Everything must say “Cloud” before launch. A deployed site refuses to start without a cloud database and cloud file storage.
+        </p>
         <div className="table-wrap">
           <table className="table">
             <thead>
@@ -150,7 +184,9 @@ export default async function TeamPage(props: PageProps<"/admin/team">) {
               {modes.map((m) => (
                 <tr key={m.service}>
                   <td>{m.service}</td>
-                  <td className={m.mode === "live" ? styles.status_redeemed : styles.status_void}>{m.mode === "live" ? "Cloud / live" : m.mode === "test" ? "Test mode" : "This computer only"}</td>
+                  <td>
+                    <span className={`st-pill ${m.mode === "live" ? "st-pill-ok" : "st-pill-warn"}`}>{m.mode === "live" ? "Cloud" : m.mode === "test" ? "Test mode" : "This computer"}</span>
+                  </td>
                   <td className="hint">{m.detail}</td>
                 </tr>
               ))}

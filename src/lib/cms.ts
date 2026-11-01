@@ -8,6 +8,7 @@ import { auditLog, contentItems, kits, kitVersions, type Block, type Cue } from 
 import type { Actor } from "./entitlements";
 import { env } from "./env";
 import { FILE_TYPES_TEXT, fileKind, isPackageName, isVideoName, looksLike, looksLikeVideo, MAX_FILE_MB, mimeFor, PACKAGE_TYPES_TEXT } from "./files";
+import { MATERIAL, MATERIAL_KINDS, type MaterialKind } from "./materials";
 import { packageMime, unpackLesson } from "./packages";
 import { deleteObject, deletePrefix, getObjectBytes, headObject, MEDIA_DIR, putObject, storageMode } from "./storage";
 import { probeSeconds, transcodeToHls } from "./transcode";
@@ -412,6 +413,75 @@ async function deleteStoredMedia(item: typeof contentItems.$inferSelect) {
   if (isUploadKey(item.fileKey)) await deleteObject(item.fileKey).catch(() => {});
   if (item.videoAssetId?.startsWith("file:")) await deleteObject(item.videoAssetId.slice(5)).catch(() => {});
   if (item.packageKey) await deletePrefix(item.packageKey).catch(() => {});
+}
+
+// ---------- Lessons built in Studio's "Create a new lesson" panel ----------
+
+export type LessonDetails = { title: string; summary: string; kitId: string | null; requiredTier: ContentInput["requiredTier"]; minutes: number | null; ngss: string[] };
+
+/**
+ * Updates only a lesson's details (never its body text, captions or files), and keeps its materials in the same kit
+ * and access tier as the lesson.
+ */
+export async function updateLessonDetails(actor: Actor, id: string, input: LessonDetails) {
+  const d = await db();
+  const [version] = input.kitId ? await d.select().from(kitVersions).where(and(eq(kitVersions.kitId, input.kitId), eq(kitVersions.isCurrent, true))) : [];
+  const shared = { kitId: input.kitId, kitVersionId: version?.id ?? null, requiredTier: input.requiredTier, isSample: input.requiredTier === "free" };
+  await d.update(contentItems).set({ ...shared, title: input.title.trim(), summary: input.summary.trim(), minutes: input.minutes, ngss: input.ngss }).where(eq(contentItems.id, id));
+  await d.update(contentItems).set(shared).where(eq(contentItems.parentId, id));
+  await audit(actor, "content.update", id, { title: input.title.trim() });
+}
+
+/** Adds an empty material (video or document) to a lesson; the browser then uploads its file to it. */
+export async function addLessonMaterial(actor: Actor, lessonId: string, input: { kind: MaterialKind; title: string; media: "video" | "file" }) {
+  const lesson = await itemOrThrow(lessonId);
+  const d = await db();
+  const slug = await uniqueSlug(`${lesson.slug}-${input.title}`);
+  const [row] = await d
+    .insert(contentItems)
+    .values({
+      kitId: lesson.kitId,
+      kitVersionId: lesson.kitVersionId,
+      parentId: lesson.id,
+      slug,
+      type: input.media === "video" ? "video" : "pdf",
+      title: input.title.trim() || MATERIAL[input.kind].label,
+      summary: "",
+      requiredTier: lesson.requiredTier,
+      isSample: lesson.isSample,
+      materialKind: input.kind,
+      mediaStatus: "uploading",
+      sortOrder: MATERIAL_KINDS.indexOf(input.kind) * 100 + (Math.floor(Date.now() / 1000) % 100),
+    })
+    .returning();
+  await audit(actor, "content.add_material", row.id, { lesson: lesson.title, kind: input.kind });
+  return row;
+}
+
+/** A top-level lesson (not an attached file), or null. */
+export async function getContentForLesson(id: string) {
+  const d = await db();
+  const [row] = await d.select().from(contentItems).where(eq(contentItems.id, id));
+  return row && !row.parentId && LESSON_TYPES.includes(row.type) ? row : null;
+}
+
+export async function renameContent(actor: Actor, id: string, title: string) {
+  const d = await db();
+  await d.update(contentItems).set({ title: title.trim() }).where(eq(contentItems.id, id));
+  await audit(actor, "content.rename", id, { title: title.trim() });
+}
+
+/** Lessons (lesson, interactive lesson, training) with their attached materials, for the Studio Lessons page. */
+export async function studioLessons() {
+  const d = await db();
+  const [allKits, items] = await Promise.all([d.select().from(kits).orderBy(kits.sortOrder), d.select().from(contentItems).orderBy(contentItems.sortOrder)]);
+  const kids = new Map<string, (typeof items)[number][]>();
+  for (const i of items) if (i.parentId) kids.set(i.parentId, [...(kids.get(i.parentId) ?? []), i]);
+  const lessons = items
+    .filter((i) => !i.parentId && LESSON_TYPES.includes(i.type))
+    .map((l) => ({ ...l, materials: kids.get(l.id) ?? [] }));
+  const other = items.filter((i) => !i.parentId && !LESSON_TYPES.includes(i.type));
+  return { kits: allKits, lessons, other };
 }
 
 export async function studioContent() {

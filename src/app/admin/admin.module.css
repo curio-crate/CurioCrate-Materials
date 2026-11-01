@@ -1,47 +1,4 @@
-.shell {
-  padding-top: 40px;
-}
-.head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding-bottom: 24px;
-  margin-bottom: 32px;
-  border-bottom: 1px solid var(--border-faint);
-}
-.who {
-  margin-top: 8px;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 4px;
-  border-radius: var(--radius-row);
-  border: 1px solid var(--border-faint);
-  background: var(--fill-faint);
-}
-.tab {
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  font-family: var(--font-mono);
-  font-size: var(--text-nav);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
-}
-.tab:hover {
-  color: var(--color-heading);
-}
-.tabOn {
-  color: var(--color-heading);
-  background: var(--fill-chip);
-}
+/* Studio's frame and its look live in studio.css; these are layout helpers used by individual Studio pages. */
 .title {
   margin-bottom: 24px;
 }

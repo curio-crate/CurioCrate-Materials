@@ -194,3 +194,37 @@ Choices made where the plan did not specify something. Newest at the bottom of e
   (cascading to sessions, sign-in links, personal seats, classes with their student devices, lab runs and chats, views
   and usage; the email is scrubbed from the audit log; redeemed codes stay used). If the teacher was the school's only
   admin, the longest-serving approved colleague becomes admin.
+
+## Usability revamp: separate Studio, roles, one-panel lessons (2026-10-31)
+
+- **D-73 Two separate products.** Teacher pages live in the `(site)` route group, which owns the site header, footer and
+  night sky. Studio (`/admin`) and its sign-in page have their own frame: a sidebar workspace with no catalog, kits or
+  redeem navigation. The teacher header no longer shows a Studio link for a signed-in Studio account.
+- **D-74 Studio look.** Calm and light by default with a dark mode (cookie `cc_studio_theme`, read on the server so there
+  is no flash), built on the CurioCrate star-logo blue. The exact logo blue `#1b7fe8` is only 4.0:1 on white, so it is
+  used for decoration (active bar, focus ring, icons) and `#1670d4` (4.9:1) for text and buttons. Studio re-skins the
+  shared primitives by remapping their theme variables under `.studio` (`src/app/admin/studio.css`), so every existing
+  Studio screen picked up the new look without being rewritten. Same brand fonts; Cormorant only for page titles.
+- **D-75 Three Studio tiers.** `admin_users.role`: `admin` (everything), `product` (lessons, materials library, kits,
+  kit codes, code lookup, schools, teacher access), `curriculum` (lessons only). `requireAdmin(perm)` checks the role in
+  every page and server action; upload routes use `studioActor("lessons")` and answer 403. Deleting a school's data is
+  admin-only (`erase`). Unknown role values get the least access. Existing accounts became `admin` in the migration.
+  Studio always keeps one active admin; nobody can change their own role.
+- **D-76 People are added by email.** Admins add a person with email, name, role and a temporary password; the email
+  becomes their login (the `CurioCrateAdmin` username still works). Changing your own password moved to *My account*.
+- **D-77 One panel for a lesson.** *Create a new lesson* (Lessons page, also on Studio home) opens a slide-over panel:
+  details (title, kit, minutes, who can open it, NGSS with one-click "add the kit's codes", description), the JavaScript
+  activity, and supplementary materials. Each material has a kind (`content_items.material_kind`: `training_video`,
+  `demo`, `manual`, `teacher_manual`, `file`); training and demo accept a video or a document. Materials follow the
+  lesson's kit and access tier. Files upload straight to storage with per-file progress; a failed file is removed and
+  can be retried without losing the lesson. Materials still uploading never show to teachers.
+- **D-78 Teacher-only materials.** Teacher training and the teacher manual are never shown to students and never served
+  to them (`gateContent` refuses them for student sessions), even inside an assigned lesson.
+- **D-79 Teacher site decluttered.** No "In development" or "Available" kit badges, no version badge, no "Free"/"Kit
+  owner" tier badges on rows (the lock icon already says whether it's open), no "free to try" counts or filter, no
+  "Free demo" badges, and no Luminol promotion on the home page. There is one demo entry point: *Try our demo* on the
+  home page. The catalog shows kits; the full item list appears only when searching or filtering. The dashboard lists
+  unlocked kits first.
+- **D-80 NGSS made clear, not loud.** One consistent marker everywhere codes appear (check icon + "NGSS" + codes): kit
+  cards, the kit hero, every lesson row and the lesson header, plus an "NGSS-aligned" line in the home hero and a short
+  standards section.

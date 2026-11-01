@@ -6,10 +6,12 @@ import { kits } from "@/db/schema";
 import { saveKitAction } from "../../content/actions";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Kit" };
 
 export default async function KitEditor(props: PageProps<"/admin/kits/[id]">) {
+  await requireAdmin("kits");
   const { id } = await props.params;
   const sp = await props.searchParams;
   const d = await db();

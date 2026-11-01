@@ -5,7 +5,7 @@ import styles from "../../admin.module.css";
 
 async function deleteAction(form: FormData) {
   "use server";
-  const actor = await requireAdmin();
+  const actor = await requireAdmin("erase");
   const orgId = String(form.get("orgId"));
   if (String(form.get("confirm")).trim() !== String(form.get("name")).trim()) redirect(`/admin/schools/${orgId}?err=${encodeURIComponent("Type the exact name to confirm.")}`);
   const r = await deleteOrganizationData(actor, orgId);

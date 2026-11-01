@@ -1,9 +1,11 @@
 import { recentAudit } from "@/lib/admin";
 import styles from "../admin.module.css";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Audit log" };
 
 export default async function AuditPage() {
+  await requireAdmin("audit");
   const rows = await recentAudit(100);
   return (
     <>

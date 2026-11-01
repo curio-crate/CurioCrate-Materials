@@ -1,9 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { SiteFooter } from "@/components/layout/SiteFooter";
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { Starfield } from "@/components/layout/Starfield";
-import { features } from "@/lib/features";
-import { getHeaderData } from "@/lib/header-data";
 import { THEME } from "@/styles/tokens";
 import "./globals.css";
 
@@ -27,8 +22,8 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const { viewer, kits } = await getHeaderData();
+// The bare document. The teacher site's frame is in (site)/layout.tsx; Studio's is in admin/layout.tsx.
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <head>
@@ -40,12 +35,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <Starfield />
-        <SiteHeader viewer={viewer} kits={kits} features={{ labs: features.labs, classes: features.classes, districts: features.districts }} />
-        <main id="main" className="page" tabIndex={-1}>
-          {children}
-        </main>
-        <SiteFooter />
+        {children}
       </body>
     </html>
   );

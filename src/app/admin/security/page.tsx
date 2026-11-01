@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { sharingAlerts } from "@/lib/security";
 import styles from "../admin.module.css";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Security" };
 
@@ -8,6 +9,7 @@ const access = (email: string) => `/admin/access?email=${encodeURIComponent(emai
 
 // How codes and accounts are protected, and the signals that someone may be sharing them.
 export default async function SecurityPage() {
+  await requireAdmin("security");
   const { manyPlaces, guessing, hoarding, adminFails } = await sharingAlerts();
   return (
     <>

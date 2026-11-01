@@ -54,7 +54,7 @@ const visits: { label: string; page: (r: R) => Page; path: string | ((r: R) => s
         await expect(r.teacher.getByText("Code redeemed")).toBeVisible();
       },
     },
-    { label: "admin-lookup", page: (r) => r.staff, path: "/admin?q=LMN" },
+    { label: "admin-lookup", page: (r) => r.staff, path: "/admin/lookup?q=LMN" },
     { label: "admin-orders", page: (r) => r.staff, path: "/admin/orders" },
     { label: "admin-order", page: (r) => r.staff, path: (r) => r.orderPath },
     { label: "admin-print", page: (r) => r.staff, path: (r) => `${r.orderPath}/print` },

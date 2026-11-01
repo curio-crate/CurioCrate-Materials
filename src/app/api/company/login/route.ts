@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const client = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   const r = await adminLogin(String(form.get("username") ?? "").trim(), String(form.get("password") ?? ""), client);
   if (!r.ok) return redirectTo(`/company/login?error=${encodeURIComponent(r.error)}`);
-  const res = redirectTo("/admin/files");
+  const res = redirectTo("/admin");
   res.cookies.set(ADMIN_COOKIE, r.token, adminCookieOptions());
   return res;
 }

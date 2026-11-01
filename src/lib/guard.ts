@@ -3,6 +3,7 @@ import { checkAccess, type Decision } from "./access";
 import { getContent, type ContentItem } from "./content";
 import { getCompanyAdmin } from "./auth/admin";
 import { getViewer } from "./auth/viewer";
+import { isTeacherOnly } from "./materials";
 import { principalFor } from "./principal";
 import { studentAccess } from "./student-access";
 
@@ -24,6 +25,8 @@ export async function gateContent(slug: string): Promise<Gate> {
     if (!decision.allowed) return { ok: false, status: 403, reason: decision.reason };
     return { ok: true, content, decision, who: { orgId: v.org?.id ?? null, teacherId: v.teacher.id, classId: null } };
   }
+  // Teacher training and teacher manuals are never for students, even inside an assigned lesson.
+  if (isTeacherOnly(content.materialKind)) return { ok: false, status: 403, reason: "not_assigned" };
   const student = await studentAccess(content);
   if (student) return student.ok ? { ok: true, content, decision: student.decision, who: { orgId: student.orgId, teacherId: null, classId: student.classId } } : { ok: false, status: 403, reason: student.reason };
   return { ok: false, status: 401, reason: "sign_in" };

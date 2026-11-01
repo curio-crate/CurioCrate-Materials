@@ -3,10 +3,12 @@ import { listKits } from "@/lib/content";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
 import { ContentEditor } from "../ContentEditor";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "New content" };
 
 export default async function NewContent(props: PageProps<"/admin/content/new">) {
+  await requireAdmin("lessons");
   const sp = await props.searchParams;
   const str = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
   const [kits, parents] = await Promise.all([listKits(), lessonsForParentSelect(null)]);

@@ -9,7 +9,7 @@ const s = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const list = (v: string) => v.split(",").map((x) => x.trim()).filter(Boolean);
 
 export async function saveContentAction(form: FormData) {
-  const actor = await requireAdmin();
+  const actor = await requireAdmin("lessons");
   const id = s(form, "id") || null;
   const type = s(form, "type") as ContentInput["type"];
   if (s(form, "title").length < 3) redirect(`${id ? `/admin/content/${id}` : "/admin/content/new"}?err=${encodeURIComponent("Add a title.")}`);
@@ -32,14 +32,14 @@ export async function saveContentAction(form: FormData) {
 }
 
 export async function deleteContentAction(form: FormData) {
-  const actor = await requireAdmin();
+  const actor = await requireAdmin("lessons");
   await deleteContent(actor, s(form, "id"));
   revalidatePath("/", "layout");
   redirect("/admin/content?ok=Deleted.");
 }
 
 export async function saveKitAction(form: FormData) {
-  const actor = await requireAdmin();
+  const actor = await requireAdmin("kits");
   const id = s(form, "id") || null;
   const name = s(form, "name");
   const code = s(form, "code").toUpperCase();

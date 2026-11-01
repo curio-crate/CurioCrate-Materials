@@ -416,11 +416,11 @@ export const CONTENT: ContentSeed[] = [
     slug: "circuits-teacher-guide",
     kit: "circuits",
     type: "pdf",
-    title: "Teacher guide: Circuit Builders Kit (preview)",
-    summary: "Unit overview, pacing and answer key (preview edition).",
+    title: "Teacher guide: Circuit Builders Kit",
+    summary: "Unit overview, pacing and answer key.",
     tier: "kit_owner",
     pdf: {
-      heading: "Teacher guide (preview)",
+      heading: "Teacher guide",
       subtitle: "Circuit Builders Kit · Grades 4-5",
       sections: [
         { heading: "Unit at a glance", lines: ["1. What makes a bulb light?", "2. Conductors and insulators", "3. Series or parallel?", "4. Design a night light"] },
@@ -529,11 +529,11 @@ export const CONTENT: ContentSeed[] = [
     slug: "water-teacher-guide",
     kit: "clean-water",
     type: "pdf",
-    title: "Teacher guide: Clean Water Engineering Kit (preview)",
-    summary: "Unit overview, rubric and safety (preview edition).",
+    title: "Teacher guide: Clean Water Engineering Kit",
+    summary: "Unit overview, rubric and safety.",
     tier: "kit_owner",
     pdf: {
-      heading: "Teacher guide (preview)",
+      heading: "Teacher guide",
       subtitle: "Clean Water Engineering Kit · Grades 9-10",
       sections: [
         { heading: "Unit at a glance", lines: ["1. Where does dirty water go?", "2. Design a filter", "3. Test and revise", "4. Defend your design"] },

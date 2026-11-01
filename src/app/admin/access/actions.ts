@@ -18,44 +18,44 @@ function back(f: FormData, msg: string, ok = true): never {
 }
 
 export async function grantSeatAction(f: FormData) {
-  const a = await requireAdmin();
+  const a = await requireAdmin("teachers");
   const r = await grantSeat(a, str(f, "teacherId"), str(f, "kitId"), str(f, "reason") || "granted in Studio");
   back(f, r.ok ? "Kit added to this teacher's account." : r.error, r.ok);
 }
 
 export async function revokeSeatAction(f: FormData) {
-  const a = await requireAdmin();
+  const a = await requireAdmin("teachers");
   await revokeEntitlement(a, str(f, "entitlementId"), str(f, "reason") || "revoked in Studio");
   back(f, "Access revoked.");
 }
 
 export async function restoreSeatAction(f: FormData) {
-  const a = await requireAdmin();
+  const a = await requireAdmin("teachers");
   await restoreEntitlement(a, str(f, "entitlementId"));
   back(f, "Access restored.");
 }
 
 export async function transferSeatAction(f: FormData) {
-  const a = await requireAdmin();
+  const a = await requireAdmin("teachers");
   const r = await transferSeat(a, str(f, "entitlementId"), str(f, "to"));
   back(f, r.ok ? `Seat moved to ${r.email}.` : r.error, r.ok);
 }
 
 export async function signOutEverywhereAction(f: FormData) {
-  await requireAdmin();
+  await requireAdmin("teachers");
   await destroyAllSessions(str(f, "teacherId"));
   back(f, "Signed out on every device.");
 }
 
 export async function membershipAction(f: FormData) {
-  const a = await requireAdmin();
+  const a = await requireAdmin("teachers");
   const approve = str(f, "approve") === "1";
   const t = await decideMembership({ ...a, orgId: null }, str(f, "teacherId"), approve);
   back(f, t ? (approve ? `${t.email} approved.` : `${t.email} removed from the school.`) : "Teacher not found.", !!t);
 }
 
 export async function setTierAction(f: FormData) {
-  const a = await requireAdmin();
+  const a = await requireAdmin("teachers");
   const tier = TIERS.find((t) => t === str(f, "tier"));
   if (!tier) back(f, "Choose who can open it.", false);
   await setContentTier(a, str(f, "contentId"), tier);

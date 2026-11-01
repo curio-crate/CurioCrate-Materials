@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, eq, gt, ne } from "drizzle-orm";
+import { and, count, eq, gt, ne, or } from "drizzle-orm";
 import { randomBytes, scrypt as scryptCb, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { cookies } from "next/headers";
@@ -7,6 +7,7 @@ import { cache } from "react";
 import { db } from "@/db";
 import { adminSessions, adminUsers, auditLog } from "@/db/schema";
 import { randomToken, sha256, signToken, verifyToken } from "../crypto";
+import { asRole, ROLE_LABEL, STUDIO_ROLES, type StudioRole } from "./roles";
 
 // Company (Curiocrate Studio) accounts. Studio is reachable ONLY with a Studio username + password: teacher
 // Google sign-in never grants Studio access. Accounts live in the database (admin_users), so the team can add
@@ -64,13 +65,13 @@ export async function ensureBootstrapAdmin() {
   if (n === 0) {
     const hash = envHash ?? (onDeployedSite() ? null : DEV_HASH);
     if (!hash) return { ready: false as const };
-    await d.insert(adminUsers).values({ username, name: username, passwordHash: hash }).onConflictDoNothing();
+    await d.insert(adminUsers).values({ username, name: username, role: "admin", passwordHash: hash }).onConflictDoNothing();
     return { ready: true as const };
   }
   if (process.env.ADMIN_PASSWORD_RESET === "1" && envHash) {
     const [u] = await d.update(adminUsers).set({ passwordHash: envHash, active: true, failedLogins: 0, lockedUntil: null, passwordChangedAt: new Date() }).where(eq(adminUsers.username, username)).returning();
     if (u) await d.delete(adminSessions).where(eq(adminSessions.adminId, u.id));
-    else await d.insert(adminUsers).values({ username, name: username, passwordHash: envHash });
+    else await d.insert(adminUsers).values({ username, name: username, role: "admin", passwordHash: envHash });
   }
   return { ready: true as const };
 }
@@ -85,7 +86,8 @@ export async function adminLogin(username: string, password: string, clientKey: 
   if (!boot.ready) return { ok: false as const, error: "Studio isn't set up yet. Set ADMIN_USERNAME and ADMIN_PASSWORD in the hosting environment, then sign in." };
 
   const d = await db();
-  const [user] = await d.select().from(adminUsers).where(eq(adminUsers.username, username));
+  const login = username.trim();
+  const [user] = await d.select().from(adminUsers).where(or(eq(adminUsers.username, login), eq(adminUsers.email, login.toLowerCase())));
   const failIp = () => {
     const n = (ip?.n ?? 0) + 1;
     ipFails.set(clientKey, { n, until: n >= MAX_FAILS * 2 ? Date.now() + LOCK_MINUTES * 60_000 : 0 });
@@ -116,7 +118,7 @@ export async function adminLogin(username: string, password: string, clientKey: 
 
 export const adminCookieOptions = () => ({ httpOnly: true, sameSite: "strict" as const, secure: process.env.NODE_ENV === "production" && !process.env.E2E, path: "/", maxAge: TTL });
 
-export type CompanyAdmin = { id: string; username: string; name: string; sessionId: string };
+export type CompanyAdmin = { id: string; username: string; name: string; role: StudioRole; sessionId: string };
 
 /** The signed-in Studio account (signature AND a live session row AND an active account), or null. */
 export const getCompanyAdmin = cache(async (): Promise<CompanyAdmin | null> => {
@@ -124,12 +126,12 @@ export const getCompanyAdmin = cache(async (): Promise<CompanyAdmin | null> => {
   if (!claims?.sid) return null;
   const d = await db();
   const [row] = await d
-    .select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, active: adminUsers.active, sessionId: adminSessions.id })
+    .select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, role: adminUsers.role, active: adminUsers.active, sessionId: adminSessions.id })
     .from(adminSessions)
     .innerJoin(adminUsers, eq(adminUsers.id, adminSessions.adminId))
     .where(and(eq(adminSessions.id, sha256(claims.sid)), gt(adminSessions.expiresAt, new Date())));
   if (!row || !row.active || row.id !== claims.sub) return null;
-  return { id: row.id, username: row.username, name: row.name, sessionId: row.sessionId };
+  return { id: row.id, username: row.username, name: row.name, role: asRole(row.role), sessionId: row.sessionId };
 });
 
 export async function adminLogout(token: string | undefined) {
@@ -143,7 +145,7 @@ export async function adminLogout(token: string | undefined) {
 
 export async function listAdmins() {
   const d = await db();
-  return d.select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, active: adminUsers.active, lastLoginAt: adminUsers.lastLoginAt, lockedUntil: adminUsers.lockedUntil, createdAt: adminUsers.createdAt }).from(adminUsers).orderBy(adminUsers.createdAt);
+  return d.select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, email: adminUsers.email, role: adminUsers.role, active: adminUsers.active, lastLoginAt: adminUsers.lastLoginAt, lockedUntil: adminUsers.lockedUntil, createdAt: adminUsers.createdAt }).from(adminUsers).orderBy(adminUsers.createdAt);
 }
 
 async function teamAudit(actor: CompanyAdmin, action: string, targetId: string, details: Record<string, unknown> = {}) {
@@ -151,28 +153,52 @@ async function teamAudit(actor: CompanyAdmin, action: string, targetId: string, 
   await d.insert(auditLog).values({ actorEmail: actor.username, action, targetType: "admin", targetId, details });
 }
 
-export async function createAdmin(actor: CompanyAdmin, input: { username: string; name: string; password: string }) {
-  const username = input.username.trim();
-  if (!/^[A-Za-z0-9._-]{3,40}$/.test(username)) return { ok: false as const, error: "Usernames are 3-40 letters, numbers, dots, dashes or underscores." };
-  const problem = passwordProblem(input.password, username);
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Adds a person to Studio by email, with a role and a temporary password. They sign in with the email. */
+export async function createAdmin(actor: CompanyAdmin, input: { email: string; name: string; role: string; password: string }) {
+  const email = input.email.trim().toLowerCase();
+  if (!EMAIL.test(email) || email.length > 120) return { ok: false as const, error: "Enter a valid email address." };
+  if (!STUDIO_ROLES.includes(input.role as StudioRole)) return { ok: false as const, error: "Choose a role." };
+  const problem = passwordProblem(input.password, email.split("@")[0]);
   if (problem) return { ok: false as const, error: problem };
   const d = await db();
-  const [row] = await d.insert(adminUsers).values({ username, name: input.name.trim() || username, passwordHash: await hashPassword(input.password) }).onConflictDoNothing().returning();
-  if (!row) return { ok: false as const, error: "That username is taken." };
-  await teamAudit(actor, "admin.create", row.id, { username });
+  const [taken] = await d.select({ id: adminUsers.id }).from(adminUsers).where(or(eq(adminUsers.username, email), eq(adminUsers.email, email)));
+  if (taken) return { ok: false as const, error: "That email already has a Studio account." };
+  const [row] = await d
+    .insert(adminUsers)
+    .values({ username: email, email, name: input.name.trim() || email, role: input.role, passwordHash: await hashPassword(input.password) })
+    .onConflictDoNothing()
+    .returning();
+  if (!row) return { ok: false as const, error: "That email already has a Studio account." };
+  await teamAudit(actor, "admin.create", row.id, { email, role: input.role });
   return { ok: true as const };
+}
+
+/** Changes a person's role. You can't change your own, and Studio always keeps at least one active admin. */
+export async function setAdminRole(actor: CompanyAdmin, id: string, role: string) {
+  if (!STUDIO_ROLES.includes(role as StudioRole)) return { ok: false as const, error: "Choose a role." };
+  if (id === actor.id) return { ok: false as const, error: "You can't change your own role. Ask another admin." };
+  const d = await db();
+  const [u] = await d.select().from(adminUsers).where(eq(adminUsers.id, id));
+  if (!u) return { ok: false as const, error: "Account not found." };
+  if (u.role === "admin" && role !== "admin" && u.active && (await activeAdminCount()) <= 1) return { ok: false as const, error: "Keep at least one active admin." };
+  await d.update(adminUsers).set({ role }).where(eq(adminUsers.id, id));
+  await teamAudit(actor, "admin.role", id, { from: u.role, to: role });
+  return { ok: true as const, label: ROLE_LABEL[role as StudioRole] };
 }
 
 async function activeAdminCount() {
   const d = await db();
-  const [{ n }] = await d.select({ n: count() }).from(adminUsers).where(eq(adminUsers.active, true));
+  const [{ n }] = await d.select({ n: count() }).from(adminUsers).where(and(eq(adminUsers.active, true), eq(adminUsers.role, "admin")));
   return n;
 }
 
 export async function setAdminActive(actor: CompanyAdmin, id: string, active: boolean) {
   if (!active && id === actor.id) return { ok: false as const, error: "You can't disable your own account." };
-  if (!active && (await activeAdminCount()) <= 1) return { ok: false as const, error: "Keep at least one active Studio account." };
   const d = await db();
+  const [target] = await d.select({ role: adminUsers.role }).from(adminUsers).where(eq(adminUsers.id, id));
+  if (!active && target?.role === "admin" && (await activeAdminCount()) <= 1) return { ok: false as const, error: "Keep at least one active admin." };
   await d.update(adminUsers).set({ active, failedLogins: 0, lockedUntil: null }).where(eq(adminUsers.id, id));
   if (!active) await d.delete(adminSessions).where(eq(adminSessions.adminId, id));
   await teamAudit(actor, active ? "admin.enable" : "admin.disable", id);

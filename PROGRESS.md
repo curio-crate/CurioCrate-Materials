@@ -1,5 +1,28 @@
 # Progress log
 
+## Update (2026-10-31): usability revamp: separate Studio, three roles, one-panel lessons, calmer teacher site
+
+- **Teacher site decluttered** (D-79, D-80): calm home page (no Luminol promo, one "Try our demo"), no "In development",
+  "Available", version, "Free"/"Kit owner", "free to try" or "Free demo" labels; catalog shows kits and lists items only
+  when searching; dashboard lists unlocked kits first. NGSS alignment shown with one consistent marker on kit cards, the
+  kit hero, every lesson row and the lesson header.
+- **Studio is its own product** (D-73, D-74): `(site)` route group for teacher pages; Studio has a sidebar workspace with
+  no teacher navigation, light/dark mode in CurioCrate blue, smooth transitions, new Home, Kits, Code lookup and My
+  account pages, and a Studio-styled sign-in page.
+- **Three tiers** (D-75, D-76): Admin / Product Officer / Curriculum, enforced on every Studio page, action and upload
+  route; admins add people by email with a role. Migration `0003_studio_roles_materials` (existing accounts → Admin).
+- **Create a new lesson** (D-77, D-78): one panel for details, NGSS, the JavaScript activity and supplementary materials
+  (+ Teacher training, + Demo, + Manual, + Teacher manual, + File). Teacher-only materials never reach students.
+
+**Checks:** `npm run lint` (0 warnings, theme check passes), `npm run typecheck` (0 errors), `npm test` 63/63 (3 new:
+role permissions, people/roles/last-admin rules, lesson materials). `npm run build` passes. `npm run test:e2e`: 59 of 60
+passed in the full run; the one failure was Chrome reporting `ERR_NETWORK_IO_SUSPENDED` (machine power state) in the
+student-join test, which passes when rerun. New e2e coverage: the lesson panel end to end (activity + teacher training +
+teacher manual, then the teacher view), Studio roles (Curriculum and Product Officer page access), and axe on the new
+Studio pages (home, lessons panel, kits, lookup, account, library). Axe found and we fixed: blue-on-tint text contrast
+(4.35:1 → 5.6:1) and two sidebar links whose accessible names didn't match their text. The e2e run also found a real
+bug, now fixed: reopening a lesson right after publishing could show its materials missing.
+
 ## Update (2026-10-31): password-only Studio, cloud storage, JS lessons, manuals, code security
 
 - **Studio is password-only** (`/company/login`). Teacher Google accounts no longer open it (`STAFF_EMAILS` removed).

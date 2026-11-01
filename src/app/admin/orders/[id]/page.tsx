@@ -6,10 +6,12 @@ import { getOrderWithCodes } from "@/lib/orders";
 import { reissueAction, voidAction } from "../../actions";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Order" };
 
 export default async function OrderPage(props: PageProps<"/admin/orders/[id]">) {
+  await requireAdmin("codes");
   const { id } = await props.params;
   const sp = await props.searchParams;
   const data = await getOrderWithCodes(id);

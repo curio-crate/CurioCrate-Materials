@@ -1,44 +1,60 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { usesDevPassword } from "@/lib/auth/admin";
+import { cookies } from "next/headers";
+import { Icon } from "@/components/ui/Icon";
+import { getCompanyAdmin } from "@/lib/auth/admin";
+import { ROLE_LABEL, STUDIO_THEME_COOKIE, studioTheme } from "@/lib/auth/roles";
 import { requireAdmin } from "@/lib/auth/viewer";
-import { serviceModes } from "@/lib/env";
-import { AdminNav } from "./AdminNav";
-import styles from "./admin.module.css";
+import { StudioNav } from "./StudioNav";
+import { ThemeToggle } from "./ThemeToggle";
+import "./studio.css";
 
 export const metadata: Metadata = { title: { default: "Studio", template: "%s · Curiocrate Studio" }, robots: { index: false } };
 
+// Studio's own frame: a sidebar workspace, separate from the teacher site (no catalog, kits or redeem navigation).
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
-  const actor = await requireAdmin();
-  const devPassword = await usesDevPassword(actor.adminId);
-  const notCloud = serviceModes().filter((m) => m.mode !== "live").map((m) => m.service.split(" (")[0]);
+  await requireAdmin();
+  const [me, jar] = await Promise.all([getCompanyAdmin(), cookies()]);
+  const theme = studioTheme(jar.get(STUDIO_THEME_COOKIE)?.value);
+  const name = me?.name ?? "Studio";
   return (
-    <div className="container-wide">
-      <div className={styles.shell}>
-        <header className={styles.head} data-print="hide">
-          <div>
-            <span className="eyebrow">Curiocrate Studio · company</span>
-            <div className={styles.who}>
-              Signed in as {actor.email}. Every change is recorded in the audit log.{" "}
-              <form action="/api/company/logout" method="post" style={{ display: "inline" }}>
-                <button className="text-link">Sign out</button>
-              </form>
-            </div>
+    <div className="studio" data-theme={theme}>
+      <aside className="st-side" data-print="hide">
+        <Link href="/admin" className="st-brand">
+          <Image src="/brand/cclogosmall.png" alt="" width={30} height={30} unoptimized />
+          <span>
+            <span className="st-brandName">CurioCrate</span>
+            <span className="st-brandTag">Studio</span>
+          </span>
+        </Link>
+        <StudioNav role={me?.role ?? "curriculum"} />
+        <div className="st-me">
+          <Link href="/admin/account" className="st-meRow">
+            <span className="sr-only">My account: </span>
+            <span className="st-avatar" aria-hidden="true">
+              {name.trim().charAt(0).toUpperCase() || "S"}
+            </span>
+            <span style={{ minWidth: 0 }}>
+              <span className="st-meName" style={{ display: "block" }}>
+                {name}
+              </span>
+              <span className="st-pill st-pill-muted">{ROLE_LABEL[me?.role ?? "curriculum"]}</span>
+            </span>
+          </Link>
+          <div className="st-meActions">
+            <ThemeToggle initial={theme} />
+            <form action="/api/company/logout" method="post" style={{ display: "contents" }}>
+              <button className="st-iconBtn">
+                <Icon name="logout" size={15} /> Sign out
+              </button>
+            </form>
           </div>
-          <AdminNav />
-        </header>
-        {devPassword && (
-          <p className="alert alert-warning" role="alert" data-print="hide">
-            This account still uses the development password, which is written in the test code. <Link className="link" href="/admin/team">Change it now</Link>.
-          </p>
-        )}
-        {!!notCloud.length && (
-          <p className="alert alert-warning" role="status" data-print="hide">
-            Not in the cloud yet: {notCloud.join(", ")}. Fine on this computer; the live site needs them. <Link className="link" href="/admin/team#sys-h">Details</Link>
-          </p>
-        )}
-        {children}
-      </div>
+        </div>
+      </aside>
+      <main id="main" className="st-main" tabIndex={-1}>
+        <div className="st-content">{children}</div>
+      </main>
     </div>
   );
 }

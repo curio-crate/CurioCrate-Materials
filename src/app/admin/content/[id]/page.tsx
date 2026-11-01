@@ -4,10 +4,12 @@ import { listKits, TYPE_LABEL } from "@/lib/content";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
 import { ContentEditor } from "../ContentEditor";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "Edit content" };
 
 export default async function EditContent(props: PageProps<"/admin/content/[id]">) {
+  await requireAdmin("lessons");
   const { id } = await props.params;
   const sp = await props.searchParams;
   const data = await contentForEdit(id);

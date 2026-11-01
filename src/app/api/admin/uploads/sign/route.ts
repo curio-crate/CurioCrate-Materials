@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { requireAdmin } from "@/lib/auth/viewer";
+import { studioActor } from "@/lib/auth/viewer";
 import { createMuxUpload, muxUploadsEnabled, newUploadKey, type UploadPurpose } from "@/lib/cms";
 import { FILE_TYPES_TEXT, fileKind, isPackageName, isVideoName, MAX_FILE_MB, MAX_PACKAGE_MB, MAX_VIDEO_MB, mimeFor, PACKAGE_TYPES_TEXT, videoMime } from "@/lib/files";
 import { json, sameOrigin } from "@/lib/http";
@@ -11,7 +11,7 @@ const MB = 1024 * 1024;
 // (a presigned PUT to the cloud bucket, or a Mux direct-upload URL for videos when Mux is set up).
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return json({ error: "forbidden" }, 403);
-  await requireAdmin();
+  if (!(await studioActor("lessons"))) return json({ error: "Your Studio role can't upload." }, 403);
   const body = (await req.json().catch(() => ({}))) as { purpose?: UploadPurpose; name?: string; size?: number };
   const name = String(body.name ?? "").slice(0, 200);
   const size = Number(body.size ?? 0);

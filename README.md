@@ -7,9 +7,11 @@ Live at **materials.curiocrate.org** (Vercel, DNS on Cloudflare; every push to `
 
 | Who | Where | What |
 | --- | --- | --- |
-| **Curiocrate team** | `/company/login` → **Studio** (`/admin`), username + password only | Build kits and lessons; upload pre-built HTML/JavaScript lessons, videos (with captions), handouts and kit manuals straight to cloud storage, and download them back; set who can open each item; generate kit codes in bulk (QR sheets, CSV); look up teachers and move, grant or revoke their kits; approve school joins; see sharing alerts, usage and the audit log; manage Studio accounts. Everything saved is live immediately. |
+| **Curiocrate team** | `/company/login` → **Studio** (`/admin`), email (or username) + password only. Studio is its own workspace (sidebar, light/dark), separate from the teacher site | **Lessons:** one *Create a new lesson* button opens a panel for the details, NGSS codes, the pre-built JavaScript activity (.zip / .html / .js) and its materials (+ Teacher training, + Demo, + Manual, + Teacher manual, + File). Also: materials library, kits, kit codes in bulk (QR sheets, CSV), code lookup, schools, teacher access, sharing alerts, usage, audit log, Team & roles. Everything saved is live immediately. |
 | **Teachers** | `/signin` (real Google accounts; Clever and ClassLink too) | Redeem the code from their kit box (unlocks the kit on their own account), open lessons, interactive lessons, manuals, PDFs, captioned videos and labs, create classes, assign work, turn Curie.AI on, subscribe. Download or delete their data at `/account`. |
 | **Students** | `/join` with a class code | No account, no name. Open assigned lessons and labs, ask Curie.AI if the teacher enabled it. |
+
+**Studio roles** (Team & roles): **Admin** = everything, including adding people by email and setting roles; **Product Officer** = lessons and materials, kits, kit codes, schools and teacher access; **Curriculum** = lessons only. Enforced on every page, action and upload route (`src/lib/auth/roles.ts`).
 
 Studio login: on a developer's computer the account `CurioCrateAdmin` exists for testing. On the live site the first
 account comes from `ADMIN_USERNAME` / `ADMIN_PASSWORD` in Vercel; add more people in Studio → Team.

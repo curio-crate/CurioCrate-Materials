@@ -9,9 +9,7 @@ import styles from "./SiteHeader.module.css";
 export type HeaderViewer = {
   name: string;
   email: string;
-  isStaff: boolean;
   isDistrictAdmin: boolean;
-  companyOnly?: boolean;
 } | null;
 
 type NavLink = { href: string; label: string };
@@ -53,7 +51,7 @@ export function SiteHeader({
       items: [
         { href: "/redeem", label: "Redeem a kit code" },
         { href: "/plans", label: "Plans & subscriptions" },
-        ...(features.classes && viewer && !viewer.companyOnly ? [{ href: "/classes", label: "My classes" }] : []),
+        ...(features.classes && viewer ? [{ href: "/classes", label: "My classes" }] : []),
         ...(features.classes ? [{ href: "/join", label: "Student class join" }] : []),
         ...(features.districts && viewer?.isDistrictAdmin ? [{ href: "/district", label: "District dashboard" }] : []),
         { href: "/schools/it", label: "IT & web filters" },
@@ -100,7 +98,8 @@ export function SiteHeader({
   }, [mobileOpen]);
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/"));
-  const groupActive = (g: NavGroup) => g.items.some((i) => isActive(i.href)) || pathname.startsWith(g.base);
+  // "All kits" points at /catalog, which has its own tab, so it doesn't light up the Kits group too.
+  const groupActive = (g: NavGroup) => g.items.some((i) => i.href !== "/catalog" && isActive(i.href)) || pathname.startsWith(g.base + "/");
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
@@ -177,21 +176,12 @@ export function SiteHeader({
 
         <div className={styles.actions}>
           {viewer ? (
-            <>
-              {viewer.isStaff && (
-                <Link href="/admin/files" className={`${viewer.companyOnly ? styles.outline : styles.link} ${isActive("/admin") ? styles.active : ""}`}>
-                  Studio
-                </Link>
-              )}
-              {!viewer.companyOnly && (
-                <Link href="/dashboard" className={`${styles.outline} ${isActive("/dashboard") ? styles.outlineActive : ""}`}>
-                  <span className={styles.avatar} aria-hidden="true">
-                    {viewer.name.trim().charAt(0).toUpperCase() || "T"}
-                  </span>
-                  Dashboard
-                </Link>
-              )}
-            </>
+            <Link href="/dashboard" className={`${styles.outline} ${isActive("/dashboard") ? styles.outlineActive : ""}`}>
+              <span className={styles.avatar} aria-hidden="true">
+                {viewer.name.trim().charAt(0).toUpperCase() || "T"}
+              </span>
+              Dashboard
+            </Link>
           ) : (
             <Link href="/signin" className={styles.outline}>
               Teacher sign in

@@ -196,3 +196,71 @@
 
   color-scheme: dark;
 }
+
+/*
+ * Studio (company workspace) palette. Calm, light by default, with a dark mode; both are built on the CurioCrate
+ * star-logo blue (--brand-blue #1b7fe8). Used only inside .studio (see src/app/admin/studio.css).
+ */
+.studio,
+.studio[data-theme="light"] {
+  --st-bg: #f4f7fb;
+  --st-surface: #ffffff;
+  --st-surface-2: #f7f9fc;
+  --st-sunken: #eef3f9;
+  --st-border: #e2e9f2;
+  --st-border-strong: #cad7e7;
+  --st-text: #1d2a3d;
+  --st-muted: #5b6b80;
+  --st-faint: #5b6b80;
+  --st-heading: #0c1a30;
+  --st-brand: #1b7fe8; /* exact logo blue: decoration only (bars, rings, icons); 4.0:1 on white is too low for text */
+  --st-accent: #1670d4; /* same hue, deep enough for text and white-on-blue buttons (4.9:1) */
+  --st-accent-hover: #1468c2;
+  --st-accent-strong: #1260b3; /* text on the --st-accent-soft tint (AA) */
+  --st-accent-soft: rgba(27, 127, 232, 0.09);
+  --st-accent-ring: rgba(27, 127, 232, 0.28);
+  --st-on-accent: #ffffff;
+  --st-success: #0b7a5c;
+  --st-success-soft: rgba(11, 122, 92, 0.09);
+  --st-warning: #8a5a00;
+  --st-warning-soft: rgba(214, 150, 20, 0.12);
+  --st-danger: #c0392b;
+  --st-danger-soft: rgba(192, 57, 43, 0.08);
+  --st-shadow-sm: 0 1px 2px rgba(12, 26, 48, 0.06), 0 1px 3px rgba(12, 26, 48, 0.04);
+  --st-shadow: 0 4px 16px rgba(12, 26, 48, 0.08);
+  --st-shadow-lg: 0 24px 64px rgba(12, 26, 48, 0.18);
+  --st-scrim: rgba(12, 26, 48, 0.32);
+  --st-sidebar: #ffffff;
+  color-scheme: light;
+}
+.studio[data-theme="dark"] {
+  --st-bg: #0f1828;
+  --st-surface: #162235;
+  --st-surface-2: #1a283d;
+  --st-sunken: #121d2e;
+  --st-border: #24354e;
+  --st-border-strong: #33496a;
+  --st-text: #d9e4f1;
+  --st-muted: #9aabc1;
+  --st-faint: #8a9cb3;
+  --st-heading: #f1f6fc;
+  --st-brand: #5aa9f5;
+  --st-accent: #5aa9f5;
+  --st-accent-hover: #7dbcf8;
+  --st-accent-strong: #7dbcf8;
+  --st-accent-soft: rgba(90, 169, 245, 0.12);
+  --st-accent-ring: rgba(90, 169, 245, 0.35);
+  --st-on-accent: #06101f;
+  --st-success: #4fd1ae;
+  --st-success-soft: rgba(79, 209, 174, 0.12);
+  --st-warning: #f0c070;
+  --st-warning-soft: rgba(240, 192, 112, 0.12);
+  --st-danger: #ff9e94;
+  --st-danger-soft: rgba(255, 158, 148, 0.1);
+  --st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --st-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  --st-shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5);
+  --st-scrim: rgba(3, 8, 18, 0.6);
+  --st-sidebar: #131f31;
+  color-scheme: dark;
+}

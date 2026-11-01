@@ -7,10 +7,12 @@ import { grantAction, moveTeacherAction, restoreAction, revokeAction, setDomainA
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
 import { DangerZone } from "./DangerZone";
+import { requireAdmin } from "@/lib/auth/viewer";
 
 export const metadata = { title: "School" };
 
 export default async function SchoolPage(props: PageProps<"/admin/schools/[id]">) {
+  await requireAdmin("schools");
   const { id } = await props.params;
   const sp = await props.searchParams;
   const [data, kits, allDistricts] = await Promise.all([orgDetail(id), listKits(), districts()]);

@@ -6,6 +6,7 @@ import { cache } from "react";
 import { db } from "@/db";
 import { organizations, type teachers } from "@/db/schema";
 import { getCompanyAdmin } from "./admin";
+import { can, type StudioPerm, type StudioRole } from "./roles";
 import { SESSION_COOKIE, teacherForSession } from "./session";
 
 export type Teacher = typeof teachers.$inferSelect;
@@ -58,14 +59,24 @@ export async function requireSchool(next: string) {
 /**
  * Studio (company side): ONLY a signed-in Studio account (username + password). Every Studio page, server action
  * and route handler calls this; src/proxy.ts also turns away requests without a valid Studio cookie first.
+ * With a permission, the account's role must also allow it (see roles.ts); otherwise it goes back to Studio home.
  * Returns the audit actor.
  */
-export async function requireAdmin(): Promise<{ teacherId: null; email: string; adminId: string }> {
+export async function requireAdmin(perm?: StudioPerm): Promise<{ teacherId: null; email: string; adminId: string; role: StudioRole }> {
   const admin = await getCompanyAdmin();
-  if (admin) return { teacherId: null, email: admin.username, adminId: admin.id };
-  redirect("/company/login");
+  if (!admin) redirect("/company/login");
+  if (perm && !can(admin.role, perm)) redirect("/admin?denied=1");
+  return { teacherId: null, email: admin.username, adminId: admin.id, role: admin.role };
 }
 
-export async function isAdmin() {
-  return !!(await getCompanyAdmin());
+/** For Studio route handlers: the actor when signed in AND allowed, else null (the route answers 401/403). */
+export async function studioActor(perm: StudioPerm) {
+  const admin = await getCompanyAdmin();
+  if (!admin || !can(admin.role, perm)) return null;
+  return { teacherId: null, email: admin.username, adminId: admin.id, role: admin.role };
+}
+
+export async function isAdmin(perm?: StudioPerm) {
+  const admin = await getCompanyAdmin();
+  return !!admin && (!perm || can(admin.role, perm));
 }
