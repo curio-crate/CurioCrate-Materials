@@ -1,9 +1,10 @@
 import { Icon } from "@/components/ui/Icon";
 import { getCompanyAdmin, listAdmins, MIN_PASSWORD } from "@/lib/auth/admin";
-import { asRole, ROLE_BLURB, ROLE_LABEL, STUDIO_ROLES } from "@/lib/auth/roles";
+import { asRole, ROLE_BLURB, ROLE_GROUPS, ROLE_LABEL } from "@/lib/auth/roles";
 import { requireAdmin } from "@/lib/auth/viewer";
 import { serviceModes } from "@/lib/env";
 import styles from "../admin.module.css";
+import { Avatar } from "../Avatar";
 import { Notice } from "../Notice";
 import { StudioHead } from "../StudioHead";
 import { createAdminAction, resetPasswordAction, setActiveAction, setRoleAction } from "./actions";
@@ -51,9 +52,14 @@ export default async function TeamPage(props: PageProps<"/admin/team">) {
                 return (
                   <tr key={a.id}>
                     <td>
-                      <strong style={{ color: "var(--st-heading)" }}>{a.name}</strong>
-                      {mine && <span className="hint"> (you)</span>}
-                      <div className="hint">{a.email ?? a.username}</div>
+                      <span className="st-person">
+                        <Avatar person={a} size={30} />
+                        <span style={{ minWidth: 0 }}>
+                          <strong style={{ color: "var(--st-heading)" }}>{a.name}</strong>
+                          {mine && <span className="hint"> (you)</span>}
+                          <span className="hint" style={{ display: "block" }}>{a.email ?? a.username}</span>
+                        </span>
+                      </span>
                     </td>
                     <td>
                       {mine ? (
@@ -64,11 +70,15 @@ export default async function TeamPage(props: PageProps<"/admin/team">) {
                           <label className="sr-only" htmlFor={`role-${a.id}`}>
                             Role for {a.name}
                           </label>
-                          <select id={`role-${a.id}`} name="role" defaultValue={role} className="select" style={{ minHeight: 34, width: 170 }}>
-                            {STUDIO_ROLES.map((r) => (
-                              <option key={r} value={r}>
-                                {ROLE_LABEL[r]}
-                              </option>
+                          <select id={`role-${a.id}`} name="role" defaultValue={role} className="select" style={{ minHeight: 34, width: 200 }}>
+                            {ROLE_GROUPS.map((g) => (
+                              <optgroup key={g.label} label={g.label}>
+                                {g.roles.map((r) => (
+                                  <option key={r} value={r}>
+                                    {ROLE_LABEL[r]}
+                                  </option>
+                                ))}
+                              </optgroup>
                             ))}
                           </select>
                           <button className="btn btn-xs">Save</button>
@@ -137,15 +147,20 @@ export default async function TeamPage(props: PageProps<"/admin/team">) {
             <legend className="label" style={{ marginBottom: 8 }}>
               Role
             </legend>
-            <div className="st-roles">
-              {STUDIO_ROLES.map((r) => (
-                <label key={r} className="st-role">
-                  <input type="radio" name="role" value={r} defaultChecked={r === "curriculum"} required />
-                  <span className="st-roleName">{ROLE_LABEL[r]}</span>
-                  <span className="st-roleText">{ROLE_BLURB[r]}</span>
-                </label>
-              ))}
-            </div>
+            {ROLE_GROUPS.map((g) => (
+              <div key={g.label} className="st-roleGroup">
+                <span className="st-roleGroupLabel">{g.label}</span>
+                <div className="st-roles">
+                  {g.roles.map((r) => (
+                    <label key={r} className="st-role">
+                      <input type="radio" name="role" value={r} defaultChecked={r === "director_curriculum"} required />
+                      <span className="st-roleName">{ROLE_LABEL[r]}</span>
+                      <span className="st-roleText">{ROLE_BLURB[r]}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
           </fieldset>
           <div className="field" style={{ maxWidth: 360 }}>
             <label className="label" htmlFor="new-password">

@@ -1,14 +1,30 @@
 import "server-only";
-import { and, asc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, ne } from "drizzle-orm";
 import { cache } from "react";
 import { db } from "@/db";
 import { contentItems, kits, kitVersions } from "@/db/schema";
+import { getCompanyAdmin } from "./auth/admin";
 import { features } from "./features";
 
 export type ContentItem = typeof contentItems.$inferSelect;
 export type Kit = typeof kits.$inferSelect;
 
+// Draft kits (created in Studio, not yet published by Curriculum) are hidden from the teacher site: not listed, and
+// their kit page and items answer "not found". A signed-in Studio account can still open them to preview.
+const draftIds = cache(async () => {
+  const d = await db();
+  return new Set((await d.select({ id: kits.id }).from(kits).where(eq(kits.status, "draft"))).map((k) => k.id));
+});
+const canPreviewDrafts = cache(async () => !!(await getCompanyAdmin()));
+
+/** Published kits (teacher site). */
 export const listKits = cache(async () => {
+  const d = await db();
+  return d.select().from(kits).where(ne(kits.status, "draft")).orderBy(asc(kits.sortOrder));
+});
+
+/** Every kit, drafts included (Studio). */
+export const listAllKits = cache(async () => {
   const d = await db();
   return d.select().from(kits).orderBy(asc(kits.sortOrder));
 });
@@ -16,7 +32,7 @@ export const listKits = cache(async () => {
 export const getKit = cache(async (slug: string) => {
   const d = await db();
   const [kit] = await d.select().from(kits).where(eq(kits.slug, slug));
-  if (!kit) return null;
+  if (!kit || (kit.status === "draft" && !(await canPreviewDrafts()))) return null;
   const [version] = await d.select().from(kitVersions).where(and(eq(kitVersions.kitId, kit.id), eq(kitVersions.isCurrent, true)));
   return { kit, version: version ?? null };
 });
@@ -29,7 +45,8 @@ export const getKitById = cache(async (kitId: string) => {
 
 export const listAllContent = cache(async () => {
   const d = await db();
-  return d.select().from(contentItems).orderBy(asc(contentItems.sortOrder));
+  const [rows, drafts] = await Promise.all([d.select().from(contentItems).orderBy(asc(contentItems.sortOrder)), draftIds()]);
+  return drafts.size ? rows.filter((c) => !c.kitId || !drafts.has(c.kitId)) : rows;
 });
 
 export async function kitContent(kitId: string) {
@@ -40,6 +57,7 @@ export async function kitContent(kitId: string) {
 export const getContent = cache(async (slug: string) => {
   const d = await db();
   const [c] = await d.select().from(contentItems).where(eq(contentItems.slug, slug));
+  if (c?.kitId && (await draftIds()).has(c.kitId) && !(await canPreviewDrafts())) return null;
   return c ?? null;
 });
 

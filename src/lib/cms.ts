@@ -102,24 +102,7 @@ async function audit(actor: Actor, action: string, targetId: string, details: Re
 /** Content that other items (videos, handouts) can sit inside. */
 export const LESSON_TYPES: ContentInput["type"][] = ["instructions", "interactive", "training"];
 
-// ---------- Kits ----------
-export type KitInput = { name: string; code: string; gradeBand: string; gradeMin: number; gradeMax: number; tagline: string; description: string; status: string; accent: string; ngss: string[]; skills: string[]; inTheBox: string[] };
-
-export async function saveKit(actor: Actor, id: string | null, input: KitInput) {
-  const d = await db();
-  if (id) {
-    await d.update(kits).set({ ...input, code: input.code.toUpperCase() }).where(eq(kits.id, id));
-    await audit(actor, "kit.update", id);
-    return id;
-  }
-  const [k] = await d
-    .insert(kits)
-    .values({ ...input, code: input.code.toUpperCase(), slug: slugify(input.name.replace(/\bkit\b/i, "")), shortName: input.name.replace(/\s*kit$/i, "").split(" ").slice(0, 2).join(" "), sortOrder: 100 })
-    .returning();
-  await d.insert(kitVersions).values({ kitId: k.id, version: "1.0", notes: "Created in Studio" });
-  await audit(actor, "kit.create", k.id, { name: k.name });
-  return k.id;
-}
+// Kits are created and edited in src/lib/kit-studio.ts.
 
 // ---------- Content ----------
 export type ContentInput = {
@@ -171,6 +154,8 @@ export async function saveContent(actor: Actor, id: string | null, input: Conten
   return row;
 }
 
+/** Deletes an item and its attached items for good, files included. Studio's delete buttons use trashContent
+ *  (src/lib/team/trash.ts) instead; this is for cleaning up failed uploads and for purging Recently deleted. */
 export async function deleteContent(actor: Actor, id: string) {
   const d = await db();
   const gone = await d.delete(contentItems).where(or(eq(contentItems.id, id), eq(contentItems.parentId, id))).returning();
@@ -409,7 +394,8 @@ export async function uploadPackage(actor: Actor, contentId: string, name: strin
 }
 
 /** Removes an item's stored files (upload, video, lesson package). Best effort: the database row is what gates access. */
-async function deleteStoredMedia(item: typeof contentItems.$inferSelect) {
+/** Removes a content item's stored files (upload, video, unpacked lesson). Used when it is deleted for good. */
+export async function deleteStoredMedia(item: Pick<typeof contentItems.$inferSelect, "fileKey" | "videoAssetId" | "packageKey">) {
   if (isUploadKey(item.fileKey)) await deleteObject(item.fileKey).catch(() => {});
   if (item.videoAssetId?.startsWith("file:")) await deleteObject(item.videoAssetId.slice(5)).catch(() => {});
   if (item.packageKey) await deletePrefix(item.packageKey).catch(() => {});

@@ -9,10 +9,10 @@ import { LessonPanel, materialLabel, TIER_TEXT, type PanelKit, type PanelLesson 
 
 const TYPE_TEXT: Record<string, string> = { interactive: "Interactive lesson", instructions: "Text lesson", training: "Training course" };
 
-export function LessonsBoard({ kits, lessons, open: initialOpen }: { kits: PanelKit[]; lessons: PanelLesson[]; open: string | null }) {
+export function LessonsBoard({ kits, lessons, open: initialOpen, kit: initialKit }: { kits: PanelKit[]; lessons: PanelLesson[]; open: string | null; kit?: string | null }) {
   const router = useRouter();
   const path = usePathname();
-  const [kit, setKit] = useState<string>("all");
+  const [kit, setKit] = useState<string>(initialKit && kits.some((k) => k.id === initialKit) ? initialKit : "all");
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<string | null>(initialOpen);
   const [toast, setToast] = useState<string | null>(null);

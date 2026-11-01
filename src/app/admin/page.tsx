@@ -12,8 +12,8 @@ export const metadata = { title: "Home" };
 
 const TILES: { perm: StudioPerm; href: string; icon: string; title: string; text: string; count?: "lessons" | "materials" | "kits" | "codes" | "orgs" | "teachers" }[] = [
   { perm: "lessons", href: "/admin/content", icon: "interactive", title: "Lessons", text: "Create lessons from your JavaScript activities and attach training, demos and manuals.", count: "lessons" },
-  { perm: "library", href: "/admin/files", icon: "folder", title: "Materials library", text: "Every handout, guide and manual, with download, replace and access.", count: "materials" },
-  { perm: "kits", href: "/admin/kits", icon: "box", title: "Kits", text: "Kit names, grades, NGSS alignment and what is in the box.", count: "kits" },
+  { perm: "library", href: "/admin/files", icon: "folder", title: "Materials library", text: "Each kit's profile: details, manuals, lessons and parts. Publish kits from here.", count: "materials" },
+  { perm: "kits", href: "/admin/kits", icon: "box", title: "Kits", text: "The kit directory: create online or physical kits and see parts and pricing.", count: "kits" },
   { perm: "codes", href: "/admin/orders", icon: "key", title: "Kit codes", text: "Generate codes in bulk for an order, print QR sheets, export CSV.", count: "codes" },
   { perm: "schools", href: "/admin/schools", icon: "school", title: "Schools", text: "School licenses, districts, email domains and join codes.", count: "orgs" },
   { perm: "teachers", href: "/admin/access", icon: "users", title: "Teacher access", text: "Look up a teacher, move or revoke their kits, approve school joins.", count: "teachers" },

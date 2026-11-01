@@ -228,3 +228,87 @@ Choices made where the plan did not specify something. Newest at the bottom of e
 - **D-80 NGSS made clear, not loud.** One consistent marker everywhere codes appear (check icon + "NGSS" + codes): kit
   cards, the kit hero, every lesson row and the lesson header, plus an "NGSS-aligned" line in the home hero and a short
   standards section.
+
+- **D-81 Kits are online or physical.** `kits.kind` (`physical` default, `online`), chosen on Studio → Kits → *New kit*. A new kit starts as `status = draft`. A draft is in the curriculum team's Materials library at once, so Curriculum builds it while Product finishes it. Drafts are hidden from the teacher site: `listKits`, `listAllContent`, `getKit` and `getContent` skip them (a signed-in Studio account can still preview). Studio pages use `listAllKits`. Curriculum publishes (`available`) or unpublishes (back to `draft`) from the kit's profile.
+- **D-82 Materials library = one profile per kit.** The long all-files table was replaced by a short kit list (`/admin/files`). Each kit opens a tabbed profile (`/admin/files/[kit]`): Details & NGSS (grades, description, alignment, skills), Manuals & files (download, edit, remove, upload), Lessons (open in the lesson panel, which is filtered to the kit), and Parts & components (physical) or HTML5 / JS activities (online). Professional learning (no kit) is `/admin/files/general`. The Curriculum role now has the `library` permission. Kits (create, directory, pricing) stays Product Officer + Admin.
+- **D-83 Parts & pricing catalog.** New table `kit_parts` (name, quantity per kit, unit cost in cents, supplier/SKU). Curriculum (or Product) edits the list on the kit profile; it is saved in one go. Saving rewrites `kits.in_the_box` as names and quantities only ("2 × Bar magnet"), so teachers see what is in the box but never prices or suppliers. The Product Officer's kit page shows the catalog with line totals and cost per kit ("$9.75+" when some parts have no price, "Not priced yet" when none do), plus a CSV export (`/admin/kits/[id]/parts.csv`). Migration `0004_kit_types_parts` turns every existing kit's In-the-box list into its starting parts (quantity 1, no price).
+- **D-84 Online kit assets are HTML5 / JavaScript.** "Java" in the request was read as JavaScript (browsers can't run Java applets). An online kit's page (and its library profile) has an uploader for `.zip` / `.html` / `.js` builds; each becomes an interactive item in that kit, using the existing sandboxed lesson-package pipeline.
+
+## Studio team: roles, chat, to-dos, notifications, Recently deleted (2026-11-01)
+
+- **D-90 Five Studio roles.** Admin, Head of Production, Product Officer, Head of Curriculum, Director of Curriculum
+  (`src/lib/auth/roles.ts`), exactly as the owner listed them. Production = Head of Production + Product Officers
+  (same access: kits, codes, schools, teacher access, lessons, library); Curriculum = Head of Curriculum + Directors
+  of Curriculum (lessons, library); Admin has no department and sees both. The old Curriculum role became Director of
+  Curriculum (same access); migration `0007_studio_roles_trim` moves existing accounts. Upload routes accept
+  `lessons` *or* `library`.
+- **D-91 Chat without a socket server.** Messages are Postgres rows (`chat_messages`); the open conversation polls
+  `/api/admin/chat/messages?since=` every 2 s (10 s in a background tab) and gets everything sent, deleted or restored
+  since (`updated_at`), so it works on Vercel serverless with no extra service. Sends are optimistic. Channels:
+  `all`, `curriculum`, `production` (open to every role, so departments can talk across) and `dm:<a>:<b>` (only those
+  two). Unread = others' messages after `chat_reads.last_read_at`. If the team grows past a few dozen people, swap the
+  poll for a push service (Pusher/Ably) behind the same API. No calls, as asked.
+- **D-92 Chat files.** Up to 100 MB, browser → bucket with a presigned PUT (`/api/admin/chat/upload`), then the message
+  is sent with the key, which the server checks (key format, size). Images are shown inline only if their first bytes
+  are PNG/JPEG/GIF/WebP and are served from our own route with `nosniff`; everything else (SVG and HTML included) is a
+  download through a 5-minute signed link. No message HTML is ever rendered; links are made clickable from text.
+- **D-93 Profile pictures.** PNG/JPEG/WebP up to 2 MB, checked by bytes, stored at `avatars/<id>/<uuid>.<ext>` and
+  served to Studio accounts only from `/api/admin/avatar/[id]`; the URL carries a version so it can be cached.
+- **D-94 To-dos.** Heads and admins give a to-do (title, notes, deadline) to a Director of Curriculum or a Product
+  Officer (either department). The
+  deadline is picked in the giver's time zone and stored as an exact moment; everyone sees it in their own. The
+  receiver's department sees it (with who gave it and when it's due); heads and admins see both departments. Only the
+  receiver (or an admin) marks it done, which notifies whoever gave it. The daily job sends one overdue notice.
+- **D-95 Notifications.** `notifications` rows, shown on Studio → Inbox, with sidebar badges and a small toast (polled
+  every 15 s). Sent for: to-do given / done / overdue; a new kit (whole curriculum department); and for admins every
+  Studio sign-in by someone else plus security risks (3 wrong passwords in a row, a lockout, a disabled account
+  signing in, 10 wrong kit codes from one teacher, a new Studio account, a role change). Notifying never breaks the
+  action that caused it.
+- **D-96 Recently deleted.** Every delete asks "Are you sure you want to delete this?" in a Studio dialog (Cancel has
+  focus; without JavaScript the delete can't be sent). Deleting a lesson, material, handout or manual copies its rows
+  (and class assignments) into `trash` and removes them, so teachers lose it at once, but its stored files stay. Admins
+  (`trash` permission) restore it with the same id, slug, files and assignments, or delete it for good (files too).
+  After 30 days the daily job, and opening the page, delete it for good. Deleted chat messages are hidden and listed
+  the same way. Throwaway rows from failed uploads skip the trash. Deleting a school's data (contract ended) stays
+  permanent and outside the trash, behind its type-the-name check plus the dialog.
+
+## Teacher site redesign, student accounts, class limits (2026-11-01)
+
+- **D-100 A functional look, separate from curiocrate.org.** Direction from Curiocrate: "the main website makes a statement
+  and moves people; this one should have functionality." The teacher & student site drops the night sky, serif display
+  type and mono uppercase buttons for a clean light theme on the CurioCrate blue (`--sx-*` in `tokens.css`, applied by
+  remapping the shared primitives under `.site` in `src/app/(site)/site.css`, the same method Studio uses). Headings and
+  body use Plus Jakarta Sans. Supersedes the curiocrate.org matching in D-01/D-02/D-05/D-06 for the teacher site; the
+  e2e brand check now asserts this theme instead of curiocrate.org's computed styles. Studio is unchanged.
+- **D-101 Motion.** Pages ease in on every navigation (`(site)/template.tsx`); sections ease in once as they scroll into
+  view (`RevealObserver`, an IntersectionObserver that marks what is already on screen first, so nothing flickers and
+  content never stays hidden). Scroll-driven CSS (`animation-timeline: view()`) was tried and dropped: elements near the
+  bottom of a short page never finished animating, and it would hang the a11y helper that waits for animations.
+  Everything respects `prefers-reduced-motion`. A small interactive preview on the home page (assign switches, a seat
+  meter) shows what the site does instead of describing it.
+- **D-102 Static header.** The header scrolls away with the page; no fixed bar sliding over content. Its links depend on
+  who is signed in: visitors (How it works, Plans, Privacy + Students, Teacher sign in), teachers (Dashboard, Classes,
+  Training + Redeem code, account), student accounts (My learning, My class), class-code students (My class).
+- **D-103 No public catalog or kit browsing.** `/catalog` and `/labs` redirect (dashboard, or the demo for visitors). Kit
+  pages are part of the teacher workspace (reached from the dashboard; visitors are sent to sign in, student accounts to
+  their own page). Students reach material through assignments (class code) or their student home (account). Exactly
+  one public demo, `/demo`: the real Luminol lab with saving off, no sign-in.
+- **D-104 Class limits.** 6 classes per teacher, 35 students (devices) per class (`src/lib/class-limits.ts`). Both are
+  enforced inside a transaction with a row lock (teacher row for classes, class row for joins), tested with 40
+  simultaneous joins. Teachers can remove a student device to free a seat, make a new class code (students already in
+  stay), rename and delete a class.
+- **D-105 Free student accounts, 13+ only.** Students 13 and older may create an account to open the free-tier student
+  material of every kit (never training, teacher-only materials, kit-owner or subscription content). Stored: email,
+  scrypt password hash, a nickname chosen from the fixed word lists (never typed, so it can't hold a real name), birth
+  year, terms version and acceptance time. Lab results from accounts are not stored. Sign-in failures lock the account
+  for 15 minutes after 8 tries; sessions are database rows (sha256 of a random token) for 30 days. Students delete their
+  own account from their page.
+- **D-106 Under 13 → class code, nothing stored.** A neutral age screen (birth month + year) comes first. In the birth
+  month the student counts as not yet having had the birthday (errs younger). An under-13 answer stores nothing and sets
+  a one-day cookie so the form can't simply be retried with another year. Rationale: an email from a child under 13
+  would require verifiable parental consent under COPPA; the anonymous class code runs under the school's authorization
+  and collects no personal information. **Needs legal review** before launch, along with the Terms of Use.
+- **D-107 User agreements.** `/terms` (plain language; sections for everyone, teachers, students) with `TERMS_VERSION`
+  in `src/lib/terms.ts`. Students tick the agreement when creating an account; teachers tick it when they join or set up
+  their school (stored as `teachers.terms_version` / `terms_accepted_at`, included in the account data export). Sign-in
+  pages link to the terms. The privacy page now describes student accounts (no longer "no student accounts").

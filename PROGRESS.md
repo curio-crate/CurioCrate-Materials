@@ -1,5 +1,41 @@
 # Progress log
 
+## Update (2026-11-01): Studio team: roles, chat, to-dos, notifications, Recently deleted
+
+- **Roles** (D-90): Admin, Head of Production, Product Officer, Head of Curriculum, Director of Curriculum (the old
+  Curriculum role became Director of Curriculum; migration `0007_studio_roles_trim`).
+- **Chat** (D-91, D-92): Studio → Chat with #Everyone, #Curriculum, #Production (open to all) and private messages.
+  Messages and files (button, drag-and-drop or paste; images inline) arrive within ~2 s with no reload; unread badges.
+- **Profile pictures** (D-93): My account → Profile picture; shown in the sidebar, chat, Team and To-dos.
+- **To-dos and Inbox** (D-94, D-95): heads assign to-dos with deadlines to Directors of Curriculum and Product Officers; departments see them; done
+  notifies the giver; new kits notify curriculum; admins get sign-in and security notices. Sidebar badges + toasts.
+- **Delete safety** (D-96): "Are you sure?" dialog on every delete; Studio → Recently deleted (admins) to restore or
+  delete for good; automatic after 30 days. Migration `0006_team_chat_tasks_trash`.
+
+**Checks:** `npm run check` passes (0 lint warnings, theme check, 0 type errors, 88/88 unit tests, 12 new in
+`tests/team.test.ts`). `npm run build` passes. `npx playwright test e2e/team.spec.ts`: 6/6 in Chrome (two people
+chatting live, file + image, unread badge, delete → Recently deleted → restore, profile picture, to-do → Inbox →
+done → giver notified, Materials library delete → restore), with axe passing on Chat, Recently deleted, To-dos,
+Inbox and My account. Axe caught one real issue (a button's accessible name), fixed.
+
+## Update (2026-11-01): Studio kits and Materials library revamp
+
+- **Materials library is now short**: one row per kit (type, grades, counts, Draft/Published). Clicking a kit opens its
+  whole profile in tabs: Details & NGSS, Manuals & files, Lessons, and Parts & components (physical) or HTML5 / JS
+  activities (online). Curriculum edits, removes, uploads and publishes there. Lessons page unchanged (D-82).
+- **Kits is the Product Officer directory**: New kit asks Online vs Physical first. The kit lands in the Materials
+  library as a draft right away, hidden from teachers until Curriculum publishes it (D-81).
+- **Physical kits get a parts & pricing catalog**: parts list with quantities and prices, live totals, cost per kit,
+  CSV export. Teachers only see part names as "In the box" (D-83). Online kits upload HTML5 / JavaScript builds (D-84).
+- Curriculum role gains the Materials library; Kits stays Product Officer + Admin.
+
+**Checks:** lint (0 warnings) and theme check pass for the changed files. `tsc` is clean for this work; the only errors
+were in other in-progress sessions' files. Unit tests: 67/67 at the time (new `tests/kits.test.ts`: draft creation,
+duplicate code prefix, publish, parts/pricing/In-the-box sync, price parsing). Manual run in Chrome against an isolated
+dev server: created physical and online kits, saved parts ($9.75 with one unpriced part), CSV export, draft kit page
+404 for teachers, then 200 after publishing with "2 × Bar magnet" and no prices; duplicate code prefix refused with the
+form kept. The e2e suite was not run (other sessions were mid-change); the Studio roles e2e test was updated.
+
 ## Update (2026-10-31): usability revamp: separate Studio, three roles, one-panel lessons, calmer teacher site
 
 - **Teacher site decluttered** (D-79, D-80): calm home page (no Luminol promo, one "Try our demo"), no "In development",

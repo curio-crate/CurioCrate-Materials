@@ -58,7 +58,7 @@ test("company builds a lesson with a PDF and a video; it is live for teachers; c
   const code = (await co.getByTestId("order-code").first().innerText()).trim();
 
   const teacher = await newSignedInPage(browser, { email: uniqueEmail("studio") });
-  await teacher.goto("/catalog?q=Magnets");
+  await teacher.goto("/kits/luminol");
   await teacher.getByRole("link", { name: title }).click();
   await expect(teacher.getByRole("heading", { name: /part of the luminol forensics kit/i })).toBeVisible();
   expect((await teacher.request.post("/api/redeem", { data: { code } })).status()).toBe(200);
@@ -162,7 +162,8 @@ test("every new page passes the accessibility check and brand comparison", async
   const visits = [
     { label: "labs", page: anon, path: "/labs" },
     { label: "join", page: anon, path: "/join" },
-    { label: "join-error", page: anon, path: "/join?error=1" },
+    { label: "join-error", page: anon, path: "/join?error=code" },
+    { label: "demo", page: anon, path: "/demo" },
     { label: "company-login", page: anon, path: "/company/login" },
     { label: "lab-luminol", page: teacher, path: "/labs/luminol-limit" },
     { label: "lab-circuits", page: teacher, path: "/labs/circuit-sandbox" },
@@ -181,6 +182,7 @@ test("every new page passes the accessibility check and brand comparison", async
     { label: "studio-new-video", page: co, path: "/admin/content/new?type=video" },
     { label: "studio-edit", page: co, path: firstEdit! },
     { label: "studio-kit", page: co, path: "/admin/kits/new" },
+    { label: "studio-kit-profile", page: co, path: "/admin/files/general" },
     { label: "studio-orders", page: co, path: "/admin/orders" },
     { label: "studio-access", page: co, path: "/admin/access" },
     { label: "studio-security", page: co, path: "/admin/security" },
@@ -198,14 +200,14 @@ test("every new page passes the accessibility check and brand comparison", async
   for (const p of [co, teacher, anon]) await p.context().close();
 });
 
-test("Studio roles: Curriculum sees lessons only, Product Officers add codes and schools, only admins manage the team", async ({ browser }) => {
+test("Studio roles: Curriculum sees lessons and the materials library, Product Officers add codes and schools, only admins manage the team", async ({ browser }) => {
   const co = await companyPage(browser);
   const stamp = Date.now().toString(36);
-  for (const [email, role] of [[`cur-${stamp}@curiocrate.org`, "Curriculum"], [`po-${stamp}@curiocrate.org`, "Product Officer"]]) {
+  for (const [email, role] of [[`cur-${stamp}@curiocrate.org`, "Curriculum"], [`po-${stamp}@curiocrate.org`, "Product Officer"]] as const) {
     await co.goto("/admin/team");
     await co.getByLabel("Email").fill(email);
     await co.getByLabel("Full name").fill(role);
-    await co.locator(".st-role", { hasText: role }).click();
+    await co.locator(".st-role").filter({ has: co.locator(".st-roleName", { hasText: new RegExp(`^${role === "Curriculum" ? "Director of Curriculum" : role}$`) }) }).click();
     await co.getByLabel("Temporary password").fill("a temporary pass 42");
     await co.getByRole("button", { name: "Add person" }).click();
     await expect(co.getByText(/^Added /)).toBeVisible();
@@ -224,9 +226,12 @@ test("Studio roles: Curriculum sees lessons only, Product Officers add codes and
     return new URL(page.url()).pathname === p;
   };
   const cur = await signInAs(`cur-${stamp}@curiocrate.org`);
-  await expect(cur.getByRole("navigation", { name: "Studio" }).getByRole("link")).toHaveText(["Home", "Lessons"]);
+  const curNav = cur.getByRole("navigation", { name: "Studio" });
+  for (const name of ["Lessons", "Materials library"]) await expect(curNav.getByRole("link", { name, exact: true })).toBeVisible();
+  for (const name of ["Kits", "Kit codes", "Schools", "Team & roles"]) await expect(curNav.getByRole("link", { name, exact: true })).toHaveCount(0);
   expect(await opens(cur, "/admin/content")).toBe(true);
-  for (const p of ["/admin/files", "/admin/orders", "/admin/schools", "/admin/access", "/admin/team", "/admin/audit"]) expect(await opens(cur, p), p).toBe(false);
+  expect(await opens(cur, "/admin/files")).toBe(true);
+  for (const p of ["/admin/kits", "/admin/kits/new", "/admin/orders", "/admin/schools", "/admin/access", "/admin/team", "/admin/audit"]) expect(await opens(cur, p), p).toBe(false);
   await expect(cur.getByText(/can.t open that page/i)).toBeVisible();
 
   const po = await signInAs(`po-${stamp}@curiocrate.org`);

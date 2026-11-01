@@ -1,21 +1,31 @@
 import type { ReactNode } from "react";
-import { features } from "@/lib/features";
-import { getHeaderData } from "@/lib/header-data";
+import "@/app/(site)/site.css";
+import { getViewer } from "@/lib/auth/viewer";
+import { currentStudent } from "@/lib/classes";
+import { currentLearner } from "@/lib/students";
+import { RevealObserver } from "./RevealObserver";
 import { SiteFooter } from "./SiteFooter";
-import { SiteHeader } from "./SiteHeader";
-import { Starfield } from "./Starfield";
+import { SiteHeader, type HeaderViewer } from "./SiteHeader";
 
-/** The teacher-facing site's frame: night sky, header, footer. Studio (/admin) has its own frame and never uses this. */
+/** The teacher & student site's frame: header, page, footer. Studio (/admin) has its own frame and never uses this. */
 export async function SiteChrome({ children }: { children: ReactNode }) {
-  const { viewer, kits } = await getHeaderData();
+  // Studio accounts are deliberately not reflected here: the site and Studio are separate products.
+  const [teacher, learner, classStudent] = await Promise.all([getViewer(), currentLearner(), currentStudent()]);
+  const viewer: HeaderViewer = teacher
+    ? { kind: "teacher", name: teacher.teacher.name, isDistrictAdmin: teacher.isDistrictAdmin }
+    : learner
+      ? { kind: "learner", name: learner.nickname, inClass: !!classStudent }
+      : classStudent
+        ? { kind: "class", name: classStudent.s.nickname }
+        : null;
   return (
-    <>
-      <Starfield />
-      <SiteHeader viewer={viewer} kits={kits} features={{ labs: features.labs, classes: features.classes, districts: features.districts }} />
+    <div className="site">
+      <SiteHeader viewer={viewer} />
       <main id="main" className="page" tabIndex={-1}>
         {children}
       </main>
       <SiteFooter />
-    </>
+      <RevealObserver />
+    </div>
   );
 }

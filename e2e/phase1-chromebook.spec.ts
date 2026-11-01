@@ -20,8 +20,9 @@ test("pages load and work on a simulated low-end Chromebook", async ({ browser }
 
   for (const [p, url] of [
     [anon, "/"],
-    [anon, "/catalog"],
-    [anon, "/kits/luminol"],
+    [anon, "/demo"],
+    [page, "/kits/luminol"],
+    [page, "/classes"],
     [anon, "/signin"],
     [page, "/dashboard"],
     [page, "/redeem"],
@@ -34,14 +35,15 @@ test("pages load and work on a simulated low-end Chromebook", async ({ browser }
     expect(m.overflow, `${url} horizontal overflow at 1366px`).toBeLessThanOrEqual(0);
   }
 
-  // Things still work under throttling: the catalog filter, a header menu, and video playback.
-  await anon.goto("/catalog");
-  await anon.getByLabel("Grade band").selectOption("4-5");
-  await anon.getByRole("button", { name: "Apply" }).click();
-  await expect(anon.getByRole("heading", { level: 3, name: /circuit builders kit/i })).toBeVisible();
-  await expect(anon.getByRole("heading", { level: 3, name: /luminol forensics kit/i })).toHaveCount(0);
-  await anon.getByRole("button", { name: /^schools/i }).click();
-  await expect(anon.getByRole("link", { name: "Redeem a kit code" })).toBeVisible();
+  // Things still work under throttling: the demo lab, the mobile-width menu, and video playback.
+  await anon.goto("/demo");
+  await anon.getByRole("button", { name: /^1/ }).first().click();
+  await expect(anon.getByRole("button", { name: /add three drops/i })).toBeEnabled();
+  await page.setViewportSize({ width: 600, height: 768 });
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: /open menu/i }).click();
+  await expect(page.getByRole("link", { name: "Classes" }).last()).toBeVisible();
+  await page.setViewportSize({ width: 1366, height: 768 });
 
   await page.goto("/lessons/luminol-a1-why-it-glows");
   await page.getByRole("radio", { name: /low 360p/i }).check({ force: true });

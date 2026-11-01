@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth/viewer";
 import { Notice } from "../Notice";
 import { StudioHead } from "../StudioHead";
 import { changeOwnPasswordAction } from "../team/actions";
+import { AvatarUploader } from "./AvatarUploader";
 
 export const metadata = { title: "My account" };
 
@@ -20,6 +21,7 @@ export default async function MyAccount(props: PageProps<"/admin/account">) {
           This account still uses the development password, which is written in the test code. Change it below.
         </p>
       )}
+      <AvatarUploader me={{ id: actor.adminId, name: me?.name ?? actor.email, avatarKey: me?.avatarKey ?? null }} />
       <div className="st-card" style={{ maxWidth: 560, marginBottom: 16 }}>
         <p className="st-h2">Your role</p>
         <p className="st-sub" style={{ marginTop: 8 }}>

@@ -4,6 +4,7 @@ import type { ContentItem, Kit } from "@/lib/content";
 import { bodyToText } from "@/lib/cms";
 import { LABS } from "@/lib/labs";
 import styles from "../admin.module.css";
+import { ConfirmSubmit } from "../Confirm";
 import { deleteContentAction, saveContentAction } from "./actions";
 import { Uploader } from "./Uploader";
 
@@ -140,7 +141,9 @@ export function ContentEditor({ item, kits, parents, defaults, resources: childr
             <Link className="link" href={item.type === "lab" && item.labSlug ? `/labs/${item.labSlug}` : `/lessons/${item.slug}`}>Open as a teacher sees it →</Link>
             <form action={deleteContentAction}>
               <input type="hidden" name="id" value={item.id} />
-              <button className="btn btn-xs btn-danger">Delete{children.length ? " (and its resources)" : ""}</button>
+              <ConfirmSubmit className="btn btn-xs btn-danger" title={`Are you sure you want to delete “${item.title}”?`} message={`Teachers lose it right away${children.length ? `, along with the ${children.length} resource${children.length === 1 ? "" : "s"} inside it` : ""}. It moves to Recently deleted, where an admin can restore it for 30 days.`}>
+                Delete{children.length ? " (and its resources)" : ""}
+              </ConfirmSubmit>
             </form>
           </section>
         )}

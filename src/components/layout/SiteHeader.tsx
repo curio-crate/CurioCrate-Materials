@@ -3,227 +3,134 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import styles from "./SiteHeader.module.css";
 
-export type HeaderViewer = {
-  name: string;
-  email: string;
-  isDistrictAdmin: boolean;
-} | null;
+export type HeaderViewer =
+  | { kind: "teacher"; name: string; isDistrictAdmin: boolean }
+  | { kind: "learner"; name: string; inClass: boolean }
+  | { kind: "class"; name: string }
+  | null;
 
 type NavLink = { href: string; label: string };
-type NavGroup = { label: string; base: string; items: NavLink[] };
-type NavEntry = NavLink | NavGroup;
 
-function isGroup(e: NavEntry): e is NavGroup {
-  return "items" in e;
-}
-
-export function SiteHeader({
-  viewer,
-  kits,
-  features,
-}: {
-  viewer: HeaderViewer;
-  kits: { slug: string; name: string }[];
-  features: { labs: boolean; classes: boolean; districts: boolean };
-}) {
+/** A short header that scrolls away with the page: a few links for whoever is signed in, nothing more. */
+export function SiteHeader({ viewer }: { viewer: HeaderViewer }) {
   const pathname = usePathname() ?? "/";
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
   const menuId = useId();
 
-  const nav: NavEntry[] = [
-    { href: "/catalog", label: "Catalog" },
-    {
-      label: "Kits",
-      base: "/kits",
-      items: [...kits.map((k) => ({ href: `/kits/${k.slug}`, label: k.name })), { href: "/catalog", label: "All kits" }],
-    },
-    ...(features.labs ? [{ href: "/labs", label: "Labs" }] : []),
-    { href: "/training", label: "Training" },
-    {
-      label: "Schools",
-      base: "/schools",
-      items: [
-        { href: "/redeem", label: "Redeem a kit code" },
-        { href: "/plans", label: "Plans & subscriptions" },
-        ...(features.classes && viewer ? [{ href: "/classes", label: "My classes" }] : []),
-        ...(features.classes ? [{ href: "/join", label: "Student class join" }] : []),
-        ...(features.districts && viewer?.isDistrictAdmin ? [{ href: "/district", label: "District dashboard" }] : []),
-        { href: "/schools/it", label: "IT & web filters" },
-        { href: "/privacy", label: "Student privacy" },
-      ],
-    },
-  ];
+  const nav: NavLink[] =
+    viewer?.kind === "teacher"
+      ? [
+          { href: "/dashboard", label: "Dashboard" },
+          { href: "/classes", label: "Classes" },
+          { href: "/training", label: "Training" },
+          ...(viewer.isDistrictAdmin ? [{ href: "/district", label: "District" }] : []),
+        ]
+      : viewer?.kind === "learner"
+        ? [{ href: "/student", label: "My learning" }, ...(viewer.inClass ? [{ href: "/class", label: "My class" }] : [])]
+        : viewer?.kind === "class"
+          ? [{ href: "/class", label: "My class" }]
+          : [
+              { href: "/#how", label: "How it works" },
+              { href: "/plans", label: "Plans" },
+              { href: "/privacy", label: "Privacy" },
+            ];
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Close menus on route change (state adjusted during render, not in an effect).
+  // Close the mobile menu on navigation (state adjusted during render, not in an effect).
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
     setLastPath(pathname);
-    setOpen(null);
     setMobileOpen(false);
   }
-
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(null);
-        setMobileOpen(false);
-      }
-    };
-    const onClick = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(null);
-    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
     document.addEventListener("keydown", onKey);
-    document.addEventListener("click", onClick);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("click", onClick);
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-  }, [mobileOpen]);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const home = viewer?.kind === "teacher" ? "/dashboard" : viewer?.kind === "learner" ? "/student" : viewer?.kind === "class" ? "/class" : "/";
 
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/"));
-  // "All kits" points at /catalog, which has its own tab, so it doesn't light up the Kits group too.
-  const groupActive = (g: NavGroup) => g.items.some((i) => i.href !== "/catalog" && isActive(i.href)) || pathname.startsWith(g.base + "/");
+  const actions =
+    viewer?.kind === "teacher" ? (
+      <>
+        <Link href="/redeem" className="btn btn-sm btn-ghost">
+          Redeem code
+        </Link>
+        <Link href="/account" className={styles.me}>
+          <span className={styles.avatar} aria-hidden="true">
+            {viewer.name.trim().charAt(0).toUpperCase() || "T"}
+          </span>
+          <span className="sr-only">Account: </span>
+          <span className={styles.meName}>{viewer.name.split(" ")[0]}</span>
+        </Link>
+      </>
+    ) : viewer ? (
+      <>
+        <span className={styles.me}>
+          <span className={styles.avatar} aria-hidden="true">
+            {viewer.name.charAt(0)}
+          </span>
+          <span className={styles.meName}>{viewer.name}</span>
+        </span>
+        {viewer.kind === "learner" && (
+          <form action="/api/student/signout" method="post">
+            <button type="submit" className="btn btn-sm btn-ghost">
+              Sign out
+            </button>
+          </form>
+        )}
+      </>
+    ) : (
+      <>
+        <Link href="/join" className="btn btn-sm btn-ghost">
+          Students
+        </Link>
+        <Link href="/signin" className="btn btn-sm btn-solid">
+          Teacher sign in
+        </Link>
+      </>
+    );
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
-      <nav ref={navRef} className={styles.nav} aria-label="Main">
-        <Link href="/" className={styles.brand} aria-label="Curiocrate Materials home">
-          <Image
-            src="/brand/cclogofull5.png"
-            alt="CurioCrate"
-            width={1026}
-            height={332}
-            priority
-            unoptimized
-            className={styles.logo}
-          />
-          <span className={styles.brandTag} aria-hidden="true">
-            Materials
-          </span>
+    <header className={styles.header}>
+      <nav className={styles.nav} aria-label="Main">
+        <Link href={home} className={styles.brand} aria-label="CurioCrate Materials home">
+          <Image src="/brand/cclogosmall.png" alt="" width={30} height={30} priority unoptimized className={styles.mark} />
+          <span className={styles.brandName}>CurioCrate</span> <span className={styles.brandTag}>Materials</span>
         </Link>
 
         <ul className={styles.links}>
-          {nav.map((entry) =>
-            isGroup(entry) ? (
-              <li
-                key={entry.label}
-                className={styles.group}
-                onMouseEnter={() => setOpen(entry.label)}
-                onMouseLeave={() => setOpen((o) => (o === entry.label ? null : o))}
-              >
-                <button
-                  type="button"
-                  className={`${styles.link} ${groupActive(entry) ? styles.active : ""}`}
-                  aria-expanded={open === entry.label}
-                  aria-controls={`${menuId}-${entry.label}`}
-                  onClick={() => setOpen((o) => (o === entry.label ? null : entry.label))}
-                >
-                  {entry.label}
-                  <span className={styles.caret} aria-hidden="true">
-                    ▾
-                  </span>
-                </button>
-                <div
-                  id={`${menuId}-${entry.label}`}
-                  className={`${styles.dropdown} ${open === entry.label ? styles.dropdownOpen : ""}`}
-                  hidden={open !== entry.label}
-                >
-                  <ul>
-                    {entry.items.map((item) => (
-                      <li key={item.href + item.label}>
-                        <Link
-                          href={item.href}
-                          className={`${styles.dropItem} ${isActive(item.href) ? styles.dropActive : ""}`}
-                          aria-current={isActive(item.href) ? "page" : undefined}
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            ) : (
-              <li key={entry.href}>
-                <Link
-                  href={entry.href}
-                  className={`${styles.link} ${isActive(entry.href) ? styles.active : ""}`}
-                  aria-current={isActive(entry.href) ? "page" : undefined}
-                >
-                  {entry.label}
-                </Link>
-              </li>
-            ),
-          )}
+          {nav.map((l) => (
+            <li key={l.href}>
+              <Link href={l.href} className={styles.link} aria-current={isActive(l.href) ? "page" : undefined}>
+                {l.label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
-        <div className={styles.actions}>
-          {viewer ? (
-            <Link href="/dashboard" className={`${styles.outline} ${isActive("/dashboard") ? styles.outlineActive : ""}`}>
-              <span className={styles.avatar} aria-hidden="true">
-                {viewer.name.trim().charAt(0).toUpperCase() || "T"}
-              </span>
-              Dashboard
-            </Link>
-          ) : (
-            <Link href="/signin" className={styles.outline}>
-              Teacher sign in
-            </Link>
-          )}
-          <Link href="/redeem" className={styles.solid} data-brand="solid">
-            Redeem code
-          </Link>
-        </div>
+        <div className={styles.actions}>{actions}</div>
 
-        <button
-          type="button"
-          className={styles.burger}
-          aria-expanded={mobileOpen}
-          aria-controls={`${menuId}-mobile`}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
+        <button type="button" className={styles.burger} aria-expanded={mobileOpen} aria-controls={`${menuId}-mobile`} onClick={() => setMobileOpen((v) => !v)}>
           <span className="sr-only">{mobileOpen ? "Close menu" : "Open menu"}</span>
           <span className={styles.burgerLines} aria-hidden="true" />
         </button>
       </nav>
 
-      <div id={`${menuId}-mobile`} className={`${styles.mobile} ${mobileOpen ? styles.mobileOpen : ""}`} hidden={!mobileOpen}>
+      <div id={`${menuId}-mobile`} className={styles.mobile} hidden={!mobileOpen}>
         <ul className={styles.mobileList}>
-          {[{ href: "/", label: "Home" }, ...nav.flatMap((e) => (isGroup(e) ? e.items : [e]))]
-            .filter((l, i, arr) => arr.findIndex((x) => x.href === l.href) === i)
-            .map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className={`${styles.mobileLink} ${isActive(l.href) ? styles.mobileActive : ""}`}>
-                  {l.label}
-                </Link>
-              </li>
-            ))}
+          {nav.map((l) => (
+            <li key={l.href}>
+              <Link href={l.href} className={styles.mobileLink} aria-current={isActive(l.href) ? "page" : undefined}>
+                {l.label}
+              </Link>
+            </li>
+          ))}
         </ul>
-        <div className={styles.mobileActions}>
-          <Link href={viewer ? "/dashboard" : "/signin"} className="btn btn-outline btn-block">
-            {viewer ? "Dashboard →" : "Teacher sign in →"}
-          </Link>
-          <Link href="/redeem" className="btn btn-solid btn-block">
-            Redeem code →
-          </Link>
-        </div>
+        <div className={styles.mobileActions}>{actions}</div>
       </div>
     </header>
   );

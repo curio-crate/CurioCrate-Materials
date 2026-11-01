@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { contentForEdit, lessonsForParentSelect } from "@/lib/cms";
-import { listKits, TYPE_LABEL } from "@/lib/content";
+import { listAllKits, TYPE_LABEL } from "@/lib/content";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
 import { ContentEditor } from "../ContentEditor";
@@ -14,7 +14,7 @@ export default async function EditContent(props: PageProps<"/admin/content/[id]"
   const sp = await props.searchParams;
   const data = await contentForEdit(id);
   if (!data) notFound();
-  const [kits, parents] = await Promise.all([listKits(), lessonsForParentSelect(null)]);
+  const [kits, parents] = await Promise.all([listAllKits(), lessonsForParentSelect(null)]);
   return (
     <>
       <Notice sp={sp} />

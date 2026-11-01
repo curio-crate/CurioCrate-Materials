@@ -9,6 +9,8 @@ export const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 // written from real check output. Fails the test on any violation.
 export async function expectAccessible(page: Page, label: string) {
   await page.evaluate(() => document.fonts.ready);
+  // Sections that ease in on scroll (.reveal) are shown first, as they are once a reader scrolls to them.
+  await page.evaluate(() => document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-in")));
   // Measure the settled page: wait for finite entrance animations (fade-ins) to finish; the star twinkle is infinite.
   await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}))));
   const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();

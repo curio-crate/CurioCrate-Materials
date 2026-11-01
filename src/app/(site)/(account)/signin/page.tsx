@@ -5,7 +5,6 @@ import { PageHead } from "@/components/ui/PageHead";
 import { getViewer } from "@/lib/auth/viewer";
 import { safeNext } from "@/lib/auth/flow";
 import { enabledProviders, isTestMode, PROVIDERS } from "@/lib/auth/providers";
-import { features } from "@/lib/features";
 import styles from "../account.module.css";
 
 export const metadata: Metadata = { title: "Teacher sign in" };
@@ -32,9 +31,8 @@ export default async function SignInPage(props: PageProps<"/signin">) {
           center
           size="h1"
           eyebrow="Teachers"
-          title="Sign in to"
-          accent="your classroom."
-          lead="Use your school account. Teachers are the only accounts; students join with a class code."
+          title="Sign in to your classroom"
+          lead="Use your school account. Your kits, classes and lessons are all in one place."
         />
         <section className={`card ${styles.panel} rise-4`} aria-labelledby="signin-heading">
           <h2 id="signin-heading" className="sr-only">
@@ -70,17 +68,24 @@ export default async function SignInPage(props: PageProps<"/signin">) {
                 the environment to use the real service.
               </p>
             )}
-            {features.classes ? (
-              <p className="hint">
-                Are you a student?{" "}
-                <Link href="/join" className="link">
-                  Join your class with a code
-                </Link>
-                . No account needed.
-              </p>
-            ) : (
-              <p className="hint">Students never sign in. They use a class code from their teacher.</p>
-            )}
+            <p className="hint">
+              Are you a student?{" "}
+              <Link href="/join" className="link">
+                Join your class or sign in here
+              </Link>
+              .
+            </p>
+            <p className="hint">
+              By continuing you agree to the{" "}
+              <Link href="/terms#teachers" className="link">
+                Terms of Use
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="link">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </div>
         </section>
       </div>

@@ -17,7 +17,7 @@ export async function accountData(teacherId: string) {
     d.select({ n: count() }).from(sessions).where(eq(sessions.teacherId, teacherId)),
   ]);
   return {
-    profile: { name: t.t.name, email: t.t.email, createdAt: t.t.createdAt, lastSeenAt: t.t.lastSeenAt },
+    profile: { name: t.t.name, email: t.t.email, createdAt: t.t.createdAt, lastSeenAt: t.t.lastSeenAt, termsVersion: t.t.termsVersion, termsAcceptedAt: t.t.termsAcceptedAt },
     school: t.org ? { name: t.org.name, membership: t.t.membership, schoolAdmin: t.t.isOrgAdmin } : null,
     signIns,
     kitSeats: seats.map((s) => ({ kit: s.kit, source: s.source, since: s.since, active: !s.revokedAt })),

@@ -1,0 +1,53 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 32px;
+  align-items: start;
+}
+.main {
+  display: grid;
+  gap: 40px;
+}
+.kit {
+  display: grid;
+  gap: 14px;
+}
+.kitHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.aside {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 16px;
+}
+.account summary {
+  cursor: pointer;
+  list-style: none;
+}
+.account summary::-webkit-details-marker {
+  display: none;
+}
+.account summary::after {
+  content: "+";
+  float: right;
+  color: var(--color-text-muted);
+  transition: transform 0.25s ease;
+}
+.account[open] summary::after {
+  transform: rotate(45deg);
+}
+.account[open] {
+  display: grid;
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .aside {
+    position: static;
+  }
+}

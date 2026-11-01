@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { districts, orgDetail } from "@/lib/admin";
 import { formatCode } from "@/lib/codes";
-import { listKits } from "@/lib/content";
+import { listAllKits } from "@/lib/content";
 import { grantAction, moveTeacherAction, restoreAction, revokeAction, setDomainAction, setParentAction } from "../../actions";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
@@ -15,7 +15,7 @@ export default async function SchoolPage(props: PageProps<"/admin/schools/[id]">
   await requireAdmin("schools");
   const { id } = await props.params;
   const sp = await props.searchParams;
-  const [data, kits, allDistricts] = await Promise.all([orgDetail(id), listKits(), districts()]);
+  const [data, kits, allDistricts] = await Promise.all([orgDetail(id), listAllKits(), districts()]);
   if (!data) notFound();
   const { org, parent, children, staff, ents, codes, usage, audit } = data;
   const now = new Date();

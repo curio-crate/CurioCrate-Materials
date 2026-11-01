@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { KITS } from "@/content/kits";
 import { CONTENT, cuesFor } from "@/content/lessons";
 import type { DB } from "./index";
-import { contentItems, kits, kitVersions } from "./schema";
+import { contentItems, kitParts, kits, kitVersions } from "./schema";
 
 /** Idempotent catalog seed: inserts kits, kit versions and content that do not exist yet (matched by slug). */
 export async function ensureSeeded(db: DB) {
@@ -21,6 +21,7 @@ export async function ensureSeeded(db: DB) {
         })
         .returning({ id: kits.id });
       kitIds.set(k.slug, row.id);
+      if (k.inTheBox.length) await db.insert(kitParts).values(k.inTheBox.map((name, n) => ({ kitId: row.id, name, sortOrder: n + 1 })));
     }
     const kitId = kitIds.get(k.slug)!;
     const [v] = await db.select().from(kitVersions).where(eq(kitVersions.kitId, kitId));

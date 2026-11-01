@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { listKits } from "@/lib/content";
+import { listAllKits } from "@/lib/content";
 import { recentOrders } from "@/lib/orders";
 import { createOrderAction } from "../actions";
 import styles from "../admin.module.css";
@@ -19,7 +19,7 @@ const SOURCES = [
 export default async function OrdersPage(props: PageProps<"/admin/orders">) {
   await requireAdmin("codes");
   const sp = await props.searchParams;
-  const [orders, kits] = await Promise.all([recentOrders(30), listKits()]);
+  const [orders, kits] = await Promise.all([recentOrders(30), listAllKits()]);
   return (
     <>
       <Notice sp={sp} />

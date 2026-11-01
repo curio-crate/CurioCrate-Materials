@@ -43,8 +43,9 @@
   border-bottom: 1px solid var(--border-hair);
 }
 .stepN {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-family: var(--font-heading, var(--font-display));
+  font-size: 1.15rem;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--color-accent);
 }
@@ -70,14 +71,14 @@
   background: var(--tier-sub-bg);
 }
 .tone_safety .calloutIcon {
-  color: var(--gold);
+  color: var(--sx-warning, var(--gold));
 }
 .tone_tip {
   border-color: var(--border-kit);
   background: var(--tier-kit-bg);
 }
 .tone_tip .calloutIcon {
-  color: var(--lum-glow);
+  color: var(--sx-success, var(--lum-glow));
 }
 .calloutIcon {
   color: var(--color-accent);
@@ -101,8 +102,9 @@
 }
 .explain p {
   margin-top: 8px;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-family: var(--font-heading, var(--font-display));
+  font-size: 1.1rem;
+  font-weight: 600;
   line-height: 1.35;
   color: var(--color-heading);
 }

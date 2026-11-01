@@ -89,34 +89,35 @@ describe("Studio accounts (password only)", () => {
   });
 });
 
-describe("Studio roles: admin, product officer, curriculum", () => {
+describe("Studio roles: admin, heads, product officer, director of curriculum", () => {
   it("each tier opens only its own areas", () => {
     expect(["lessons", "library", "kits", "codes", "schools", "teachers", "security", "usage", "audit", "team", "erase"].every((p) => can("admin", p as never))).toBe(true);
     expect(["lessons", "library", "kits", "codes", "schools", "teachers"].every((p) => can("product", p as never))).toBe(true);
     expect(["security", "usage", "audit", "team", "erase"].some((p) => can("product", p as never))).toBe(false);
-    expect(can("curriculum", "lessons")).toBe(true);
-    expect(["library", "kits", "codes", "schools", "teachers", "security", "usage", "audit", "team", "erase"].some((p) => can("curriculum", p as never))).toBe(false);
-    expect(asRole("root")).toBe("curriculum"); // unknown values get the least access
+    expect(can("director_curriculum", "lessons") && can("director_curriculum", "library")).toBe(true); // lessons + the materials library (kit profiles)
+    expect(["kits", "codes", "schools", "teachers", "security", "usage", "audit", "team", "erase"].some((p) => can("director_curriculum", p as never))).toBe(false);
+    expect(asRole("root")).toBe("director_curriculum"); // unknown values get the least access
+    expect(asRole("curriculum")).toBe("director_curriculum"); // the retired Curriculum role (migrated in 0007)
   });
 
   it("people are added with a role; roles change; Studio always keeps one active admin", async () => {
     const owner = await me();
     expect(await createAdmin(owner, { email: "po@curiocrate.org", name: "Pat Product", role: "product", password: "product officer pass" })).toMatchObject({ ok: true });
-    expect(await createAdmin(owner, { email: "cur@curiocrate.org", name: "Cam Curriculum", role: "curriculum", password: "lesson writer pass 7" })).toMatchObject({ ok: true });
+    expect(await createAdmin(owner, { email: "cur@curiocrate.org", name: "Cam Curriculum", role: "director_curriculum", password: "lesson writer pass 7" })).toMatchObject({ ok: true });
     const po = await me("po@curiocrate.org");
     expect(po.role).toBe("product");
-    expect((await me("cur@curiocrate.org")).role).toBe("curriculum");
+    expect((await me("cur@curiocrate.org")).role).toBe("director_curriculum");
 
-    expect(await setAdminRole(owner, owner.id, "curriculum")).toMatchObject({ ok: false }); // not your own
+    expect(await setAdminRole(owner, owner.id, "director_curriculum")).toMatchObject({ ok: false }); // not your own
     expect(await setAdminRole(owner, po.id, "wizard")).toMatchObject({ ok: false });
-    expect(await setAdminRole(owner, po.id, "curriculum")).toMatchObject({ ok: true });
-    expect((await me("po@curiocrate.org")).role).toBe("curriculum");
+    expect(await setAdminRole(owner, po.id, "director_curriculum")).toMatchObject({ ok: true });
+    expect((await me("po@curiocrate.org")).role).toBe("director_curriculum");
 
     // With the owner as the only active admin, nobody can demote or disable them.
     const d = await db();
     const otherAdmins = (await d.select().from(adminUsers)).filter((u) => u.role === "admin" && u.active && u.id !== owner.id);
     for (const u of otherAdmins) await setAdminActive(owner, u.id, false);
-    expect(await setAdminRole(po, owner.id, "curriculum")).toMatchObject({ ok: false, error: /admin/ });
+    expect(await setAdminRole(po, owner.id, "director_curriculum")).toMatchObject({ ok: false, error: /admin/ });
     expect(await setAdminActive(po, owner.id, false)).toMatchObject({ ok: false, error: /admin/ });
     for (const u of otherAdmins) await setAdminActive(owner, u.id, true);
   });

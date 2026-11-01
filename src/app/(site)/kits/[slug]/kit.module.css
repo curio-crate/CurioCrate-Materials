@@ -1,67 +1,52 @@
 .crumbs {
-  padding-top: 40px;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 32px;
+  font-size: 0.875rem;
+  color: var(--sx-muted);
 }
 .crumbs a {
-  color: var(--color-accent);
+  font-weight: 600;
+  color: var(--sx-accent);
 }
 .crumbs a:hover {
-  color: var(--color-heading);
+  color: var(--sx-accent-hover);
 }
 .hero {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
+  grid-template-columns: 1.4fr 1fr;
   gap: 40px;
   align-items: center;
-  margin-top: 24px;
-  padding: 52px;
-  border-radius: var(--radius-feature);
-  border: 1px solid var(--border-card);
-  background: var(--surface-card);
-  box-shadow: var(--shadow-feature);
-}
-.accent_lum {
-  background: var(--lum-surface);
-  background-image: var(--gradient-kit);
-  border-color: var(--border-kit);
-}
-.accent_gold {
-  background-image: var(--gradient-gold);
-}
-.accent_blue {
-  background-image: var(--gradient-sky);
+  margin-top: 20px;
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--sx-border);
+  background: var(--sx-glow), var(--sx-surface);
+  box-shadow: var(--sx-shadow);
 }
 .heroCopy {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   align-items: flex-start;
 }
 .kicker {
-  font-family: var(--font-mono);
-  font-size: var(--text-nav);
-  letter-spacing: var(--tracking-nav);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--lum-glow);
-}
-.accent_gold .kicker {
-  color: var(--gold);
-}
-.accent_blue .kicker {
-  color: var(--pastel1);
+  color: var(--sx-accent-strong);
 }
 .title {
-  font-size: clamp(2.5rem, 4.6vw, 4rem);
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  line-height: 1.1;
 }
 .desc {
   max-width: 560px;
-  font-size: var(--text-lead);
+  font-size: 1rem;
   line-height: 1.65;
-  color: var(--lum-muted);
+  color: var(--sx-muted);
 }
 .accessBanner {
   display: flex;
@@ -69,17 +54,21 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  margin-top: 6px;
-  padding: 14px 16px;
-  border-radius: var(--radius-row);
-  border: 1px solid var(--border-kit-soft);
-  background: var(--lum-chip);
-  color: var(--lum-text);
-  font-size: var(--text-md);
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--sx-accent-softer);
+  border: 1px solid var(--sx-accent-ring);
+  color: var(--sx-text);
+  font-size: 0.875rem;
   line-height: 1.5;
 }
+.accessOpen {
+  background: var(--sx-success-soft);
+  border-color: transparent;
+  color: var(--sx-success);
+}
 .accessBanner svg {
-  color: var(--lum-glow);
   flex-shrink: 0;
 }
 .accessBanner span {
@@ -88,13 +77,16 @@
 }
 .heroArt {
   min-width: 0;
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--sx-navy);
 }
 
 .layout {
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: 40px;
-  margin-top: 64px;
+  margin-top: 48px;
   align-items: start;
 }
 .main {
@@ -108,7 +100,7 @@
 }
 .aside {
   position: sticky;
-  top: calc(var(--header-h) + 16px);
+  top: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;

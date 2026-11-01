@@ -4,13 +4,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { can, type StudioPerm, type StudioRole } from "@/lib/auth/roles";
+import { useLive } from "./StudioLive";
 
-type Item = { href: string; label: string; icon: string; perm?: StudioPerm };
+type Item = { href: string; label: string; icon: string; perm?: StudioPerm; badge?: "inbox" | "chat" | "tasks" };
 
-// Grouped by job, and filtered by role: Curriculum sees Lessons only; Product Officers add materials, kits, codes,
-// schools and teacher access; Admins see everything.
+// Grouped by job, and filtered by role: Curriculum sees Lessons and the Materials library; Product Officers also create
+// kits and manage codes, schools and teacher access; Admins see everything. Everyone has the Team group.
 const GROUPS: { label: string | null; items: Item[] }[] = [
   { label: null, items: [{ href: "/admin", label: "Home", icon: "home" }] },
+  {
+    label: "Team",
+    items: [
+      { href: "/admin/inbox", label: "Inbox", icon: "inbox", badge: "inbox" },
+      { href: "/admin/chat", label: "Chat", icon: "chat", badge: "chat" },
+      { href: "/admin/tasks", label: "To-dos", icon: "todo", badge: "tasks" },
+    ],
+  },
   {
     label: "Curriculum",
     items: [
@@ -35,12 +44,17 @@ const GROUPS: { label: string | null; items: Item[] }[] = [
       { href: "/admin/usage", label: "Usage", icon: "chart", perm: "usage" },
       { href: "/admin/audit", label: "Audit log", icon: "list", perm: "audit" },
       { href: "/admin/team", label: "Team & roles", icon: "user", perm: "team" },
+      { href: "/admin/trash", label: "Recently deleted", icon: "trash", perm: "trash" },
     ],
   },
 ];
 
+const BADGE_TEXT = { inbox: "unread", chat: "unread messages", tasks: "open to-dos for you" };
+
 export function StudioNav({ role }: { role: StudioRole }) {
   const path = usePathname() ?? "";
+  const live = useLive();
+  const counts = { inbox: live.inbox, chat: Object.values(live.chat).reduce((a, b) => a + b, 0), tasks: live.tasks };
   const active = (href: string) => (href === "/admin" ? path === "/admin" : path === href || path.startsWith(href + "/"));
   return (
     <nav aria-label="Studio" className="st-nav">
@@ -50,12 +64,21 @@ export function StudioNav({ role }: { role: StudioRole }) {
         return (
           <div key={g.label ?? "main"} className="st-navGroup">
             {g.label && <span className="st-navLabel">{g.label}</span>}
-            {items.map((i) => (
-              <Link key={i.href} href={i.href} className="st-navLink" aria-current={active(i.href) ? "page" : undefined}>
-                <Icon name={i.icon} size={18} />
-                {i.label}
-              </Link>
-            ))}
+            {items.map((i) => {
+              const n = i.badge ? counts[i.badge] : 0;
+              return (
+                <Link key={i.href} href={i.href} className="st-navLink" aria-current={active(i.href) ? "page" : undefined}>
+                  <Icon name={i.icon} size={18} />
+                  {i.label}
+                  {n > 0 && i.badge && (
+                    <span className="st-badge">
+                      {n > 99 ? "99+" : n}
+                      <span className="sr-only"> {BADGE_TEXT[i.badge]}</span>
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         );
       })}

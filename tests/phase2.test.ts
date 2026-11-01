@@ -10,6 +10,7 @@ import { bulbBrightness, luminolGlow, runFilter } from "@/lib/labs";
 import { deleteOrganizationData } from "@/lib/privacy";
 import { redeemCode } from "@/lib/redeem";
 import { upsertTeacherFromProfile } from "@/lib/teachers";
+import { joinOrFail } from "./helpers/classes";
 import { freshDb } from "./helpers/db";
 import { addColleague, codesFor, content, makeTeacher } from "./helpers/factory";
 
@@ -22,7 +23,7 @@ describe("students join with a class code and the database stores no personal de
     const t = await makeTeacher();
     const cls = await createClass(t.id, t.orgId!, "Period 3 Science");
     await setAssigned(cls.id, (await content("luminol-limit-lab")).id, true);
-    const joined = await joinClass(cls.classCode.toLowerCase());
+    const joined = await joinOrFail(cls.classCode.toLowerCase());
     expect(joined).not.toBeNull();
     await saveLabRun("luminol-limit", { room: "dark", ratings: [3, 3, 2, 1, 1, 0], limit: 5 }, { classId: cls.id, studentSessionId: joined!.session.id });
 
@@ -68,7 +69,7 @@ describe("data for one school can be fully deleted", () => {
     const [code] = await codesFor("luminol");
     await redeemCode(t.id, code);
     const cls = await createClass(t.id, t.orgId!, "Doomed class");
-    const j = await joinClass(cls.classCode);
+    const j = await joinOrFail(cls.classCode);
     await saveLabRun("circuit-sandbox", { observations: 2 }, { classId: cls.id, studentSessionId: j!.session.id });
     const d = await db();
     await d.insert(s.curieMessages).values({ classId: cls.id, studentSessionId: j!.session.id, role: "user", content: "why does it glow" });

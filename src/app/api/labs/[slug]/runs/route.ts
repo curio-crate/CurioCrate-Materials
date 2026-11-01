@@ -3,6 +3,7 @@ import { getViewer } from "@/lib/auth/viewer";
 import { currentStudent, saveLabRun } from "@/lib/classes";
 import { json, sameOrigin } from "@/lib/http";
 import { labBySlug } from "@/lib/labs";
+import { currentLearner } from "@/lib/students";
 
 // Saves lab results. Values are numbers/short strings only; free text is never accepted from students.
 export async function POST(req: NextRequest, ctx: RouteContext<"/api/labs/[slug]/runs">) {
@@ -19,5 +20,7 @@ export async function POST(req: NextRequest, ctx: RouteContext<"/api/labs/[slug]
   if (st) return json(await saveLabRun(slug, data, { classId: st.c.id, studentSessionId: st.s.id }));
   const v = await getViewer();
   if (v) return json(await saveLabRun(slug, data, { teacherId: v.teacher.id }));
+  // Free student accounts can run labs, but their results aren't stored (no class to report to).
+  if (await currentLearner()) return json({ saved: false });
   return json({ error: "sign_in" }, 401);
 }

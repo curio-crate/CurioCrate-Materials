@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: THEME.void,
-  colorScheme: "dark",
+  themeColor: THEME.siteBg,
+  colorScheme: "light",
 };
 
 // The bare document. The teacher site's frame is in (site)/layout.tsx; Studio's is in admin/layout.tsx.

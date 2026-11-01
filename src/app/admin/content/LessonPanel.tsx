@@ -4,8 +4,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { FILE_ACCEPT, fileKind, formatBytes, isPackageName, isVideoName, PACKAGE_ACCEPT, titleFromFileName, VIDEO_ACCEPT } from "@/lib/files";
 import { MATERIAL, MATERIAL_KINDS, type MaterialKind } from "@/lib/materials";
+import { useConfirm } from "../Confirm";
 import { studioUpload } from "../upload-client";
-import { addMaterialAction, removeContentAction, renameMaterialAction, saveLessonDetailsAction } from "./lesson-actions";
+import { addMaterialAction, discardFailedMaterialAction, removeContentAction, renameMaterialAction, saveLessonDetailsAction } from "./lesson-actions";
 
 export type Tier = "free" | "kit_owner" | "subscription";
 export type PanelMaterial = { id: string; kind: MaterialKind | null; type: string; title: string; fileName: string | null; status: string | null };
@@ -40,6 +41,7 @@ export function materialLabel(m: { kind: MaterialKind | null; type: string }) {
  */
 export function LessonPanel({ lesson, kits, defaultKitId, onClose, onSaved }: { lesson: PanelLesson | null; kits: PanelKit[]; defaultKitId?: string | null; onClose: () => void; onSaved: (message: string) => void }) {
   const uid = useId();
+  const confirm = useConfirm();
   const [closing, setClosing] = useState(false);
   const [lessonId, setLessonId] = useState<string | null>(lesson?.id ?? null);
   const [title, setTitle] = useState(lesson?.title ?? "");
@@ -84,7 +86,8 @@ export function LessonPanel({ lesson, kits, defaultKitId, onClose, onSaved }: { 
     returnFocus.current = document.activeElement;
     titleRef.current?.focus();
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    // Esc inside the "are you sure" dialog only closes that dialog, not the panel.
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector("dialog[open]") && close();
     document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
@@ -181,7 +184,7 @@ export function LessonPanel({ lesson, kits, defaultKitId, onClose, onSaved }: { 
           patch(m.key, { state: "done", pct: 100 });
         } catch (e) {
           failed++;
-          await removeContentAction(created.id);
+          await discardFailedMaterialAction(created.id);
           patch(m.key, { state: "error", error: (e as Error).message });
         }
       }
@@ -202,12 +205,14 @@ export function LessonPanel({ lesson, kits, defaultKitId, onClose, onSaved }: { 
   };
 
   const remove = async () => {
-    if (!lessonId || !confirm(`Delete “${title}” and all of its materials? Teachers lose it immediately.`)) return;
+    if (!lessonId) return;
+    const n = existing.length;
+    if (!(await confirm({ title: `Are you sure you want to delete “${title}”?`, message: `Teachers lose it right away${n ? `, with its ${n} material${n === 1 ? "" : "s"}` : ""}. It moves to Recently deleted, where an admin can restore it for 30 days.` }))) return;
     setBusy(true);
     const r = await removeContentAction(lessonId);
     setBusy(false);
     if (r.ok) {
-      onSaved(`Deleted “${title}”.`);
+      onSaved(`Moved “${title}” to Recently deleted. An admin can restore it for 30 days.`);
       setClosing(true);
       setTimeout(onClose, 200);
     }
@@ -378,7 +383,16 @@ export function LessonPanel({ lesson, kits, defaultKitId, onClose, onSaved }: { 
                       <input className="st-matTitle" value={m.newTitle} aria-label={`Title of ${materialLabel(m)}`} onChange={(e) => setExisting((l) => l.map((x) => (x.id === m.id ? { ...x, newTitle: e.target.value } : x)))} />
                       {m.fileName && <span className="st-matFile">{m.fileName}</span>}
                     </span>
-                    <button type="button" className="st-close" aria-label={`Remove ${m.title}`} onClick={() => setExisting((l) => l.map((x) => (x.id === m.id ? { ...x, removed: true } : x)))} disabled={busy}>
+                    <button
+                      type="button"
+                      className="st-close"
+                      aria-label={`Remove ${m.title}`}
+                      onClick={async () => {
+                        if (await confirm({ title: `Are you sure you want to delete “${m.title}”?`, message: "It is removed from the lesson when you save. It then moves to Recently deleted, where an admin can restore it for 30 days." }))
+                          setExisting((l) => l.map((x) => (x.id === m.id ? { ...x, removed: true } : x)));
+                      }}
+                      disabled={busy}
+                    >
                       <Icon name="x" size={16} />
                     </button>
                   </li>

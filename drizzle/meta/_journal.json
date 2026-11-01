@@ -29,6 +29,34 @@
       "when": 1793482325746,
       "tag": "0003_studio_roles_materials",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793519917034,
+      "tag": "0004_kit_types_parts",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793519987266,
+      "tag": "0005_student_accounts_terms",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793520694952,
+      "tag": "0006_team_chat_tasks_trash",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793524505081,
+      "tag": "0007_studio_roles_trim",
+      "breakpoints": true
     }
   ]
 }

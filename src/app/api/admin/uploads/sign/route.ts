@@ -11,7 +11,7 @@ const MB = 1024 * 1024;
 // (a presigned PUT to the cloud bucket, or a Mux direct-upload URL for videos when Mux is set up).
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return json({ error: "forbidden" }, 403);
-  if (!(await studioActor("lessons"))) return json({ error: "Your Studio role can't upload." }, 403);
+  if (!(await studioActor("lessons", "library"))) return json({ error: "Your Studio role can't upload." }, 403);
   const body = (await req.json().catch(() => ({}))) as { purpose?: UploadPurpose; name?: string; size?: number };
   const name = String(body.name ?? "").slice(0, 200);
   const size = Number(body.size ?? 0);

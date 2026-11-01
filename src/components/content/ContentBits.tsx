@@ -74,7 +74,7 @@ export function LockedPanel({
   next,
   tier = "free",
 }: {
-  reason: "sign_in" | "needs_kit" | "needs_subscription" | "not_assigned";
+  reason: "sign_in" | "needs_kit" | "needs_subscription" | "not_assigned" | "student_locked";
   kitSlug?: string | null;
   kitName?: string | null;
   next: string;
@@ -82,15 +82,16 @@ export function LockedPanel({
 }) {
   const signInText =
     tier === "free"
-      ? "This one is free. It just needs a free teacher account, so student data stays out of it."
+      ? "Sign in to open this. Teachers use their school account; students use their class code or a free student account."
       : tier === "kit_owner"
-        ? `This is part of the ${kitName ?? "kit"}. Sign in to see whether your school already has it.`
+        ? `This is part of the ${kitName ?? "kit"}. Teachers: sign in to see whether you already have it.`
         : "This is included with a subscription. Sign in to see whether your school has one.";
   const copy = {
     sign_in: { title: "Sign in to open this", text: signInText, cta: { href: `/signin?next=${encodeURIComponent(next)}`, label: "Teacher sign in" } },
     needs_kit: { title: `Part of the ${kitName ?? "kit"}`, text: "This unlocks on your account when you redeem the code that came in your kit box. A subscription also unlocks it.", cta: { href: "/redeem", label: "Redeem a kit code" } },
     needs_subscription: { title: "Included with a subscription", text: "Teacher training and new content come with a teacher, school or district subscription.", cta: { href: "/plans", label: "See plans" } },
     not_assigned: { title: "Not assigned to your class", text: "Ask your teacher to assign this. You can open everything on your class page.", cta: { href: "/class", label: "Back to my class" } },
+    student_locked: { title: "Your teacher can share this one", text: "Student accounts open the free lessons and labs. Ask your teacher to assign this one to your class.", cta: { href: "/student", label: "Back to my learning" } },
   }[reason];
   return (
     <section className={`card ${styles.locked}`} aria-labelledby="locked-title">
@@ -105,6 +106,11 @@ export function LockedPanel({
         <Link href={copy.cta.href} className="btn btn-solid">
           {copy.cta.label}
         </Link>
+        {reason === "sign_in" && tier === "free" && (
+          <Link href="/join" className="btn">
+            I&apos;m a student
+          </Link>
+        )}
         {reason === "needs_kit" && kitSlug && (
           <Link href={`/kits/${kitSlug}`} className="btn">
             Back to the kit

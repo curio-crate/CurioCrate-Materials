@@ -1,5 +1,5 @@
 import { lessonsForParentSelect } from "@/lib/cms";
-import { listKits } from "@/lib/content";
+import { listAllKits } from "@/lib/content";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
 import { ContentEditor } from "../ContentEditor";
@@ -11,7 +11,7 @@ export default async function NewContent(props: PageProps<"/admin/content/new">)
   await requireAdmin("lessons");
   const sp = await props.searchParams;
   const str = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
-  const [kits, parents] = await Promise.all([listKits(), lessonsForParentSelect(null)]);
+  const [kits, parents] = await Promise.all([listAllKits(), lessonsForParentSelect(null)]);
   return (
     <>
       <Notice sp={sp} />

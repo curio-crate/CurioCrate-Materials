@@ -1,9 +1,13 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { contentItems } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth/viewer";
 import { addLessonMaterial, deleteContent, getContentForLesson, renameContent, updateLessonDetails, type LessonDetails } from "@/lib/cms";
 import { asMaterialKind } from "@/lib/materials";
+import { trashContent } from "@/lib/team/trash";
 
 // Used by the "Create a new lesson" panel. Each returns a result (no redirect) so the panel can keep going and show
 // progress per file. Curriculum, Product Officers and Admins all have the "lessons" permission.
@@ -53,9 +57,19 @@ export async function renameMaterialAction(id: string, title: string): Promise<R
   return { ok: true };
 }
 
+/** Deleting a lesson or one of its materials moves it to Recently deleted (admins can restore it for 30 days). */
 export async function removeContentAction(id: string): Promise<Result> {
   const actor = await requireAdmin("lessons");
-  await deleteContent(actor, id);
+  const r = await trashContent(actor, id);
   live();
+  return r.ok ? { ok: true } : { ok: false, error: r.error };
+}
+
+/** Throws away a material whose file never finished uploading (nothing to keep, so it skips Recently deleted). */
+export async function discardFailedMaterialAction(id: string): Promise<Result> {
+  const actor = await requireAdmin("lessons");
+  const d = await db();
+  const [row] = await d.select({ status: contentItems.mediaStatus, parentId: contentItems.parentId }).from(contentItems).where(eq(contentItems.id, id));
+  if (row?.parentId && row.status === "uploading") await deleteContent(actor, id);
   return { ok: true };
 }

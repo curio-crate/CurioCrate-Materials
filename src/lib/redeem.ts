@@ -3,6 +3,7 @@ import { and, count, eq, gt, isNull, like } from "drizzle-orm";
 import { db } from "@/db";
 import { auditLog, entitlements, kits, organizations, redemptionCodes, teachers } from "@/db/schema";
 import { isWellFormedCode, normalizeCode } from "./codes";
+import { notifyAdminsOfRisk } from "./team/notify";
 
 export type RedeemResult =
   | { ok: true; kit: { id: string; slug: string; name: string }; orgName: string; alreadyHad: boolean }
@@ -44,8 +45,10 @@ export async function redeemCode(teacherId: string, rawCode: string): Promise<Re
   if (n >= MAX_FAILED_PER_15_MIN) return fail("rate_limited");
 
   const code = normalizeCode(rawCode);
-  const logFail = async (reason: string) =>
-    d.insert(auditLog).values({ actorTeacherId: teacherId, actorEmail: teacher.email, action: `code.redeem_failed.${reason}`, targetType: "redemption_code", targetId: code.slice(0, 3) + "…", orgId: teacher.orgId, details: {} });
+  const logFail = async (reason: string) => {
+    await d.insert(auditLog).values({ actorTeacherId: teacherId, actorEmail: teacher.email, action: `code.redeem_failed.${reason}`, targetType: "redemption_code", targetId: code.slice(0, 3) + "…", orgId: teacher.orgId, details: {} });
+    if (n + 1 === MAX_FAILED_PER_15_MIN) await notifyAdminsOfRisk(`Possible code guessing: ${teacher.email}`, `${MAX_FAILED_PER_15_MIN} wrong kit codes in 15 minutes. Their code entry is paused for 15 minutes.`);
+  };
 
   if (!isWellFormedCode(code)) {
     await logFail("invalid");

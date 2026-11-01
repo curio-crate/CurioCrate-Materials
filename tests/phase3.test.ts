@@ -4,10 +4,11 @@ import { db } from "@/db";
 import { classes, curieMessages, curieUsage } from "@/db/schema";
 import { checkAccess } from "@/lib/access";
 import { adminLogin } from "@/lib/auth/admin";
-import { createClass, joinClass, updateClass } from "@/lib/classes";
+import { createClass, updateClass } from "@/lib/classes";
 import { askCurie, checkStudentMessage, purgeOldChats } from "@/lib/curie";
 import { handleStripeEvent, signTestEvent, verifyWebhook } from "@/lib/payments";
 import { handleSubscriptionEvent } from "@/lib/subscriptions";
+import { joinOrFail } from "./helpers/classes";
 import { freshDb } from "./helpers/db";
 import { content, makeTeacher, principal } from "./helpers/factory";
 
@@ -19,7 +20,7 @@ beforeAll(async () => {
 async function classWithStudent() {
   const t = await makeTeacher();
   const cls = await createClass(t.id, t.orgId!, "Curie class");
-  const j = await joinClass(cls.classCode);
+  const j = await joinOrFail(cls.classCode);
   return { t, cls, sid: j!.session.id };
 }
 

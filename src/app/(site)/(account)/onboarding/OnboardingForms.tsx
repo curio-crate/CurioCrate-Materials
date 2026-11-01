@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { FormMessage } from "@/components/ui/FormMessage";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -26,6 +27,12 @@ export function OnboardingForms({ next, domain }: { next: string; domain: string
           </label>
           <input id="school-code" name="code" className="input input-code" required minLength={6} maxLength={8} autoComplete="off" placeholder="ABCDEF" />
         </div>
+        <label className="checkbox">
+          <input type="checkbox" name="agree" required />
+          <span>
+            I agree to the <Link href="/terms#teachers" className="link" target="_blank">Terms of Use</Link> and <Link href="/privacy" className="link" target="_blank">Privacy Policy</Link>.
+          </span>
+        </label>
         <FormMessage state={joinState} />
         <SubmitButton className="btn btn-glass" pendingText="Joining…">
           Join school
@@ -67,6 +74,12 @@ export function OnboardingForms({ next, domain }: { next: string; domain: string
             Teachers with @{domain} emails join automatically
           </label>
         )}
+        <label className="checkbox">
+          <input type="checkbox" name="agree" required />
+          <span>
+            I agree to the <Link href="/terms#teachers" className="link" target="_blank">Terms of Use</Link> and <Link href="/privacy" className="link" target="_blank">Privacy Policy</Link>.
+          </span>
+        </label>
         <FormMessage state={createState} />
         <SubmitButton className="btn btn-solid" pendingText="Creating…">
           Create school

@@ -54,6 +54,9 @@ export const teachers = pgTable(
     // "pending" = joined with the school's join code and waiting for the school admin to approve.
     // Pending teachers get no school-wide access, so a leaked join code unlocks nothing.
     membership: text("membership").notNull().default("active"),
+    // Version of the Terms of Use the teacher agreed to (src/lib/terms.ts), and when.
+    termsVersion: text("terms_version"),
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
     createdAt: createdAt(),
     lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
   },
@@ -98,8 +101,9 @@ export const adminUsers = pgTable(
     username: text("username").notNull(),
     name: text("name").notNull(),
     email: text("email"), // people added by email sign in with it (or their username)
-    // admin = everything; product = lessons, materials, kits, codes, schools, teacher access; curriculum = lessons only
+    // one of STUDIO_ROLES in src/lib/auth/roles.ts (admin, product, head_/director_ of production or curriculum, team)
     role: text("role").notNull().default("admin"),
+    avatarKey: text("avatar_key"), // profile picture in storage (avatars/…), shown in chat, the sidebar and Team
     passwordHash: text("password_hash").notNull(), // scrypt:<saltHex>:<hashHex>
     active: boolean("active").notNull().default(true),
     failedLogins: integer("failed_logins").notNull().default(0),
@@ -139,7 +143,10 @@ export const kits = pgTable(
     gradeMax: integer("grade_max").notNull(),
     tagline: text("tagline").notNull(),
     description: text("description").notNull(),
+    // draft = just created by a Product Officer and still being built by Curriculum (hidden from teachers);
+    // available / in_development = published
     status: text("status").notNull().default("available"),
+    kind: text("kind").notNull().default("physical"), // physical | online
     accent: text("accent").notNull().default("lum"),
     inTheBox: jsonb("in_the_box").$type<string[]>().notNull().default([]),
     skills: jsonb("skills").$type<string[]>().notNull().default([]),
@@ -148,6 +155,24 @@ export const kits = pgTable(
     createdAt: createdAt(),
   },
   (t) => [uniqueIndex("kits_slug_idx").on(t.slug), uniqueIndex("kits_code_idx").on(t.code)],
+);
+
+/** A physical kit's parts and components, with pricing (Studio only; teachers see names as "In the box"). */
+export const kitParts = pgTable(
+  "kit_parts",
+  {
+    id: id(),
+    kitId: uuid("kit_id")
+      .notNull()
+      .references(() => kits.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    quantity: integer("quantity").notNull().default(1), // per kit
+    unitCostCents: integer("unit_cost_cents"),
+    supplier: text("supplier"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: createdAt(),
+  },
+  (t) => [index("kit_parts_kit_idx").on(t.kitId)],
 );
 
 export const kitVersions = pgTable(
@@ -394,6 +419,43 @@ export const studentSessions = pgTable(
   (t) => [uniqueIndex("student_sessions_token_idx").on(t.tokenHash), index("student_sessions_class_idx").on(t.classId)],
 );
 
+/**
+ * A free student account (ages 13 and up only; younger students use a class code). Holds the minimum needed to
+ * sign in: email, password hash, a nickname generated from fixed word lists, and the birth year from the age screen.
+ * No name, school, photo or free text.
+ */
+export const studentAccounts = pgTable(
+  "student_accounts",
+  {
+    id: id(),
+    email: text("email").notNull(),
+    passwordHash: text("password_hash").notNull(),
+    nickname: text("nickname").notNull(),
+    birthYear: integer("birth_year").notNull(),
+    termsVersion: text("terms_version").notNull(),
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }).notNull().defaultNow(),
+    failedLogins: integer("failed_logins").notNull().default(0),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    createdAt: createdAt(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("student_accounts_email_idx").on(t.email)],
+);
+
+export const studentAccountSessions = pgTable(
+  "student_account_sessions",
+  {
+    id: id(),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => studentAccounts.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("student_account_sessions_token_idx").on(t.tokenHash), index("student_account_sessions_account_idx").on(t.accountId)],
+);
+
 export const labRuns = pgTable(
   "lab_runs",
   {
@@ -462,3 +524,103 @@ export const stripeEvents = pgTable("stripe_events", {
   type: text("type").notNull(),
   processedAt: timestamp("processed_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------- Studio team: chat, notifications, to-dos, Recently deleted ----------
+
+/**
+ * One chat message. `channel` is "all", "curriculum", "production" (open to every Studio account) or
+ * "dm:<idA>:<idB>" (the two account ids in sorted order; only those two can read it). `updated_at` moves on send,
+ * delete and restore, so clients poll for "everything changed since" and stay in step.
+ */
+export const chatMessages = pgTable(
+  "chat_messages",
+  {
+    id: id(),
+    channel: text("channel").notNull(),
+    senderId: uuid("sender_id")
+      .notNull()
+      .references(() => adminUsers.id, { onDelete: "cascade" }),
+    body: text("body").notNull().default(""),
+    fileKey: text("file_key"),
+    fileName: text("file_name"),
+    fileBytes: integer("file_bytes"),
+    isImage: boolean("is_image").notNull().default(false),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("chat_messages_channel_idx").on(t.channel, t.createdAt), index("chat_messages_updated_idx").on(t.channel, t.updatedAt)],
+);
+
+/** How far each person has read each channel (for unread badges). */
+export const chatReads = pgTable(
+  "chat_reads",
+  {
+    adminId: uuid("admin_id")
+      .notNull()
+      .references(() => adminUsers.id, { onDelete: "cascade" }),
+    channel: text("channel").notNull(),
+    lastReadAt: timestamp("last_read_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.adminId, t.channel] })],
+);
+
+/** Inbox items: to-dos assigned and done, new kits (curriculum), sign-ins and security risks (admins). */
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: id(),
+    recipientId: uuid("recipient_id")
+      .notNull()
+      .references(() => adminUsers.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(), // task_assigned | task_done | task_overdue | kit_created | login | security
+    title: text("title").notNull(),
+    body: text("body").notNull().default(""),
+    link: text("link"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("notifications_recipient_idx").on(t.recipientId, t.createdAt)],
+);
+
+/** A to-do a head (or admin) gives a director. The director's whole department can see it. */
+export const tasks = pgTable(
+  "tasks",
+  {
+    id: id(),
+    title: text("title").notNull(),
+    notes: text("notes").notNull().default(""),
+    department: text("department").notNull(), // the assignee's department: curriculum | production
+    assigneeId: uuid("assignee_id")
+      .notNull()
+      .references(() => adminUsers.id, { onDelete: "cascade" }),
+    assignedById: uuid("assigned_by_id").references(() => adminUsers.id, { onDelete: "set null" }),
+    dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
+    status: text("status").notNull().default("open"), // open | done
+    doneAt: timestamp("done_at", { withTimezone: true }),
+    overdueNotifiedAt: timestamp("overdue_notified_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("tasks_assignee_idx").on(t.assigneeId), index("tasks_department_idx").on(t.department, t.status)],
+);
+
+/**
+ * Recently deleted (admins only). A deleted lesson/file keeps a copy of its rows here (its stored files stay in
+ * storage) until an admin restores it, deletes it forever, or `purge_after` passes. A deleted chat message is
+ * hidden (deleted_at) and listed here the same way.
+ */
+export const trash = pgTable(
+  "trash",
+  {
+    id: id(),
+    kind: text("kind").notNull(), // content | message
+    title: text("title").notNull(),
+    detail: text("detail").notNull().default(""),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    deletedById: uuid("deleted_by_id").references(() => adminUsers.id, { onDelete: "set null" }),
+    deletedByName: text("deleted_by_name").notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }).notNull().defaultNow(),
+    purgeAfter: timestamp("purge_after", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("trash_deleted_idx").on(t.deletedAt)],
+);

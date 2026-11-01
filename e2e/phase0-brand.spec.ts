@@ -2,16 +2,16 @@ import { expect, test } from "@playwright/test";
 import { expectAccessible } from "./helpers/a11y";
 import { expectBrand } from "./helpers/brand";
 
-// Phase 0 gate: the sample page uses the extracted brand and passes the accessibility check.
+// The home page uses the site theme (clean, light, CurioCrate blue) and passes the accessibility check.
 for (const vp of [
   { name: "desktop-1440", width: 1440, height: 900 },
   { name: "chromebook-1366x768", width: 1366, height: 768 },
 ]) {
-  test(`sample page matches curiocrate.org brand at ${vp.name}`, async ({ page }) => {
+  test(`sample page uses the site theme at ${vp.name}`, async ({ page }) => {
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await page.goto("/");
     await expectBrand(page, `home ${vp.name}`);
-    await expect(page.locator("header img").first()).toHaveAttribute("alt", "CurioCrate");
+    await expect(page.getByRole("link", { name: /curiocrate materials home/i })).toBeVisible();
   });
 
   test(`sample page passes axe WCAG 2.1 AA at ${vp.name}`, async ({ page }) => {

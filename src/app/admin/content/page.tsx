@@ -35,7 +35,7 @@ export default async function StudioLessons(props: PageProps<"/admin/content">) 
   return (
     <>
       <Notice sp={sp} />
-      <LessonsBoard kits={kits.map((k) => ({ id: k.id, name: k.name, ngss: k.ngss }))} lessons={rows} open={open} />
+      <LessonsBoard kits={kits.map((k) => ({ id: k.id, name: k.name, ngss: k.ngss }))} lessons={rows} open={open} kit={typeof sp.kit === "string" ? sp.kit : null} />
 
       <details className="st-details">
         <summary>

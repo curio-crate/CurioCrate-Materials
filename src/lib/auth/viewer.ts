@@ -69,10 +69,17 @@ export async function requireAdmin(perm?: StudioPerm): Promise<{ teacherId: null
   return { teacherId: null, email: admin.username, adminId: admin.id, role: admin.role };
 }
 
-/** For Studio route handlers: the actor when signed in AND allowed, else null (the route answers 401/403). */
-export async function studioActor(perm: StudioPerm) {
+/** For Studio route handlers: the actor when signed in AND allowed (any of the permissions), else null (401/403). */
+export async function studioActor(...perms: StudioPerm[]) {
   const admin = await getCompanyAdmin();
-  if (!admin || !can(admin.role, perm)) return null;
+  if (!admin || !perms.some((p) => can(admin.role, p))) return null;
+  return { teacherId: null, email: admin.username, adminId: admin.id, role: admin.role };
+}
+
+/** For Studio route handlers every role may use (chat, inbox, profile picture): the actor when signed in, else null. */
+export async function studioMember() {
+  const admin = await getCompanyAdmin();
+  if (!admin) return null;
   return { teacherId: null, email: admin.username, adminId: admin.id, role: admin.role };
 }
 

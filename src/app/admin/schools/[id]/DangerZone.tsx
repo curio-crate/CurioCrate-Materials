@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/viewer";
 import { deleteOrganizationData } from "@/lib/privacy";
 import styles from "../../admin.module.css";
+import { ConfirmSubmit } from "../../Confirm";
 
 async function deleteAction(form: FormData) {
   "use server";
@@ -22,7 +23,9 @@ export function DangerZone({ orgId, orgName }: { orgId: string; orgName: string 
         <input type="hidden" name="name" value={orgName} />
         <label className="sr-only" htmlFor="confirm-del">Type the school name to confirm</label>
         <input id="confirm-del" name="confirm" className="input" placeholder={orgName} style={{ width: 260 }} />
-        <button className="btn btn-sm btn-danger">Delete all data</button>
+        <ConfirmSubmit className="btn btn-sm btn-danger" title={`Delete all of ${orgName}'s data?`} message="This is permanent and does not go to Recently deleted: teachers, classes, student work and usage are erased." confirmLabel="Delete all data">
+          Delete all data
+        </ConfirmSubmit>
       </form>
     </section>
   );

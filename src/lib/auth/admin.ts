@@ -7,6 +7,7 @@ import { cache } from "react";
 import { db } from "@/db";
 import { adminSessions, adminUsers, auditLog } from "@/db/schema";
 import { randomToken, sha256, signToken, verifyToken } from "../crypto";
+import { adminIds, notify, notifyAdminsOfRisk } from "../team/notify";
 import { asRole, ROLE_LABEL, STUDIO_ROLES, type StudioRole } from "./roles";
 
 // Company (Curiocrate Studio) accounts. Studio is reachable ONLY with a Studio username + password: teacher
@@ -105,7 +106,9 @@ export async function adminLogin(username: string, password: string, clientKey: 
       const fails = user.failedLogins + 1;
       await d.update(adminUsers).set({ failedLogins: fails >= MAX_FAILS ? 0 : fails, lockedUntil: fails >= MAX_FAILS ? new Date(Date.now() + LOCK_MINUTES * 60_000) : null }).where(eq(adminUsers.id, user.id));
       await d.insert(auditLog).values({ actorEmail: user.username, action: fails >= MAX_FAILS ? "admin.locked" : "admin.login_failed", targetType: "admin", targetId: user.id, details: {} });
-    }
+      if (fails >= MAX_FAILS) await notifyAdminsOfRisk(`Studio account locked: ${user.name}`, `${MAX_FAILS} wrong passwords in a row for ${user.username}. It is locked for ${LOCK_MINUTES} minutes.`);
+      else if (fails === 3) await notifyAdminsOfRisk(`Wrong passwords for ${user.name}`, `3 wrong passwords in a row for ${user.username}. If it wasn't them, someone may be guessing.`);
+    } else await notifyAdminsOfRisk(`Disabled account tried to sign in: ${user.name}`, `${user.username} entered the right password, but the account is disabled.`);
     return { ok: false as const, error: good ? "This Studio account is disabled." : "Wrong username or password." };
   }
   ipFails.delete(clientKey);
@@ -113,12 +116,13 @@ export async function adminLogin(username: string, password: string, clientKey: 
   await d.insert(adminSessions).values({ id: sha256(sid), adminId: user.id, expiresAt: new Date(Date.now() + TTL * 1000) });
   await d.update(adminUsers).set({ failedLogins: 0, lockedUntil: null, lastLoginAt: new Date() }).where(eq(adminUsers.id, user.id));
   await d.insert(auditLog).values({ actorEmail: user.username, action: "admin.login", targetType: "admin", targetId: user.id, details: {} });
+  await notify(await adminIds(user.id), { kind: "login", title: `${user.name} signed in to Studio`, body: `${ROLE_LABEL[asRole(user.role)]} · ${user.username}`, link: "/admin/audit" });
   return { ok: true as const, token: await signToken({ sid, sub: user.id }, TTL, ADMIN_COOKIE_AUDIENCE) };
 }
 
 export const adminCookieOptions = () => ({ httpOnly: true, sameSite: "strict" as const, secure: process.env.NODE_ENV === "production" && !process.env.E2E, path: "/", maxAge: TTL });
 
-export type CompanyAdmin = { id: string; username: string; name: string; role: StudioRole; sessionId: string };
+export type CompanyAdmin = { id: string; username: string; name: string; role: StudioRole; sessionId: string; avatarKey?: string | null };
 
 /** The signed-in Studio account (signature AND a live session row AND an active account), or null. */
 export const getCompanyAdmin = cache(async (): Promise<CompanyAdmin | null> => {
@@ -126,12 +130,12 @@ export const getCompanyAdmin = cache(async (): Promise<CompanyAdmin | null> => {
   if (!claims?.sid) return null;
   const d = await db();
   const [row] = await d
-    .select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, role: adminUsers.role, active: adminUsers.active, sessionId: adminSessions.id })
+    .select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, role: adminUsers.role, avatarKey: adminUsers.avatarKey, active: adminUsers.active, sessionId: adminSessions.id })
     .from(adminSessions)
     .innerJoin(adminUsers, eq(adminUsers.id, adminSessions.adminId))
     .where(and(eq(adminSessions.id, sha256(claims.sid)), gt(adminSessions.expiresAt, new Date())));
   if (!row || !row.active || row.id !== claims.sub) return null;
-  return { id: row.id, username: row.username, name: row.name, role: asRole(row.role), sessionId: row.sessionId };
+  return { id: row.id, username: row.username, name: row.name, role: asRole(row.role), sessionId: row.sessionId, avatarKey: row.avatarKey };
 });
 
 export async function adminLogout(token: string | undefined) {
@@ -145,7 +149,7 @@ export async function adminLogout(token: string | undefined) {
 
 export async function listAdmins() {
   const d = await db();
-  return d.select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, email: adminUsers.email, role: adminUsers.role, active: adminUsers.active, lastLoginAt: adminUsers.lastLoginAt, lockedUntil: adminUsers.lockedUntil, createdAt: adminUsers.createdAt }).from(adminUsers).orderBy(adminUsers.createdAt);
+  return d.select({ id: adminUsers.id, username: adminUsers.username, name: adminUsers.name, email: adminUsers.email, role: adminUsers.role, avatarKey: adminUsers.avatarKey, active: adminUsers.active, lastLoginAt: adminUsers.lastLoginAt, lockedUntil: adminUsers.lockedUntil, createdAt: adminUsers.createdAt }).from(adminUsers).orderBy(adminUsers.createdAt);
 }
 
 async function teamAudit(actor: CompanyAdmin, action: string, targetId: string, details: Record<string, unknown> = {}) {
@@ -172,6 +176,7 @@ export async function createAdmin(actor: CompanyAdmin, input: { email: string; n
     .returning();
   if (!row) return { ok: false as const, error: "That email already has a Studio account." };
   await teamAudit(actor, "admin.create", row.id, { email, role: input.role });
+  await notify(await adminIds(actor.id), { kind: "security", title: `New Studio account: ${row.name}`, body: `${actor.name} added ${email} as ${ROLE_LABEL[input.role as StudioRole]}.`, link: "/admin/team" });
   return { ok: true as const };
 }
 
@@ -185,6 +190,7 @@ export async function setAdminRole(actor: CompanyAdmin, id: string, role: string
   if (u.role === "admin" && role !== "admin" && u.active && (await activeAdminCount()) <= 1) return { ok: false as const, error: "Keep at least one active admin." };
   await d.update(adminUsers).set({ role }).where(eq(adminUsers.id, id));
   await teamAudit(actor, "admin.role", id, { from: u.role, to: role });
+  await notify(await adminIds(actor.id), { kind: "security", title: `Role changed: ${u.name}`, body: `${actor.name} changed ${u.username} from ${ROLE_LABEL[asRole(u.role)]} to ${ROLE_LABEL[role as StudioRole]}.`, link: "/admin/team" });
   return { ok: true as const, label: ROLE_LABEL[role as StudioRole] };
 }
 

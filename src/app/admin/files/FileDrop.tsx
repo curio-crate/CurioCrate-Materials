@@ -11,7 +11,8 @@ type Row = { key: string; file: File; title: string; state: "waiting" | "uploadi
 
 // Studio uploader: pick or drop several files. mode "file": each becomes a live handout or kit manual.
 // mode "package": each pre-built HTML/JavaScript lesson becomes a live interactive lesson. Files go straight to storage.
-export function FileDrop({ kits, lessons, defaultKit, mode = "file" }: { kits: { id: string; name: string }[]; lessons: { id: string; title: string; kitId: string | null }[]; defaultKit: string; mode?: "file" | "package" }) {
+// fixedKit: the uploader sits on one kit's page, so it always uses defaultKit and doesn't ask.
+export function FileDrop({ kits, lessons, defaultKit, mode = "file", fixedKit = false, title }: { kits: { id: string; name: string }[]; lessons: { id: string; title: string; kitId: string | null }[]; defaultKit: string; mode?: "file" | "package"; fixedKit?: boolean; title?: string }) {
   const router = useRouter();
   const [kitId, setKitId] = useState(defaultKit);
   const [parentId, setParentId] = useState("");
@@ -62,10 +63,11 @@ export function FileDrop({ kits, lessons, defaultKit, mode = "file" }: { kits: {
   return (
     <section className={`card ${styles.panel}`} aria-labelledby="upload-h">
       <h2 id="upload-h" className="h4">
-        {pkg ? "Upload interactive lessons" : "Upload files"}
+        {title ?? (pkg ? "Upload interactive lessons" : "Upload files")}
       </h2>
       {pkg && <p className="hint">Drop the lessons you built in HTML/JavaScript: {PACKAGE_TYPES_TEXT}. Each one becomes its own lesson, running in a safe sandboxed frame. Add videos and handouts to it afterwards.</p>}
       <div className={styles.formRow3}>
+        {!fixedKit && (
         <div className="field">
           <label className="label" htmlFor="up-kit">
             Kit
@@ -82,6 +84,7 @@ export function FileDrop({ kits, lessons, defaultKit, mode = "file" }: { kits: {
             ))}
           </select>
         </div>
+        )}
         {!pkg && (
           <div className="field">
             <label className="label" htmlFor="up-type">

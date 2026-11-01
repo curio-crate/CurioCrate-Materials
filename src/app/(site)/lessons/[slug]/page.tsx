@@ -9,10 +9,11 @@ import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { checkAccess } from "@/lib/access";
 import { getViewer } from "@/lib/auth/viewer";
 import { childrenOf, getContent, getContentById, getKitById, kitContent, TYPE_LABEL, type ContentItem } from "@/lib/content";
-import { gateContent } from "@/lib/guard";
+import { gateContent, learnerMayOpen } from "@/lib/guard";
 import { principalFor } from "@/lib/principal";
 import { recordView } from "@/lib/views";
-import { classesFor, isAssigned } from "@/lib/classes";
+import { classesFor, currentStudent, isAssigned } from "@/lib/classes";
+import { currentLearner } from "@/lib/students";
 import { features } from "@/lib/features";
 import { fileLabel } from "@/lib/files";
 import { isTeacherOnly, MATERIAL, asMaterialKind } from "@/lib/materials";
@@ -37,7 +38,7 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   }
   if (item.type === "lab" && item.labSlug) redirect(`/labs/${item.labSlug}`);
 
-  const [gate, kitInfo, viewer] = await Promise.all([gateContent(slug), item.kitId ? getKitById(item.kitId) : null, getViewer()]);
+  const [gate, kitInfo, viewer, learner, classStudent] = await Promise.all([gateContent(slug), item.kitId ? getKitById(item.kitId) : null, getViewer(), currentLearner(), currentStudent()]);
   const kit = kitInfo?.kit ?? null;
   const siblings = kit ? (await kitContent(kit.id)).filter((c) => !c.parentId && c.type === item.type) : [];
   const idx = siblings.findIndex((c) => c.id === item.id);
@@ -47,11 +48,16 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const header = (
     <header className={styles.head}>
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
-        <Link href="/catalog">Catalog</Link>
-        {kit ? (
+        {viewer ? <Link href="/dashboard">Dashboard</Link> : learner ? <Link href="/student">My learning</Link> : classStudent ? <Link href="/class">My class</Link> : <Link href="/">Home</Link>}
+        {kit && viewer ? (
           <>
             <span aria-hidden="true">/</span>
             <Link href={`/kits/${kit.slug}`}>{kit.shortName}</Link>
+          </>
+        ) : kit ? (
+          <>
+            <span aria-hidden="true">/</span>
+            <span>{kit.shortName}</span>
           </>
         ) : (
           <>
@@ -84,7 +90,7 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
     return (
       <div className="container">
         {header}
-        <LockedPanel reason={gate.reason as "sign_in" | "needs_kit" | "needs_subscription" | "not_assigned"} kitSlug={kit?.slug} kitName={kit?.name} next={`/lessons/${slug}`} tier={item.requiredTier} />
+        <LockedPanel reason={gate.reason as "sign_in" | "needs_kit" | "needs_subscription" | "not_assigned" | "student_locked"} kitSlug={kit?.slug} kitName={kit?.name} next={`/lessons/${slug}`} tier={item.requiredTier} />
       </div>
     );
   }
@@ -94,7 +100,9 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const principal = principalFor(viewer);
   // Materials still uploading (or that failed) never show; teacher-only materials never show to students.
   const visible = children.filter((c) => c.mediaStatus !== "uploading" && c.mediaStatus !== "failed" && (viewer || gate.decision.via === "staff" || !isTeacherOnly(c.materialKind)));
-  const childAccess = await Promise.all(visible.map(async (c) => ({ c, ok: viewer ? (await checkAccess(principal, c)).allowed : true })));
+  // Teachers: the access rule. Free student accounts: free student material only. Class students: the assignment covers it.
+  const viaLearner = !viewer && !!gate.who.learnerId;
+  const childAccess = (await Promise.all(visible.map(async (c) => ({ c, ok: viewer ? (await checkAccess(principal, c)).allowed : viaLearner ? learnerMayOpen(c) : true })))).filter((x) => x.ok || !viaLearner);
   const kindOf = (c: ContentItem) => asMaterialKind(c.materialKind);
   const videos = childAccess.filter((x) => x.c.type === "video" && kindOf(x.c) !== "training_video");
   const training = childAccess.filter((x) => kindOf(x.c) === "training_video");

@@ -24,7 +24,7 @@ type Body = {
 // live (handout/manual file, video, or an interactive HTML/JS lesson package).
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return json({ error: "forbidden" }, 403);
-  const actor = await studioActor("lessons");
+  const actor = await studioActor("lessons", "library");
   if (!actor) return json({ error: "Your Studio role can't upload." }, 403);
   const b = (await req.json().catch(() => ({}))) as Body;
   const name = String(b.name ?? "").slice(0, 200);

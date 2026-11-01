@@ -1,44 +1,48 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { requireAdmin } from "@/lib/auth/viewer";
-import { LESSON_TYPES, studioContent } from "@/lib/cms";
+import { asKitKind, costText, KIT_KIND } from "@/lib/kit-parts";
+import { kitOverview } from "@/lib/kit-studio";
 import { Notice } from "../Notice";
 import { StudioHead } from "../StudioHead";
 
 export const metadata = { title: "Kits" };
 
+const n = (count: number, word: string, words = `${word}s`) => `${count} ${count === 1 ? word : words}`;
+
+// Kits (Product Officers): the directory of every kit, with what it is and, for physical kits, the cost of one box.
+// Curriculum builds each kit's content in the Materials library.
 export default async function KitsPage(props: PageProps<"/admin/kits">) {
   await requireAdmin("kits");
   const sp = await props.searchParams;
-  const { kits, items } = await studioContent();
+  const { kits } = await kitOverview();
   return (
     <>
       <Notice sp={sp} />
-      <StudioHead title="Kits" sub="Each kit's name, grades, NGSS alignment and box contents. Teachers see these on the catalog and kit pages.">
+      <StudioHead title="Kits" sub="Every kit, online and physical. A new kit goes straight to the curriculum team's Materials library as a draft, so they can build it while you finish it here.">
         <Link href="/admin/kits/new" className="btn btn-solid">
           <Icon name="plus" size={16} /> New kit
         </Link>
       </StudioHead>
-      <ul className="st-list">
-        {kits.map((k) => {
-          const lessons = items.filter((i) => i.kitId === k.id && !i.parentId && LESSON_TYPES.includes(i.type)).length;
-          const standards = k.ngss.filter((c) => !c.startsWith("SEP") && !c.startsWith("CCC"));
+      <ul className="st-list" aria-label="Kits">
+        {kits.map(({ kit, draft, lessons, parts, activities, cost }, i) => {
+          const kind = asKitKind(kit.kind);
           return (
-            <li key={k.id}>
-              <Link href={`/admin/kits/${k.id}`} className="st-row">
+            <li key={kit.id}>
+              <Link href={`/admin/kits/${kit.id}`} className="st-row" style={{ animationDelay: `${Math.min(i, 12) * 0.02}s` }}>
                 <span className="st-rowIcon" aria-hidden="true">
-                  <Icon name="box" size={20} />
+                  <Icon name={KIT_KIND[kind].icon} size={20} />
                 </span>
                 <span style={{ minWidth: 0 }}>
-                  <span className="st-rowTitle">{k.name}</span>
+                  <span className="st-rowTitle">{kit.name}</span>
                   <span className="st-rowMeta">
-                    {k.gradeBand} · code prefix {k.code} · NGSS {standards.join(", ") || "not set"}
+                    {KIT_KIND[kind].label} · code {kit.code} · {kit.tagline || kit.gradeBand}
                   </span>
                 </span>
-                <span className="st-pill st-pill-muted st-rowTier">
-                  {lessons} lesson{lessons === 1 ? "" : "s"}
+                <span className="st-rowMeta st-num st-rowMats">
+                  {kind === "online" ? n(activities, "activity", "activities") : parts ? `${n(parts, "part")} · ${costText(cost, parts)}` : "No parts yet"} · {n(lessons, "lesson")}
                 </span>
-                <span />
+                <span className={`st-pill st-rowTier ${draft ? "st-pill-warn" : "st-pill-ok"}`}>{draft ? "In curriculum" : "Published"}</span>
                 <span className="st-rowGo" aria-hidden="true">
                   <Icon name="chevron" size={18} />
                 </span>

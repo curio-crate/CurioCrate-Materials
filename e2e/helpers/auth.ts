@@ -18,6 +18,7 @@ export async function signIn(page: Page, opts: { email: string; name?: string; p
   await page.waitForURL((u) => !u.pathname.startsWith("/auth/") && !u.pathname.startsWith("/api/auth/"));
   if (page.url().includes("/onboarding") && opts.school !== null) {
     await page.getByLabel("School name").fill(opts.school ?? `E2E School ${Date.now().toString(36)}`);
+    await page.locator("form:has(#school-name) input[name=agree]").check();
     await page.getByRole("button", { name: /create school/i }).click();
     await page.waitForURL((u) => !u.pathname.startsWith("/onboarding"));
   }

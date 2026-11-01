@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// The curiocrate.org inner-page header pattern: mono eyebrow → display title (second line italic) → lead.
+// Inner-page header: eyebrow → title (optional accent phrase in blue) → lead.
 export function PageHead({
   eyebrow,
   title,
@@ -26,7 +26,6 @@ export function PageHead({
         {accent && (
           <>
             {" "}
-            <br />
             <span className="italic-accent">{accent}</span>
           </>
         )}

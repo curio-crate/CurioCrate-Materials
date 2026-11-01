@@ -31,11 +31,14 @@
   line-height: 1.6;
 }
 .list li::before {
-  content: "✦";
+  content: "";
   position: absolute;
-  left: 0;
-  top: 1px;
-  font-size: 11px;
+  left: 4px;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
   color: var(--color-accent);
 }
 .section {
@@ -52,12 +55,13 @@
   border-radius: var(--radius-feature);
 }
 .planFeatured {
-  background: var(--lum-surface);
-  background-image: var(--gradient-gold);
-  border-color: var(--tier-sub-border);
+  background: var(--sx-accent-softer, var(--lum-surface));
+  border-color: var(--sx-accent-ring, var(--tier-sub-border));
 }
 .price {
-  font-family: var(--font-display);
+  font-family: var(--font-heading, var(--font-display));
+  font-weight: 800;
+  letter-spacing: -0.03em;
   font-size: 3rem;
   line-height: 1;
   color: var(--color-heading);
@@ -68,11 +72,11 @@
   color: var(--color-text-muted);
 }
 .mode_live {
-  color: var(--lum-glow);
+  color: var(--sx-success, var(--lum-glow));
 }
 .mode_test,
 .mode_local {
-  color: var(--gold);
+  color: var(--sx-warning, var(--gold));
 }
 .mono {
   font-family: var(--font-mono);

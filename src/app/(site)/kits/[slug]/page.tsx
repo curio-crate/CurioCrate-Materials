@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ContentRow, NgssTags } from "@/components/content/ContentBits";
 import listStyles from "@/components/content/content.module.css";
 import { KitArt } from "@/components/kit/KitArt";
 import { Icon } from "@/components/ui/Icon";
 import { NGSS_LABELS } from "@/content/kits";
+import { getCompanyAdmin } from "@/lib/auth/admin";
+import { getViewer } from "@/lib/auth/viewer";
+import { currentLearner } from "@/lib/students";
 import { contentHref, getKit, isShipped, kitContent } from "@/lib/content";
 import { viewerAccess } from "@/lib/viewer-grants";
 import styles from "./kit.module.css";
@@ -21,6 +24,8 @@ export default async function KitPage(props: PageProps<"/kits/[slug]">) {
   const found = await getKit(slug);
   if (!found) notFound();
   const { kit } = found;
+  // Kit pages are part of the teacher's workspace (reached from the dashboard). Students get their own pages.
+  if (!(await getViewer()) && !(await getCompanyAdmin())) redirect((await currentLearner()) ? "/student" : `/signin?next=${encodeURIComponent(`/kits/${slug}`)}`);
   const [allItems, access] = await Promise.all([kitContent(kit.id), viewerAccess()]);
   const items = allItems.filter(isShipped);
   const top = items.filter((c) => !c.parentId);
@@ -41,10 +46,10 @@ export default async function KitPage(props: PageProps<"/kits/[slug]">) {
   return (
     <div className="container">
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
-        <Link href="/catalog">Catalog</Link> <span aria-hidden="true">/</span> <span aria-current="page">{kit.shortName}</span>
+        <Link href="/dashboard">Dashboard</Link> <span aria-hidden="true">/</span> <span aria-current="page">{kit.shortName}</span>
       </nav>
 
-      <section className={`${styles.hero} ${styles[`accent_${kit.accent}`]}`} aria-labelledby="kit-title">
+      <section className={styles.hero} aria-labelledby="kit-title">
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>
             {kit.name} · {kit.gradeBand}
@@ -54,7 +59,7 @@ export default async function KitPage(props: PageProps<"/kits/[slug]">) {
           </h1>
           <p className={styles.desc}>{kit.description}</p>
           <NgssTags codes={standards} />
-          <div className={styles.accessBanner} role="status">
+          <div className={`${styles.accessBanner} ${owned || viaSub ? styles.accessOpen : ""}`} role="status">
             {owned ? (
               <>
                 <Icon name="unlock" size={20} /> <span>Unlocked on your account. Everything below is open.</span>
@@ -67,7 +72,7 @@ export default async function KitPage(props: PageProps<"/kits/[slug]">) {
               <>
                 <Icon name="key" size={20} />
                 <span>Unlock the full kit on your account with the code in your kit box.</span>
-                <Link href="/redeem" className="btn btn-kit btn-sm">
+                <Link href="/redeem" className="btn btn-solid btn-sm">
                   Redeem code
                 </Link>
               </>

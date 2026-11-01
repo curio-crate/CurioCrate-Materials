@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { auditLog, authAccounts, organizations, teachers } from "@/db/schema";
 import type { Profile, ProviderId } from "./auth/providers";
 import { newShortCode } from "./codes";
+import { TERMS_VERSION } from "./terms";
 
 const PUBLIC_EMAIL_DOMAINS = new Set(["gmail.com", "googlemail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "aol.com", "proton.me", "protonmail.com"]);
 
@@ -97,4 +98,10 @@ export async function decideMembership(actor: { teacherId: string | null; email:
   else await d.update(teachers).set({ orgId: null, membership: "active", isOrgAdmin: false }).where(eq(teachers.id, teacherId));
   await d.insert(auditLog).values({ actorTeacherId: actor.teacherId, actorEmail: actor.email, action: approve ? "school.member_approved" : "school.member_removed", targetType: "teacher", targetId: teacherId, orgId: t.orgId, details: { email: t.email } });
   return t;
+}
+
+/** Records that the teacher agreed to the current Terms of Use (asked during school setup). */
+export async function acceptTeacherTerms(teacherId: string) {
+  const d = await db();
+  await d.update(teachers).set({ termsVersion: TERMS_VERSION, termsAcceptedAt: new Date() }).where(eq(teachers.id, teacherId));
 }

@@ -1,45 +1,43 @@
-/* Mirrors curiocrate.org footer: glass bg, hairline top border, 1100px inner, 4 columns, mono bottom bar. */
 .footer {
-  position: relative;
-  z-index: 1;
-  margin-top: 80px;
-  padding: 56px 40px 40px;
-  background: var(--surface-footer);
-  border-top: 1px solid var(--border-hair);
-  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--sx-border);
+  background: var(--sx-surface);
+  font-size: 0.875rem;
 }
 .inner {
-  max-width: var(--page-max);
-  margin: 0 auto;
-}
-.grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  grid-template-columns: 1.6fr repeat(3, 1fr);
   gap: 40px;
+  max-width: calc(var(--page-wide) + 2 * var(--page-gutter));
+  margin-inline: auto;
+  padding: 48px var(--page-gutter) 32px;
 }
 .brandCol {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
 }
-.mark {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 16px;
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--sx-heading);
 }
 .tagline {
-  max-width: 220px;
-  font-size: var(--text-sm);
-  line-height: 1.7;
-  color: var(--color-text-muted);
+  max-width: 280px;
+  color: var(--sx-muted);
+  line-height: 1.6;
 }
 .label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: var(--tracking-label);
+  margin-bottom: 12px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-label);
-  margin-bottom: 20px;
+  color: var(--sx-heading);
 }
 .list {
   list-style: none;
@@ -48,42 +46,36 @@
   gap: 8px;
 }
 .link {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--color-text-muted);
-  transition: color var(--dur-fast);
+  color: var(--sx-muted);
+  transition: color 0.2s var(--sx-ease);
 }
 .link:hover {
-  color: var(--pastel2);
+  color: var(--sx-accent);
 }
 .bottom {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
   flex-wrap: wrap;
-  margin-top: 56px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border-hair);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--color-text-faint);
+  gap: 12px;
+  max-width: calc(var(--page-wide) + 2 * var(--page-gutter));
+  margin-inline: auto;
+  padding: 18px var(--page-gutter) 28px;
+  border-top: 1px solid var(--sx-border);
+  font-size: 0.8125rem;
+  color: var(--sx-muted);
 }
-.domain {
-  letter-spacing: 1px;
-  text-transform: none;
+.bottomLinks {
+  display: flex;
+  gap: 20px;
 }
-@media (max-width: 860px) {
-  .grid {
+.bottomLinks a:hover {
+  color: var(--sx-accent);
+}
+@media (max-width: 820px) {
+  .inner {
     grid-template-columns: 1fr 1fr;
   }
   .brandCol {
     grid-column: 1 / -1;
-  }
-}
-@media (max-width: 520px) {
-  .footer {
-    padding: 48px 20px 32px;
   }
 }

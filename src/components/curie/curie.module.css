@@ -30,7 +30,7 @@
   justify-self: start;
   background: var(--tier-kit-bg);
   border: 1px solid var(--border-kit-soft);
-  color: var(--lum-text);
+  color: var(--sx-heading, var(--lum-text));
 }
 .form {
   display: grid;
