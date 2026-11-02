@@ -9,8 +9,8 @@ export const metadata: Metadata = { title: "Demo", description: "Try a CurioCrat
 // The site's one demo. Open to everyone, no sign-in; everything else needs a teacher or student account.
 export default function DemoPage() {
   return (
-    <div className="container-wide">
-      <PageHead eyebrow="Demo · Luminol Forensics kit · Grades 6–8" size="h1" title="Find your limit." lead="Students test six diluted samples in a blackout sleeve to find the faintest stain luminol can detect. This is the same lab your class would use. Try it." />
+    <div className="container-wide" data-cap="lum">
+      <PageHead eyebrow="Demo lab from the Luminol Forensics Kit, grades 6–8" size="h1" title="Find your limit." lead="Students test six diluted samples in a blackout sleeve to find the faintest stain luminol can detect. This is the same lab your class would use. Try it." />
       <p className={`alert ${styles.note}`} role="note">
         This is a demo, so results aren&apos;t saved. In a class, each student&apos;s results show up on your class page.
       </p>

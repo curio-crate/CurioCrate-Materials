@@ -21,8 +21,8 @@ export default async function StudentSigninPage() {
           New here?{" "}
           <Link href="/student/signup" className="link">
             Create a free account
-          </Link>{" "}
-          · In a class?{" "}
+          </Link>
+          . In a class?{" "}
           <Link href="/join" className="link">
             Use your class code
           </Link>

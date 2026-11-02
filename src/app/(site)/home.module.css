@@ -1,26 +1,13 @@
 /* ============ Hero ============ */
+/* grid: [copy 1.05fr][preview 1fr]. No backdrop decoration: the bench color and the product carry it. */
 .hero {
-  position: relative;
-  overflow: hidden;
-  padding-block: 72px 88px;
-  background: var(--sx-glow), linear-gradient(180deg, var(--sx-bg-tint) 0%, var(--sx-bg) 100%);
+  padding-block: var(--sx-18) var(--sx-24);
   border-bottom: 1px solid var(--sx-border);
 }
-/* A faint blueprint grid behind the hero, fading out toward the edges. */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(var(--sx-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--sx-grid-line) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(70% 70% at 60% 40%, var(--sx-heading) 0%, transparent 75%);
-  pointer-events: none;
-}
 .heroInner {
-  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: 56px;
+  gap: var(--sx-14);
   align-items: center;
 }
 .heroCopy {
@@ -28,42 +15,50 @@
   flex-direction: column;
   align-items: flex-start;
 }
-.pill {
+.standard {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--sx-border);
-  background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
-  font-size: 0.75rem;
+  margin-bottom: var(--sx-5);
+  font-size: var(--sx-fs-sm);
   font-weight: 600;
   color: var(--sx-success);
-  margin-bottom: 22px;
+}
+/* The page's one big type moment: condensed, heavy, tight, like the side of a crate. */
+.display {
+  max-width: 11ch;
+  font-size: clamp(2.75rem, 6.4vw, var(--sx-fs-5xl));
+  font-stretch: 82%;
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
 }
 .heroLead {
-  margin-top: 20px;
-  max-width: 520px;
+  max-width: 50ch;
+  margin-top: var(--sx-6);
 }
 .ctas {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
+  gap: var(--sx-3);
+  margin-top: var(--sx-8);
 }
 .studentNote {
-  margin-top: 22px;
+  margin-top: var(--sx-5);
   font-size: 0.875rem;
   color: var(--sx-muted);
 }
 .studentNote a {
   font-weight: 600;
   color: var(--sx-accent);
-  transition: color 0.2s var(--sx-ease);
+  text-decoration: underline;
+  text-decoration-color: var(--sx-accent-ring);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--sx-t-hover) var(--sx-ease);
 }
 .studentNote a:hover {
-  color: var(--sx-accent-hover);
+  text-decoration-color: currentColor;
 }
 .heroArt {
   display: flex;
@@ -73,62 +68,49 @@
 /* ============ Interactive preview ============ */
 .previewWrap {
   width: 100%;
-  max-width: 470px;
+  max-width: 460px;
   perspective: 1200px;
 }
 .preview {
   --rx: 0deg;
   --ry: 0deg;
   display: grid;
-  gap: 16px;
-  padding: 22px;
-  border-radius: 20px;
+  gap: var(--sx-4);
+  padding: var(--sx-5);
+  border-radius: var(--sx-r-xl);
   border: 1px solid var(--sx-border);
   background: var(--sx-surface);
   box-shadow: var(--sx-shadow-lg);
   transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.5s var(--sx-ease);
-  animation: float 7s ease-in-out infinite;
-}
-@keyframes float {
-  50% {
-    translate: 0 -6px;
-  }
+  transition: transform 600ms var(--sx-ease);
 }
 .pvHead {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--sx-3);
 }
 .pvKicker {
-  display: block;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--sx-fs-xs);
+  font-weight: 600;
   color: var(--sx-muted);
 }
 .pvTitle {
   display: block;
-  margin-top: 3px;
-  font-size: 1rem;
+  margin-top: 4px;
+  font-family: var(--font-label);
+  font-size: 1.125rem;
+  font-weight: 700;
   color: var(--sx-heading);
-  letter-spacing: -0.01em;
-}
-.pvCode {
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: 1px dashed var(--sx-border-strong);
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.18em;
-  color: var(--sx-heading);
+  letter-spacing: -0.02em;
 }
 .pvSeats {
   display: grid;
   gap: 8px;
-  font-size: 0.8125rem;
+  font-size: var(--sx-fs-sm);
   color: var(--sx-muted);
 }
 .pvSeats strong {
@@ -145,29 +127,22 @@
   display: block;
   height: 100%;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--sx-brand), var(--sx-accent));
+  background: var(--sx-brand);
   transition: width 0.2s linear;
 }
 .pvList {
   list-style: none;
   padding: 0;
   display: grid;
-  gap: 8px;
+  border-top: 1px solid var(--sx-border);
 }
 .pvList li {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--sx-border);
-  background: var(--sx-surface-2);
-  transition: border-color 0.25s var(--sx-ease), background-color 0.25s var(--sx-ease);
-}
-.pvList li:has([aria-pressed="true"]) {
-  border-color: var(--sx-accent-ring);
-  background: var(--sx-accent-softer);
+  gap: var(--sx-3);
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--sx-border);
 }
 .pvIcon {
   display: grid;
@@ -175,8 +150,15 @@
   width: 32px;
   height: 32px;
   border-radius: 9px;
-  background: var(--sx-accent-soft);
-  color: var(--sx-accent);
+  background: color-mix(in srgb, var(--cap) 12%, transparent);
+  color: var(--cap-ink);
+  transition:
+    background-color var(--sx-t-hover) var(--sx-ease),
+    color var(--sx-t-hover) var(--sx-ease);
+}
+.pvList li:has([aria-pressed="true"]) .pvIcon {
+  background: var(--cap);
+  color: var(--sx-surface);
 }
 .pvItem {
   display: grid;
@@ -191,173 +173,227 @@
   text-overflow: ellipsis;
 }
 .pvMeta {
-  font-size: 0.75rem;
+  display: flex;
+  gap: 10px;
+  font-size: var(--sx-fs-xs);
   color: var(--sx-muted);
-}
-.pvToggle {
-  position: relative;
-  width: 38px;
-  height: 22px;
-  border-radius: 22px;
-  background: var(--sx-border-strong);
-  transition: background-color 0.3s var(--sx-ease);
-}
-.pvToggle[aria-pressed="true"] {
-  background: var(--sx-accent);
-}
-.pvKnob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
-  transition: transform 0.35s var(--sx-ease);
-}
-.pvToggle[aria-pressed="true"] .pvKnob {
-  transform: translateX(16px);
 }
 .pvFoot {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.8125rem;
+  font-size: var(--sx-fs-sm);
   font-weight: 600;
   color: var(--sx-success);
+}
+.pvCount {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  animation: tick 480ms var(--sx-spring);
+}
+@keyframes tick {
+  from {
+    translate: 0 -6px;
+    opacity: 0;
+  }
 }
 
 /* ============ Sections ============ */
 .section {
-  padding-block: 88px 0;
+  padding-top: var(--sx-24);
 }
 .head {
   display: grid;
-  gap: 10px;
+  gap: var(--sx-2);
   max-width: 640px;
-  margin-bottom: 36px;
+  margin-bottom: var(--sx-10);
 }
+
+/* How it works: a numbered procedure. A dashed line joins the step numbers, like a lab procedure card. */
 .steps {
+  position: relative;
   list-style: none;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sx-8);
+}
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 21px;
+  left: 22px;
+  right: 33%;
+  border-top: 1.5px dashed var(--sx-border-strong);
 }
 .step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sx-2);
+}
+.step p {
+  max-width: 34ch;
+  color: var(--sx-muted);
+}
+.stepNum {
   display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 26px;
-  border-radius: var(--radius-panel);
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--sx-3);
+  border-radius: 50%;
+  border: 2px solid var(--sx-heading);
+  background: var(--sx-bg);
+  font-family: var(--font-label);
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--sx-heading);
+}
+/* The real object at each step: a code ticket, a class code, a switch */
+.stepThing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sx-3);
+  margin-top: var(--sx-3);
+  padding: 10px 14px;
+  border-radius: var(--sx-r-md);
   border: 1px solid var(--sx-border);
   background: var(--sx-surface);
   box-shadow: var(--sx-shadow-sm);
-  transition: transform 0.35s var(--sx-ease), box-shadow 0.35s var(--sx-ease), border-color 0.35s var(--sx-ease);
 }
-.step:hover {
-  transform: translateY(-3px);
-  border-color: var(--sx-border-strong);
-  box-shadow: var(--sx-shadow-lg);
-}
-.stepIcon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  background: var(--sx-accent-soft);
-  color: var(--sx-accent);
-  transition: transform 0.4s var(--sx-ease);
-}
-.step:hover .stepIcon {
-  transform: scale(1.08) rotate(-4deg);
-}
-.stepNum {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--sx-muted);
+.thingLabel {
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  color: var(--sx-heading);
 }
 
+/* Students: heading on the left, two ways in on the right */
 .students {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
-  gap: 40px;
-  align-items: center;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sx-4);
+  align-items: stretch;
 }
 .studentsHead {
   display: grid;
-  gap: 10px;
+  align-content: center;
+  gap: var(--sx-2);
+  padding-right: var(--sx-6);
 }
-.studentCards {
+.way {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.studentCard {
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 24px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sx-4);
+  padding: var(--sx-6);
+  border-radius: var(--sx-r-lg);
+  border: 1px solid var(--sx-border);
+  background: var(--sx-surface);
+  box-shadow: var(--sx-shadow-sm);
   color: var(--sx-accent);
+  transition:
+    border-color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-enter) var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring);
+}
+.way:hover {
+  border-color: var(--sx-border-strong);
+  box-shadow: var(--sx-shadow);
+}
+.way:hover :global(.text-link) svg {
+  translate: 3px 0;
+}
+.way:active {
+  scale: 0.99;
+}
+.wayBody {
+  display: grid;
+  gap: 6px;
+}
+.wayTitle {
+  font-family: var(--font-label);
+  font-size: var(--sx-fs-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sx-heading);
+}
+.wayBody :global(.text-link) {
+  margin-top: 4px;
 }
 
 /* The last band sits directly on the footer (cancels the page's bottom padding). */
 .trust {
-  margin-top: 88px;
-  margin-bottom: -96px;
+  margin-top: var(--sx-24);
+  margin-bottom: calc(-1 * var(--sx-24));
   border-top: 1px solid var(--sx-border);
-  background: var(--sx-surface);
+  background: var(--sx-surface-2);
 }
 .trustInner {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px 32px;
-  padding-block: 20px;
+  gap: var(--sx-3) var(--sx-8);
+  padding-block: var(--sx-5);
   font-size: 0.875rem;
   color: var(--sx-muted);
 }
 .trustInner p {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  padding-left: 24px;
+  text-indent: -24px;
 }
-.trustInner svg {
-  color: var(--sx-accent);
+.trustInner p > svg {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: -3px;
+  color: var(--sx-success);
 }
 
 @media (max-width: 960px) {
-  .heroInner,
-  .students {
-    grid-template-columns: 1fr;
-  }
   .heroInner {
-    gap: 40px;
+    grid-template-columns: 1fr;
+    gap: var(--sx-10);
   }
   .steps {
     grid-template-columns: 1fr;
+    gap: var(--sx-8);
+  }
+  .steps::before {
+    top: 22px;
+    bottom: 60px;
+    left: 21px;
+    right: auto;
+    border-top: 0;
+    border-left: 1.5px dashed var(--sx-border-strong);
+  }
+  .step {
+    padding-left: 64px;
+  }
+  .stepNum {
+    position: absolute;
+    left: 0;
+    top: -8px;
+  }
+  .students {
+    grid-template-columns: 1fr 1fr;
+  }
+  .studentsHead {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 600px) {
   .hero {
-    padding-block: 44px 56px;
+    padding-block: var(--sx-10) var(--sx-14);
   }
-  .studentCards {
+  .students {
     grid-template-columns: 1fr;
   }
   .section {
-    padding-top: 64px;
+    padding-top: var(--sx-18);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .preview {
-    animation: none;
     transform: none;
   }
 }

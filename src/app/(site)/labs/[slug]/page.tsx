@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LockedPanel } from "@/components/content/ContentBits";
 import { PageHead } from "@/components/ui/PageHead";
+import { getContent, getKitById } from "@/lib/content";
 import { gateContent } from "@/lib/guard";
 import { labBySlug } from "@/lib/labs";
 import { LabRunner } from "./LabRunner";
@@ -15,9 +16,10 @@ export default async function LabPage(props: PageProps<"/labs/[slug]">) {
   const { slug } = await props.params;
   const lab = labBySlug(slug);
   if (!lab) notFound();
-  const gate = await gateContent(lab.contentSlug);
+  const [gate, item] = await Promise.all([gateContent(lab.contentSlug), getContent(lab.contentSlug)]);
+  const kit = item?.kitId ? await getKitById(item.kitId) : null;
   return (
-    <div className="container-wide">
+    <div className="container-wide" data-cap={kit?.kit.accent}>
       <PageHead eyebrow="Online lab" size="h1" title={lab.title} lead={lab.intro} />
       {gate.ok ? <LabRunner slug={lab.slug} /> : <LockedPanel reason={gate.reason === "sign_in" ? "sign_in" : "needs_kit"} next={`/labs/${slug}`} tier="free" />}
     </div>

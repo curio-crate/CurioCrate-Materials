@@ -82,6 +82,8 @@ test("a student joins with a class code, uses an assigned lab and Curie.AI; the 
   await t.getByRole("button", { name: /assign find your limit/i }).click();
   await t.getByRole("button", { name: /assign a\.0 predict/i }).click();
   await expect(t.getByRole("button", { name: /unassign find your limit/i })).toBeVisible();
+  // Switches flip at once and save in the background; wait until both saves have landed.
+  await expect(t.locator(".sx-switch[aria-busy]")).toHaveCount(0);
   await t.getByRole("button", { name: /turn curie\.ai on/i }).click();
   await expect(t.getByText(/curie\.ai is on/i)).toBeVisible();
 
@@ -298,6 +300,7 @@ test("a kit code unlocks one teacher; a colleague joining by school code waits f
   const b = await newSignedInPage(browser, { email: uniqueEmail("seat-b"), school: null });
   await b.goto("/onboarding");
   await b.getByLabel(/school code/i).fill(joinCode);
+  await b.locator("form:has(#school-code) input[name=agree]").check();
   await b.getByRole("button", { name: /join school/i }).click();
   await b.goto("/dashboard");
   await expect(b.getByText(/hasn.t approved you yet/i)).toBeVisible();

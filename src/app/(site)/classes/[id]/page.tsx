@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Notice } from "@/app/admin/Notice";
 import { CopyCode } from "@/app/(site)/dashboard/CopyCode";
+import { AssignSwitch } from "@/components/ui/AssignSwitch";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
 import { Icon } from "@/components/ui/Icon";
 import { PageHead } from "@/components/ui/PageHead";
 import { requireSchool } from "@/lib/auth/viewer";
@@ -36,7 +38,7 @@ export default async function ClassPage(props: PageProps<"/classes/[id]">) {
       <Link href="/classes" className={styles.back}>
         <Icon name="back" size={15} /> All classes
       </Link>
-      <PageHead eyebrow="Class" size="h1" title={c.name} lead="Students go to materials.curiocrate.org/join and type the class code. They see only what you assign below." />
+      <PageHead eyebrow="Class" size="h1" title={c.name} lead="Students go to materials.curiocrate.org/join and type the class code. They only see what you switch on below." />
       <Notice sp={sp} />
 
       <div className={styles.top}>
@@ -72,32 +74,31 @@ export default async function ClassPage(props: PageProps<"/classes/[id]">) {
           <h2 id="assign-h" className="h2">
             What students see
           </h2>
-          <p>Switch on what this class should open. Only kits on your account are listed.</p>
+          <p>Switch on what this class should open. Changes save as you go. Only kits on your account are listed.</p>
         </div>
         {groups.map(({ kit, items }) => (
-          <div key={kit.id} className={styles.kitGroup}>
-            <h3>{kit.name}</h3>
+          <div key={kit.id} className={styles.kitGroup} data-cap={kit.accent}>
+            <h3>
+              <span className="sx-dot" aria-hidden="true" />
+              {kit.name}
+              <small>{items.filter((i) => assignedIds.has(i.id)).length} of {items.length} assigned</small>
+            </h3>
             <ul className={styles.assignList}>
               {items.map((i) => {
                 const on = assignedIds.has(i.id);
                 return (
-                  <li key={i.id} className={`${styles.assignRow} ${on ? styles.assignOn : ""}`}>
+                  <li key={i.id} className={styles.assignRow}>
                     <span className={styles.assignIcon} aria-hidden="true">
                       <Icon name={i.type} size={16} />
                     </span>
                     <span className={styles.assignTitle}>
                       <Link href={contentHref(i)}>{i.title}</Link>
                       <span>
-                        {TYPE_LABEL[i.type]}
-                        {i.minutes ? ` · ${i.minutes} min` : ""}
+                        <span>{TYPE_LABEL[i.type]}</span>
+                        {i.minutes ? <span>{i.minutes} min</span> : null}
                       </span>
                     </span>
-                    <form action={assignAction}>
-                      <input type="hidden" name="classId" value={c.id} />
-                      <input type="hidden" name="contentId" value={i.id} />
-                      <input type="hidden" name="on" value={on ? "0" : "1"} />
-                      <button className={styles.switch} aria-pressed={on} aria-label={`${on ? "Unassign" : "Assign"} ${i.title}`} />
-                    </form>
+                    <AssignSwitch classId={c.id} contentId={i.id} slug={i.slug} title={i.title} initial={on} action={assignAction} />
                   </li>
                 );
               })}
@@ -105,9 +106,13 @@ export default async function ClassPage(props: PageProps<"/classes/[id]">) {
           </div>
         ))}
         {!groups.length && (
-          <p className="muted">
-            Nothing to assign yet. <Link href="/redeem" className="link">Redeem a kit code</Link> to add a kit.
-          </p>
+          <div className="sx-empty">
+            <strong>Nothing to assign yet.</strong>
+            <span>Lessons appear here once a kit is on your account.</span>
+            <Link href="/redeem" className="btn btn-sm btn-solid">
+              <Icon name="key" size={15} /> Redeem a kit code
+            </Link>
+          </div>
         )}
       </section>
 
@@ -129,15 +134,18 @@ export default async function ClassPage(props: PageProps<"/classes/[id]">) {
                 <form action={removeStudentAction}>
                   <input type="hidden" name="classId" value={c.id} />
                   <input type="hidden" name="studentId" value={st.id} />
-                  <button className={styles.iconBtn} aria-label={`Remove ${st.nickname}`} title="Remove">
+                  <ConfirmButton className={styles.iconBtn} ariaLabel={`Remove ${st.nickname}`} title={`Remove ${st.nickname}?`} text="Their seat opens up and their lab results are deleted. The device can join again with the class code." confirmLabel="Remove student">
                     <Icon name="x" size={15} />
-                  </button>
+                  </ConfirmButton>
                 </form>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">No students yet. Share the code above.</p>
+          <div className="sx-empty">
+            <strong>No students yet.</strong>
+            <span>Write the class code on the board. Each device that joins appears here with a nickname.</span>
+          </div>
         )}
       </section>
 
@@ -165,7 +173,7 @@ export default async function ClassPage(props: PageProps<"/classes/[id]">) {
                   <td className="hint">
                     {Object.entries(run.data)
                       .map(([k, val]) => `${k}: ${Array.isArray(val) ? val.join(" ") : val}`)
-                      .join(" · ")}
+                      .join(", ")}
                   </td>
                   <td>{run.createdAt.toLocaleString()}</td>
                 </tr>
@@ -261,11 +269,10 @@ export default async function ClassPage(props: PageProps<"/classes/[id]">) {
         </form>
         <form action={deleteClassAction} className={styles.danger}>
           <input type="hidden" name="classId" value={c.id} />
-          <label className="checkbox">
-            <input type="checkbox" name="confirm" required />
-            <span>Delete this class, its students, results and chats. This can&apos;t be undone.</span>
-          </label>
-          <button className="btn btn-sm btn-danger">Delete class</button>
+          <p>Deleting this class removes its students, results and chats.</p>
+          <ConfirmButton title={`Delete ${c.name}?`} text="Its students, lab results and Curie.AI chats are deleted too. This can't be undone." confirmLabel="Delete class" fields={{ confirm: "on" }}>
+            Delete class
+          </ConfirmButton>
         </form>
       </details>
     </div>

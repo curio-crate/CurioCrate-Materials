@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Notice } from "@/app/admin/Notice";
-import { ContentRow } from "@/components/content/ContentBits";
-import listStyles from "@/components/content/content.module.css";
+import { ContentList, ContentRow } from "@/components/content/ContentBits";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
 import { PageHead } from "@/components/ui/PageHead";
 import { currentStudent } from "@/lib/classes";
 import { contentHref, isShipped, listAllContent, listKits } from "@/lib/content";
@@ -36,21 +36,27 @@ export default async function StudentHome(props: PageProps<"/student">) {
       <div className={styles.layout}>
         <div className={styles.main}>
           {groups.map(({ kit, items }) => (
-            <section key={kit.id} className={`${styles.kit} reveal`} aria-labelledby={`k-${kit.slug}`}>
+            <section key={kit.id} className={styles.kit} aria-labelledby={`k-${kit.slug}`} data-cap={kit.accent}>
               <div className={styles.kitHead}>
-                <h2 id={`k-${kit.slug}`} className="h3">
+                <h2 id={`k-${kit.slug}`} className={`h3 ${styles.kitName}`}>
+                  <span className="sx-dot" aria-hidden="true" />
                   {kit.name}
                 </h2>
                 <span className="badge badge-plain">{kit.gradeBand}</span>
               </div>
-              <ul className={listStyles.list}>
+              <ContentList>
                 {items.map((c) => (
                   <ContentRow key={c.id} item={c} href={contentHref(c)} state="open" />
                 ))}
-              </ul>
+              </ContentList>
             </section>
           ))}
-          {!groups.length && <p className="muted">Nothing free to explore yet. Check back soon.</p>}
+          {!groups.length && (
+            <div className="sx-empty">
+              <strong>Nothing free to explore yet.</strong>
+              <span>New lessons are added through the year. If your teacher gave you a class code, join your class on the right.</span>
+            </div>
+          )}
         </div>
 
         <aside className={styles.aside} aria-label="Class and account">
@@ -81,13 +87,9 @@ export default async function StudentHome(props: PageProps<"/student">) {
               Signed in as {me.email}. We store only your email, password (scrambled), nickname and birth year.
             </p>
             <form action={deleteAccountAction} className="stack" style={{ gap: 10 }}>
-              <label className="checkbox">
-                <input type="checkbox" name="confirm" required />
-                <span>Delete my account and everything in it. This can&apos;t be undone.</span>
-              </label>
-              <button type="submit" className="btn btn-sm btn-danger">
+              <ConfirmButton title="Delete your account?" text="Your nickname, email and everything you saved are deleted. This can't be undone." confirmLabel="Delete my account" fields={{ confirm: "on" }}>
                 Delete my account
-              </button>
+              </ConfirmButton>
             </form>
           </details>
         </aside>

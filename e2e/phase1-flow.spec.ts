@@ -20,6 +20,7 @@ test("teacher signs in, redeems a code, opens a lesson, downloads the PDF and pl
   await page.getByRole("button", { name: /continue as this teacher/i }).click();
   await expect(page).toHaveURL(/\/onboarding/);
   await page.getByLabel("School name").fill("Cerritos Middle School");
+  await page.locator("form:has(#school-name) input[name=agree]").check();
   await page.getByRole("button", { name: /create school/i }).click();
   await expect(page).toHaveURL(/\/redeem\?code=/);
   await expect(page.getByLabel("Kit code")).toHaveValue(code);

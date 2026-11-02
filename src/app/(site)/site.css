@@ -1,8 +1,8 @@
 /*
- * The teacher & student site: clean, light and functional, on the CurioCrate blue. Same method as Studio: the
- * shared primitives in globals.css (.btn, .card, .input, .table, .badge, .alert…) read theme variables, so they are
- * re-skinned here by remapping those variables under .site, plus a few shape and type overrides. Colors come only
- * from tokens.css (--sx-*). Labs and kit art keep their night-sky drawing on a navy "screen" panel.
+ * The teacher & student site: "the crate label". Clean, light and functional, on the CurioCrate blue.
+ * The shared primitives in globals.css (.btn, .card, .input, .table, .badge, .alert…) read theme variables, so they are
+ * re-skinned here by remapping those variables under .site, plus shape, type and motion overrides. Site-only
+ * components are prefixed sx-. Colors come only from tokens.css (--sx-*). Spec: design/ui-system.md.
  */
 
 .site {
@@ -53,7 +53,7 @@
   --fill-faint: var(--sx-surface-2);
   --fill-kit-hover: var(--sx-accent-soft);
   --surface-card: var(--sx-surface);
-  --surface-card-2: var(--sx-surface);
+  --surface-card-2: var(--sx-surface-2);
   --surface-raised: var(--sx-surface);
   --surface-input: var(--sx-surface);
   --surface-input-blue: var(--sx-surface);
@@ -68,20 +68,24 @@
   --shadow-dropdown: var(--sx-shadow-lg);
   --pastel1: var(--sx-accent);
   --focus-ring: 2px solid var(--sx-brand);
-  --font-heading: var(--font-body);
-  --sx-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius-btn: 10px;
-  --radius-card: 14px;
-  --radius-panel: 16px;
-  --header-h: 68px;
+  --font-heading: var(--font-label);
+  --radius-btn: var(--sx-r-sm);
+  --radius-card: var(--sx-r-md);
+  --radius-panel: var(--sx-r-lg);
+  --header-h: 64px;
   --section-y: 96px;
+  --page-gutter: 32px;
+  /* Default cap (kit color) when no data-cap is set: the brand blue */
+  --cap: var(--sx-brand);
+  --cap-ink: var(--sx-accent-strong);
 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background: var(--sx-bg);
   color: var(--sx-text);
-  font-size: 0.9375rem;
+  font-size: var(--sx-fs-ui);
+  line-height: 1.55;
 }
 body:has(> .site) {
   background: var(--sx-bg);
@@ -93,74 +97,95 @@ body:has(> .site) {
 .site .page {
   flex: 1;
   padding-top: 0;
-  padding-bottom: 96px;
+  padding-bottom: var(--sx-24);
 }
-/* Every navigation: (site)/template.tsx remounts this wrapper, so each page eases in. */
-.site .sx-enter {
-  animation: sx-page 0.45s var(--sx-ease) both;
+
+/* ============ Kit caps ============ */
+/* Any element can take a kit's color: data-cap="lum|gold|blue" sets --cap (decoration) and --cap-ink (text). */
+.site [data-cap="lum"] {
+  --cap: var(--sx-cap-lum);
+  --cap-ink: var(--sx-cap-lum-ink);
 }
-@keyframes sx-page {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
+.site [data-cap="gold"] {
+  --cap: var(--sx-cap-gold);
+  --cap-ink: var(--sx-cap-gold-ink);
+}
+.site [data-cap="blue"] {
+  --cap: var(--sx-cap-blue);
+  --cap-ink: var(--sx-cap-blue-ink);
+}
+/* A small colored dot that names a kit wherever it appears (crumbs, search results, class lists). */
+.site .sx-dot {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cap);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cap) 18%, transparent);
 }
 
 /* ============ Type ============ */
 .site :is(h1, h2, h3, h4),
 .site :is(.display, .h1, .h2, .h3, .h4) {
-  font-family: var(--font-body);
+  font-family: var(--font-label);
+  font-optical-sizing: auto;
   color: var(--sx-heading);
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 .site .display {
-  font-size: clamp(2.5rem, 5vw, 3.75rem);
-  line-height: 1.06;
+  font-size: clamp(2.5rem, 5.2vw, var(--sx-fs-4xl));
+  font-stretch: 88%;
+  font-weight: 750;
+  line-height: 1.02;
   letter-spacing: -0.035em;
-  font-weight: 800;
 }
 .site .h1 {
-  font-size: clamp(2rem, 3.6vw, 2.75rem);
-  line-height: 1.12;
+  font-size: clamp(2rem, 3.6vw, var(--sx-fs-3xl));
+  font-stretch: 92%;
+  line-height: 1.08;
   letter-spacing: -0.03em;
 }
 .site .h2 {
-  font-size: clamp(1.6rem, 2.6vw, 2rem);
-  line-height: 1.18;
+  font-size: clamp(1.45rem, 2.4vw, var(--sx-fs-2xl));
+  line-height: 1.15;
+  letter-spacing: -0.025em;
 }
 .site .h3 {
-  font-size: 1.3rem;
-  line-height: 1.3;
-  letter-spacing: -0.02em;
+  font-size: var(--sx-fs-xl);
+  line-height: 1.25;
 }
 .site .h4 {
-  font-size: 1.05rem;
-  line-height: 1.35;
+  font-size: var(--sx-fs-lg);
+  line-height: 1.3;
   letter-spacing: -0.01em;
 }
 .site .italic-accent {
   font-style: normal;
   font-weight: inherit;
-  color: var(--sx-accent);
+  color: inherit;
 }
 .site .subtitle {
   font-family: var(--font-body);
   font-style: normal;
-  font-size: 1.125rem;
+  font-size: var(--sx-fs-lg);
   color: var(--sx-muted);
 }
 .site .lead {
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  max-width: 62ch;
+  font-size: var(--sx-fs-lg);
+  line-height: 1.6;
   color: var(--sx-muted);
 }
+/* Small context line above a title (school name, kit name). Sentence case, never tracked-out capitals. */
 .site .eyebrow {
   font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--sx-accent-strong);
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--sx-muted);
 }
 .site .hint {
   color: var(--sx-muted);
@@ -171,16 +196,23 @@ body:has(> .site) {
   color: var(--sx-heading);
 }
 .site .kit-title {
-  font-family: var(--font-body);
+  font-family: var(--font-label);
   text-transform: none;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 750;
+  font-stretch: 85%;
+  letter-spacing: -0.03em;
   color: var(--sx-heading);
 }
 .site .prose {
+  max-width: 68ch;
   color: var(--sx-text);
+  font-size: var(--sx-fs-md);
+  line-height: 1.75;
 }
 .site .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-body);
   font-size: 0.875rem;
   font-weight: 600;
@@ -188,32 +220,44 @@ body:has(> .site) {
   text-transform: none;
   color: var(--sx-accent);
 }
+.site .text-link svg {
+  transition: transform var(--sx-t-hover) var(--sx-ease);
+}
 .site .text-link:hover {
   color: var(--sx-accent-hover);
+}
+.site .text-link:hover svg {
+  transform: translateX(3px);
 }
 .site .link {
   text-decoration-color: var(--sx-accent-ring);
 }
+.site .mono,
+.site code {
+  font-variant-ligatures: none;
+}
 
 /* ============ Page header ============ */
 .site .page-head {
-  padding-top: 56px;
-  padding-bottom: 36px;
+  padding-top: var(--sx-14);
+  padding-bottom: var(--sx-8);
 }
 .site .page-head .display,
 .site .page-head .h1 {
-  margin-top: 10px;
+  margin-top: var(--sx-2);
 }
 .site .page-head .lead {
-  margin-top: 12px;
+  margin-top: var(--sx-3);
 }
 
 /* ============ Buttons ============ */
+/* Heights: sm 34, md 40, lg 48. Hover changes color only; press scales on the spring. */
 .site .btn {
-  --btn-pad-y: 10px;
-  --btn-pad-x: 18px;
+  --btn-pad-y: 9px;
+  --btn-pad-x: 16px;
   gap: 8px;
-  border-radius: var(--radius-btn);
+  min-height: 40px;
+  border-radius: var(--sx-r-sm);
   border: 1px solid var(--sx-border-strong);
   background: var(--sx-surface);
   color: var(--sx-heading);
@@ -221,26 +265,36 @@ body:has(> .site) {
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0;
+  line-height: 1.3;
   text-transform: none;
   backdrop-filter: none;
   box-shadow: var(--sx-shadow-sm);
-  transition: background-color 0.2s var(--sx-ease), border-color 0.2s var(--sx-ease), color 0.2s var(--sx-ease), box-shadow 0.25s var(--sx-ease), transform 0.25s var(--sx-ease);
+  transition:
+    background-color var(--sx-t-hover) var(--sx-ease),
+    border-color var(--sx-t-hover) var(--sx-ease),
+    color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-hover) var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring);
 }
 .site .btn:hover {
   background: var(--sx-surface-2);
-  border-color: var(--sx-accent);
-  color: var(--sx-accent-strong);
-  box-shadow: var(--sx-shadow);
-  transform: translateY(-1px);
-}
-.site .btn:active {
-  transform: translateY(0);
+  border-color: var(--sx-muted);
+  color: var(--sx-heading);
   box-shadow: var(--sx-shadow-sm);
+  transform: none;
+}
+.site .btn:active:not(:disabled) {
+  scale: 0.97;
+  transition-duration: var(--sx-t-hover), var(--sx-t-hover), var(--sx-t-hover), var(--sx-t-hover), var(--sx-t-press);
+}
+.site .btn svg {
+  flex: none;
 }
 .site .btn-solid {
   background: var(--sx-accent);
   border-color: var(--sx-accent);
   color: var(--sx-on-accent);
+  box-shadow: var(--sx-shadow-blue);
 }
 .site .btn-solid:hover {
   background: var(--sx-accent-hover);
@@ -288,43 +342,65 @@ body:has(> .site) {
   color: var(--sx-danger);
   box-shadow: none;
 }
+.site .btn-danger-solid {
+  background: var(--sx-danger);
+  border-color: var(--sx-danger);
+  color: var(--sx-on-accent);
+}
+.site .btn-danger-solid:hover {
+  background: var(--sx-danger);
+  border-color: var(--sx-danger);
+  color: var(--sx-on-accent);
+  filter: brightness(0.92);
+}
 .site .btn-sm {
-  --btn-pad-y: 7px;
-  --btn-pad-x: 13px;
+  --btn-pad-y: 6px;
+  --btn-pad-x: 12px;
+  min-height: 34px;
   font-size: 0.8125rem;
   border-radius: 9px;
 }
 .site .btn-xs {
-  --btn-pad-y: 5px;
+  --btn-pad-y: 4px;
   --btn-pad-x: 10px;
+  min-height: 28px;
   font-size: 0.75rem;
   letter-spacing: 0;
   border-radius: 8px;
 }
 .site .btn-lg {
-  --btn-pad-y: 13px;
-  --btn-pad-x: 24px;
+  --btn-pad-y: 12px;
+  --btn-pad-x: 22px;
+  min-height: 48px;
   font-size: 0.9375rem;
+  border-radius: 12px;
 }
 
 /* ============ Surfaces ============ */
 .site .card {
   background: var(--sx-surface);
   border: 1px solid var(--sx-border);
-  border-radius: var(--radius-panel);
+  border-radius: var(--sx-r-lg);
   backdrop-filter: none;
   box-shadow: var(--sx-shadow-sm);
 }
 .site .card-pad {
-  padding: 32px;
+  padding: var(--sx-8);
 }
+/* Clickable panels: the border darkens and the shadow deepens. No lift, so lists stay calm. */
 .site .card-link {
-  transition: border-color 0.25s var(--sx-ease), transform 0.3s var(--sx-ease), box-shadow 0.3s var(--sx-ease);
+  transition:
+    border-color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-enter) var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring);
 }
 .site .card-link:hover {
   border-color: var(--sx-border-strong);
-  transform: translateY(-3px);
-  box-shadow: var(--sx-shadow-lg);
+  transform: none;
+  box-shadow: var(--sx-shadow);
+}
+.site .card-link:active {
+  scale: 0.99;
 }
 .site .feature-card {
   background: var(--sx-surface);
@@ -333,14 +409,14 @@ body:has(> .site) {
   color: var(--sx-text);
 }
 
-/* ============ Badges ============ */
+/* ============ Badges & chips ============ */
 .site .badge {
   font-family: var(--font-body);
-  font-size: 0.6875rem;
+  font-size: var(--sx-fs-xs);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   text-transform: none;
-  padding: 3px 9px;
+  padding: 2px 9px;
   border-color: transparent;
   background: var(--sx-sunken);
   color: var(--sx-muted);
@@ -368,10 +444,157 @@ body:has(> .site) {
   color: var(--sx-danger);
 }
 .site .chip {
+  padding: 4px 11px;
+  font-size: var(--sx-fs-sm);
   font-weight: 500;
   border-color: var(--sx-border);
   background: var(--sx-surface-2);
   color: var(--sx-text);
+}
+
+/* Filter chips (a row of toggle buttons with counts). Used on the kit page and the dashboard finder. */
+.site .sx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+}
+.site .sx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--sx-border-strong);
+  background: var(--sx-surface);
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  color: var(--sx-text);
+  transition:
+    background-color var(--sx-t-hover) var(--sx-ease),
+    border-color var(--sx-t-hover) var(--sx-ease),
+    color var(--sx-t-hover) var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring);
+}
+.site .sx-chip:hover {
+  border-color: var(--sx-muted);
+}
+.site .sx-chip:active {
+  scale: 0.96;
+}
+.site .sx-chip[aria-pressed="true"] {
+  background: var(--sx-heading);
+  border-color: var(--sx-heading);
+  color: var(--sx-surface);
+}
+.site .sx-chip-count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--sx-sunken);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 18px;
+  text-align: center;
+  color: var(--sx-muted);
+}
+.site .sx-chip[aria-pressed="true"] .sx-chip-count {
+  background: color-mix(in srgb, var(--sx-surface) 18%, transparent);
+  color: var(--sx-surface);
+}
+
+/* ============ Switch (assign / unassign) ============ */
+/* A real toggle: 42x24 track, knob travels on the spring. Used on class pages, lesson pages and the home preview. */
+.site .sx-switch {
+  position: relative;
+  flex: none;
+  width: 42px;
+  height: 24px;
+  border-radius: 24px;
+  background: var(--sx-border-strong);
+  transition: background-color var(--sx-t-hover) var(--sx-ease);
+}
+.site .sx-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sx-surface);
+  box-shadow: 0 1px 2px var(--sx-scrim);
+  transition:
+    translate var(--sx-t-toggle) var(--sx-spring),
+    width var(--sx-t-press) var(--sx-ease);
+}
+.site .sx-switch:hover {
+  background: var(--sx-muted);
+}
+.site .sx-switch:active::after {
+  width: 22px;
+}
+.site .sx-switch[aria-pressed="true"] {
+  background: var(--sx-accent);
+}
+.site .sx-switch[aria-pressed="true"]::after {
+  translate: 18px 0;
+}
+.site .sx-switch[aria-pressed="true"]:active::after {
+  translate: 14px 0;
+}
+.site .sx-switch[aria-busy="true"] {
+  opacity: 0.7;
+}
+
+/* ============ Code ticket ============ */
+/* Class and kit codes look like a tear-off ticket: teachers copy them to the board, students type them. */
+.site .sx-ticket {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  border-radius: 8px;
+  background: var(--sx-surface);
+  border: 1.5px dashed var(--sx-border-strong);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.125rem;
+  letter-spacing: 0.2em;
+  color: var(--sx-heading);
+  white-space: nowrap;
+}
+.site .sx-ticket::before,
+.site .sx-ticket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--sx-bg);
+  border: 1.5px dashed var(--sx-border-strong);
+  clip-path: inset(0 0 0 50%);
+}
+.site .sx-ticket::before {
+  left: -6px;
+}
+.site .sx-ticket::after {
+  right: -6px;
+  clip-path: inset(0 50% 0 0);
+}
+.site .sx-ticket-sm {
+  padding: 3px 10px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.16em;
+  border-width: 1px;
+}
+.site .sx-ticket-sm::before,
+.site .sx-ticket-sm::after {
+  display: none;
 }
 
 /* ============ Forms ============ */
@@ -379,11 +602,11 @@ body:has(> .site) {
 .site .select,
 .site .textarea {
   min-height: 44px;
-  border-radius: 10px;
+  border-radius: var(--sx-r-sm);
   border-color: var(--sx-border-strong);
   background-color: var(--sx-surface);
   color: var(--sx-heading);
-  font-size: 0.9375rem;
+  font-size: var(--sx-fs-ui);
   box-shadow: var(--sx-shadow-sm);
 }
 .site .input:hover,
@@ -415,11 +638,12 @@ body:has(> .site) {
 
 /* ============ Alerts & tables ============ */
 .site .alert {
-  border-radius: 12px;
+  border-radius: var(--sx-r-md);
   border-color: var(--sx-accent-ring);
   background: var(--sx-accent-softer);
   color: var(--sx-text);
   font-size: 0.875rem;
+  animation: sx-in var(--sx-t-enter) var(--sx-ease) both;
 }
 .site .alert-success {
   border-color: transparent;
@@ -437,15 +661,15 @@ body:has(> .site) {
   color: var(--sx-danger);
 }
 .site .table-wrap {
-  border-radius: var(--radius-card);
+  border-radius: var(--sx-r-md);
   background: var(--sx-surface);
   box-shadow: var(--sx-shadow-sm);
 }
 .site .table th {
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: var(--sx-fs-xs);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   text-transform: none;
   color: var(--sx-muted);
   background: var(--sx-surface-2);
@@ -454,52 +678,180 @@ body:has(> .site) {
   color: var(--sx-text);
 }
 .site .table tbody tr {
-  transition: background-color 0.15s var(--sx-ease);
+  transition: background-color var(--sx-t-hover) var(--sx-ease);
 }
 .site .table tbody tr:hover {
   background: var(--sx-surface-2);
 }
 
+/* ============ Empty states ============ */
+/* An empty area says what goes here and offers the one action that fills it. */
+.site .sx-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--sx-2);
+  padding: var(--sx-6);
+  border-radius: var(--sx-r-md);
+  border: 1.5px dashed var(--sx-border-strong);
+  color: var(--sx-muted);
+}
+.site .sx-empty strong {
+  color: var(--sx-heading);
+  font-size: var(--sx-fs-ui);
+}
+.site .sx-empty > :last-child:is(a, button) {
+  margin-top: var(--sx-1);
+}
+
+/* ============ Dialog ============ */
+/* Native <dialog>: scales in from 0.96 on the spring; the scrim fades. Closing fades out quickly. */
+.site .sx-dialog {
+  width: min(440px, calc(100vw - 32px));
+  margin: auto;
+  padding: var(--sx-6);
+  border: 1px solid var(--sx-border);
+  border-radius: var(--sx-r-lg);
+  background: var(--sx-surface);
+  color: var(--sx-text);
+  box-shadow: var(--sx-shadow-lg);
+  opacity: 0;
+  scale: 0.96;
+  transition:
+    opacity 140ms var(--sx-ease-exit),
+    scale 140ms var(--sx-ease-exit),
+    overlay 140ms allow-discrete,
+    display 140ms allow-discrete;
+}
+.site .sx-dialog[open] {
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity 200ms var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring),
+    overlay var(--sx-t-toggle) allow-discrete,
+    display var(--sx-t-toggle) allow-discrete;
+}
+@starting-style {
+  .site .sx-dialog[open] {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+.site .sx-dialog::backdrop {
+  background: var(--sx-scrim);
+  opacity: 0;
+  transition: opacity 200ms var(--sx-ease), overlay 200ms allow-discrete, display 200ms allow-discrete;
+}
+.site .sx-dialog[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .site .sx-dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+.site .sx-dialog h2 {
+  font-size: var(--sx-fs-xl);
+}
+.site .sx-dialog p {
+  margin-top: var(--sx-2);
+  color: var(--sx-muted);
+}
+.site .sx-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--sx-2);
+  margin-top: var(--sx-6);
+}
+
+/* ============ Loading ============ */
+/* Skeleton blocks shimmer left to right. They only appear if loading takes over 150ms, so fast pages never flash. */
+.site .sx-skel {
+  display: block;
+  border-radius: var(--sx-r-sm);
+  background: linear-gradient(90deg, var(--sx-sunken) 0%, var(--sx-surface-2) 40%, var(--sx-sunken) 80%) 0 0 / 300% 100%;
+  animation: sx-shimmer 1.4s var(--sx-ease-in-out) infinite;
+}
+.site .sx-loading {
+  animation: sx-in var(--sx-t-enter) 150ms var(--sx-ease) both;
+}
+@keyframes sx-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
 /* ============ Motion ============ */
-/* Sections ease in the first time they scroll into view (RevealObserver adds .is-in). */
+/* Every navigation: (site)/template.tsx remounts this wrapper, so each page settles in (fade + 6px, 420ms). */
+.site .sx-enter {
+  animation: sx-page var(--sx-t-page) var(--sx-ease) both;
+}
+@keyframes sx-page {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes sx-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+/* Sections ease in once, the first time they scroll into view (RevealObserver adds .is-in). */
 .site .reveal {
-  transition: opacity 0.7s var(--sx-ease), transform 0.7s var(--sx-ease);
+  transition:
+    opacity 600ms var(--sx-ease),
+    transform 600ms var(--sx-ease);
 }
 html[data-reveal="on"] .site .reveal:not(.is-in) {
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(16px);
 }
-/* Cards in a row arrive one after another. */
 .site li.reveal:nth-child(2) {
-  transition-delay: 0.07s;
+  transition-delay: 60ms;
 }
 .site li.reveal:nth-child(3) {
-  transition-delay: 0.14s;
+  transition-delay: 120ms;
 }
 .site li.reveal:nth-child(4) {
-  transition-delay: 0.21s;
+  transition-delay: 180ms;
 }
 .site .rise,
 .site .rise-2,
 .site .rise-3,
 .site .rise-4 {
-  animation-duration: 0.6s;
+  animation-duration: 0.55s;
   animation-timing-function: var(--sx-ease);
+}
+/* Items that appear after filtering: fade up 4px, staggered by --i (set inline, capped at 8). */
+.site .sx-item-in {
+  animation: sx-in 280ms calc(min(var(--i, 0), 8) * 28ms) var(--sx-ease) both;
 }
 
 @media (max-width: 720px) {
   .site {
-    --header-h: 60px;
+    --header-h: 58px;
     --section-y: 64px;
+    --page-gutter: 16px;
   }
   .site .page-head {
-    padding-top: 36px;
+    padding-top: var(--sx-8);
   }
   .site .card-pad {
-    padding: 22px;
+    padding: var(--sx-5);
   }
 }
-/* The header isn't fixed any more, so anchors don't need room for it. */
+@media (prefers-reduced-motion: reduce) {
+  .site .sx-skel {
+    animation: none;
+  }
+}
+/* The header isn't fixed, so anchors don't need room for it. */
 html:has(.site) {
   scroll-padding-top: 16px;
 }

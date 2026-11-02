@@ -1,178 +1,351 @@
+/* ============ Breadcrumb ============ */
 .crumbs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding-top: 32px;
+  align-items: center;
+  gap: 6px;
+  padding-top: var(--sx-8);
   font-size: 0.875rem;
   color: var(--sx-muted);
 }
 .crumbs a {
   font-weight: 600;
   color: var(--sx-accent);
+  transition: color var(--sx-t-hover) var(--sx-ease);
 }
 .crumbs a:hover {
   color: var(--sx-accent-hover);
 }
-.hero {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 40px;
+.crumbKit {
+  display: inline-flex;
   align-items: center;
-  margin-top: 20px;
-  padding: 40px;
-  border-radius: 20px;
-  border: 1px solid var(--sx-border);
-  background: var(--sx-glow), var(--sx-surface);
-  box-shadow: var(--sx-shadow);
+  gap: 8px;
+  font-weight: 600;
+  color: var(--sx-heading);
 }
-.heroCopy {
+
+/* ============ The crate label ============ */
+/*
+ * grid: [copy 1.35fr][art 1fr] / [access bar, full width]
+ * The striped band on the left edge is printed in the kit's cap color, like the hazard stripes on a shipping crate.
+ * It is the one loud element on the page; everything else stays quiet.
+ */
+.label {
+  --band: 14px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-areas:
+    "copy art"
+    "access access";
+  margin-top: var(--sx-4);
+  border: 1px solid var(--sx-border);
+  border-radius: var(--sx-r-xl);
+  background: var(--sx-surface);
+  box-shadow: var(--sx-shadow);
+  overflow: hidden;
+}
+.label::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--band);
+  background: repeating-linear-gradient(-45deg, var(--cap) 0 7px, color-mix(in srgb, var(--cap) 22%, var(--sx-surface)) 7px 14px);
+  animation: band-in 900ms var(--sx-ease) both;
+}
+@keyframes group-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes band-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+.labelCopy {
+  grid-area: copy;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   align-items: flex-start;
+  gap: var(--sx-3);
+  padding: var(--sx-10) var(--sx-10) var(--sx-8) calc(var(--band) + var(--sx-10));
 }
-.kicker {
-  font-size: 0.8125rem;
+.kitName {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--sx-accent-strong);
+  color: var(--cap-ink);
 }
 .title {
-  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
-  line-height: 1.1;
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  line-height: 1.02;
+  text-wrap: balance;
 }
 .desc {
-  max-width: 560px;
-  font-size: 1rem;
+  max-width: 58ch;
+  font-size: var(--sx-fs-md);
   line-height: 1.65;
   color: var(--sx-muted);
 }
-.accessBanner {
+/* Spec cells, ruled like the facts box on a label */
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: var(--sx-2);
+  border: 1px solid var(--sx-border);
+  border-radius: var(--sx-r-md);
+}
+.specs > div {
+  padding: 10px 18px;
+}
+.specs > div + div {
+  border-left: 1px solid var(--sx-border);
+}
+.specs dt {
+  font-size: var(--sx-fs-xs);
+  font-weight: 600;
+  color: var(--sx-muted);
+}
+.specs dd {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--sx-heading);
+}
+.labelArt {
+  grid-area: art;
+  display: grid;
+  place-items: center;
+  margin: var(--sx-6) var(--sx-6) var(--sx-6) 0;
+  padding: var(--sx-6);
+  border-radius: var(--sx-r-lg);
+  background: var(--sx-navy);
+}
+.labelArt > * {
+  width: 100%;
+  max-width: 360px;
+}
+/* Access bar: below a dashed tear line, spanning the label */
+.access {
+  grid-area: access;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-  margin-top: 4px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: var(--sx-accent-softer);
-  border: 1px solid var(--sx-accent-ring);
-  color: var(--sx-text);
+  gap: var(--sx-3);
+  padding: var(--sx-4) var(--sx-6) var(--sx-4) calc(var(--band) + var(--sx-10));
+  border-top: 1.5px dashed var(--sx-border-strong);
+  background: var(--sx-surface-2);
   font-size: 0.875rem;
-  line-height: 1.5;
+  color: var(--sx-text);
+}
+.access svg {
+  flex: none;
+  color: var(--sx-muted);
+}
+.access span {
+  flex: 1;
+  min-width: 220px;
 }
 .accessOpen {
   background: var(--sx-success-soft);
-  border-color: transparent;
   color: var(--sx-success);
+  font-weight: 600;
 }
-.accessBanner svg {
-  flex-shrink: 0;
-}
-.accessBanner span {
-  flex: 1;
-  min-width: 200px;
-}
-.heroArt {
-  min-width: 0;
-  padding: 18px;
-  border-radius: 16px;
-  background: var(--sx-navy);
+.accessOpen svg {
+  color: currentColor;
 }
 
+/* ============ Materials ============ */
 .layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 40px;
-  margin-top: 48px;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--sx-14);
+  margin-top: var(--sx-10);
   align-items: start;
 }
 .main {
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
   min-width: 0;
 }
-.groupTitle {
-  margin-bottom: 18px;
+.toolbar {
+  margin-bottom: var(--sx-8);
 }
-.aside {
-  position: sticky;
-  top: 24px;
+.groups {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--sx-10);
 }
-.asideCard {
-  padding: 24px;
-  border-radius: var(--radius-card);
+/* Choosing a chip hides the other groups; the groups that stay replay their entrance (display none → block). */
+.group {
+  animation: group-in 320ms var(--sx-ease) both;
+}
+.groups[data-filter="lessons"] > [data-group]:not([data-group="lessons"]),
+.groups[data-filter="labs"] > [data-group]:not([data-group="labs"]),
+.groups[data-filter="manuals"] > [data-group]:not([data-group="manuals"]),
+.groups[data-filter="teacher"] > [data-group]:not([data-group="teacher"]),
+.groups[data-filter="training"] > [data-group]:not([data-group="training"]) {
+  display: none;
+}
+.groupTitle {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: var(--sx-3);
+}
+.groupNote {
+  font-family: var(--font-body);
+  font-size: var(--sx-fs-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--sx-muted);
+}
+
+/* ============ Aside ============ */
+.aside {
+  position: sticky;
+  top: var(--sx-6);
+  display: flex;
+  flex-direction: column;
+}
+.asideBlock {
+  padding-block: var(--sx-5);
+  border-top: 1px solid var(--sx-border);
+}
+.asideBlock:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.asideTitle {
+  margin-bottom: var(--sx-3);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--sx-heading);
 }
 .standards {
   display: grid;
-  gap: 14px;
-  margin-top: 16px;
+  gap: var(--sx-3);
 }
 .standards dt {
-  font-size: var(--text-sm);
-  color: var(--color-heading);
+  font-size: var(--sx-fs-sm);
+  font-weight: 700;
+  color: var(--sx-heading);
 }
 .standards dd {
-  margin: 2px 0 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  margin: 0;
+  font-size: var(--sx-fs-sm);
   line-height: 1.5;
+  color: var(--sx-muted);
 }
-.subLabel {
-  margin-top: 22px;
+.more {
+  margin-top: var(--sx-4);
+}
+.more summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  color: var(--sx-accent);
+  list-style: none;
+}
+.more summary::-webkit-details-marker {
+  display: none;
+}
+.more summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  rotate: -45deg;
+  transition: rotate var(--sx-t-hover) var(--sx-ease);
+}
+.more[open] summary::before {
+  rotate: 45deg;
 }
 .practices {
   list-style: none;
   padding: 0;
-  margin-top: 12px;
+  margin-top: var(--sx-3);
   display: grid;
-  gap: 8px;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  gap: 6px;
+  font-size: var(--sx-fs-sm);
   line-height: 1.45;
+  color: var(--sx-muted);
+  animation: group-in 240ms var(--sx-ease) both;
 }
-.practices .mono {
-  color: var(--color-text-soft);
-  font-size: var(--text-xs);
-  margin-right: 6px;
+.practices strong {
+  margin-right: 4px;
+  color: var(--sx-heading);
+  font-weight: 700;
 }
 .chips {
   list-style: none;
   padding: 0;
-  margin-top: 14px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 .box {
-  margin-top: 14px;
-  padding-left: 18px;
+  list-style: none;
+  padding: 0;
   display: grid;
   gap: 6px;
-  font-size: var(--text-md);
-  color: var(--color-text-soft);
+  font-size: 0.875rem;
+  color: var(--sx-text);
 }
-.box li::marker {
-  color: var(--color-accent);
+.box li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
+.box svg {
+  flex: none;
+  translate: 0 2px;
+  color: var(--cap-ink);
+}
+
 @media (max-width: 1000px) {
-  .hero {
+  .label {
     grid-template-columns: 1fr;
-    padding: 28px;
+    grid-template-areas:
+      "copy"
+      "art"
+      "access";
   }
-  .heroArt {
-    max-width: 360px;
+  .labelCopy {
+    padding: var(--sx-8) var(--sx-6) var(--sx-4) calc(var(--band) + var(--sx-6));
+  }
+  .labelArt {
+    margin: 0 var(--sx-6) var(--sx-6) calc(var(--band) + var(--sx-6));
+    max-width: 420px;
+  }
+  .access {
+    padding-left: calc(var(--band) + var(--sx-6));
   }
   .layout {
     grid-template-columns: 1fr;
+    gap: var(--sx-10);
   }
   .aside {
     position: static;
+  }
+}
+@media (max-width: 560px) {
+  .label {
+    --band: 8px;
+  }
+  .specs > div {
+    padding: 8px 12px;
   }
 }

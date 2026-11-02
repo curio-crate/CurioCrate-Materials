@@ -8,7 +8,12 @@ async function tabUntil(page: Page, predicate: () => Promise<boolean>, max = 60)
   }
   throw new Error("focus never reached the target by Tab");
 }
-const focusedText = (page: Page) => page.evaluate(() => (document.activeElement as HTMLElement)?.innerText?.trim() ?? "");
+// The focused control's text. Focus sitting on <body> (e.g. mid-navigation) is "nothing focused", not the whole page.
+const focusedText = (page: Page) =>
+  page.evaluate(() => {
+    const el = document.activeElement as HTMLElement | null;
+    return el && el !== document.body ? (el.innerText?.trim() ?? "") : "";
+  });
 
 test("skip link, header links, the mobile menu and Escape work by keyboard alone", async ({ page }) => {
   await page.goto("/");
@@ -47,6 +52,7 @@ test("redeem a code, open the lesson and play the video by keyboard alone", asyn
   await tabUntil(page, async () => (await focusedText(page)).toLowerCase().includes("open the kit"));
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/kits\/luminol/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible(); // the kit page has rendered (not the loading view)
 
   await tabUntil(page, async () => (await focusedText(page)).includes("A.1 Why it glows"), 80);
   await page.keyboard.press("Enter");

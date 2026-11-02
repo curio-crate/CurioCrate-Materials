@@ -16,7 +16,7 @@ export function NgssTags({ codes, limit }: { codes: string[]; limit?: number }) 
   return (
     <ul className={styles.ngss} aria-label="NGSS standards">
       <li className={styles.ngssLabel} aria-hidden="true">
-        <Icon name="ngss" size={13} /> NGSS
+        <Icon name="ngss" size={12} /> NGSS
       </li>
       {shown.map((c) => (
         <li key={c} className={styles.ngssTag} title={NGSS_LABELS[c]}>
@@ -31,40 +31,75 @@ export function NgssTags({ codes, limit }: { codes: string[]; limit?: number }) 
 
 export type RowState = "open" | "locked" | "signin";
 
-/** One content item in a list, with its lock state for the current viewer. */
-export function ContentRow({ item, href, state, kitName }: { item: ContentItem; href: string; state: RowState; kitName?: string }) {
+/** "A.1 Why it glows" → { code: "A.1", rest: "Why it glows" }, so the section code can sit on the lesson rail. */
+function splitSection(title: string, section: string | null | undefined) {
+  if (section && title.startsWith(section)) return { code: section, rest: title.slice(section.length).trim() };
+  return { code: null, rest: title };
+}
+
+/**
+ * One content item in a list, with its lock state for the current viewer.
+ * `step`: show the item on a numbered rail (lessons that are taught in order); the list must have the `rail` class
+ * (use <ContentList rail>). Otherwise a type icon leads the row.
+ */
+export function ContentRow({ item, href, state, kitName, step = false, cap }: { item: ContentItem; href: string; state: RowState; kitName?: string; step?: boolean; cap?: string }) {
+  const locked = state === "locked" || (state === "signin" && item.requiredTier !== "free");
+  const { code, rest } = splitSection(item.title, item.section);
+  const onRail = step && !!code;
   return (
-    <li className={`${styles.row} ${state !== "open" ? styles.rowLocked : ""}`}>
-      <span className={`${styles.typeIcon} ${styles[`t_${item.type}`]}`} aria-hidden="true">
-        <Icon name={item.type} size={20} />
-      </span>
+    <li className={`${styles.row} ${locked ? styles.rowLocked : ""}`} data-cap={cap}>
+      {onRail ? (
+        <span className={styles.node} aria-hidden="true">
+          {code}
+        </span>
+      ) : (
+        <span className={`${styles.typeIcon} ${styles[`t_${item.type}`]}`} aria-hidden="true">
+          <Icon name={item.type} size={20} />
+        </span>
+      )}
       <div className={styles.rowBody}>
-        <div className={styles.rowMeta}>
-          <span className="eyebrow">
-            {kitName ? `${kitName} · ` : ""}
-            {TYPE_LABEL[item.type]}
-            {item.section ? ` · ${item.section}` : ""}
-          </span>
-        </div>
+        <p className={styles.rowMeta}>
+          {kitName && <span className={styles.metaKit}>{kitName}</span>}
+          <span>{TYPE_LABEL[item.type]}</span>
+          {item.minutes && (
+            <span className={styles.minutes}>
+              <Icon name="clock" size={13} /> {item.minutes} min
+            </span>
+          )}
+        </p>
         <Link href={href} className={styles.rowTitle}>
-          {item.title}
+          {onRail ? (
+            <>
+              <span className={styles.codeHidden}>{code}</span> {rest}
+            </>
+          ) : (
+            item.title
+          )}
           <span className="sr-only">{state === "locked" ? " (locked)" : state === "signin" ? " (sign in to open)" : ""}</span>
         </Link>
         <p className={styles.rowSummary}>{item.summary}</p>
-        <div className={styles.rowFoot}>
-          {item.minutes && (
-            <span className={styles.minutes}>
-              <Icon name="clock" size={14} /> {item.minutes} min
-            </span>
-          )}
-          <NgssTags codes={item.ngss} limit={3} />
-        </div>
+        {!!item.ngss.length && (
+          <div className={styles.rowFoot}>
+            <NgssTags codes={item.ngss} limit={3} />
+          </div>
+        )}
       </div>
       <span className={styles.state} aria-hidden="true">
-        {state === "locked" || (state === "signin" && item.requiredTier !== "free") ? <Icon name="lock" size={18} /> : <Icon name="arrow" size={18} />}
+        {locked ? (
+          <span className={styles.lockPill}>
+            <Icon name="lock" size={13} /> Locked
+          </span>
+        ) : (
+          <Icon name="arrow" size={18} />
+        )}
       </span>
     </li>
   );
+}
+
+/** A list of ContentRows. `rail` draws the line that joins numbered lessons. */
+export function ContentList({ children, rail = false }: { children: React.ReactNode; rail?: boolean }) {
+  return <ul className={`${styles.list} ${rail ? styles.rail : ""}`}>{children}</ul>;
 }
 
 export function LockedPanel({

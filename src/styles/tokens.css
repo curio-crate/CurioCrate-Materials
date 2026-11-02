@@ -198,48 +198,105 @@
 }
 
 /*
- * Teacher & student site palette. Clean, light and functional (the main curiocrate.org site makes the statement;
- * this one is a tool), built on the CurioCrate star-logo blue. Used only inside .site (src/app/(site)/site.css).
+ * Teacher & student site: "the crate label". Clean, light and functional (the main curiocrate.org site makes the
+ * statement; this one is a tool). Two color jobs, never mixed:
+ *   - CurioCrate blue means "you can act on this" (links, buttons, switches, focus).
+ *   - A kit's cap color means "this belongs to that kit" (like the colored caps on a kit's sample tubes). It comes from
+ *     the kit's Studio "Card style" (kits.accent: lum | gold | blue) and is set with data-cap on an element.
  * #1b7fe8 is decoration only (4.0:1 on white); #1670d4 (4.9:1) is used for text and filled buttons.
+ * Full spec: design/ui-system.md. Used only inside .site (src/app/(site)/site.css).
  */
 .site {
-  --sx-bg: #f6f8fc;
-  --sx-bg-tint: #eef4fc;
+  /* Surfaces: a cool lab bench with white paper on it */
+  --sx-bg: #f4f6fa;
+  --sx-bg-tint: #edf2f9;
   --sx-surface: #ffffff;
-  --sx-surface-2: #f9fbfe;
-  --sx-sunken: #f0f4f9;
-  --sx-border: #e3e9f2;
-  --sx-border-strong: #cbd7e6;
-  --sx-text: #26354a;
-  --sx-muted: #5a6a80;
+  --sx-surface-2: #f8fafd;
+  --sx-sunken: #eef2f7;
+  --sx-border: #dfe6ef;
+  --sx-border-strong: #c6d2e1;
+  /* Ink */
   --sx-heading: #0c1a30;
+  --sx-text: #2a3950;
+  --sx-muted: #56667c;
+  /* Action blue */
   --sx-brand: #1b7fe8;
   --sx-accent: #1670d4;
   --sx-accent-hover: #125fb6;
   --sx-accent-strong: #1260b3;
-  --sx-accent-soft: rgba(27, 127, 232, 0.08);
+  --sx-accent-soft: rgba(27, 127, 232, 0.09);
   --sx-accent-softer: rgba(27, 127, 232, 0.05);
-  --sx-accent-ring: rgba(27, 127, 232, 0.25);
+  --sx-accent-ring: rgba(27, 127, 232, 0.28);
   --sx-on-accent: #ffffff;
   --sx-navy: #0f2044;
   --sx-navy-2: #162a5c;
   --sx-on-navy: #e8f2fd;
   --sx-on-navy-muted: rgba(232, 242, 253, 0.72);
+  /* Status */
   --sx-success: #08694f; /* 5.2:1 on its own soft tint (AA with margin) */
-  --sx-success-soft: rgba(11, 122, 92, 0.08);
+  --sx-success-soft: rgba(11, 122, 92, 0.09);
   --sx-warning: #8a5a00;
-  --sx-warning-soft: rgba(214, 150, 20, 0.1);
-  --sx-danger: #c0392b;
-  --sx-danger-soft: rgba(192, 57, 43, 0.07);
-  --sx-danger-border: rgba(192, 57, 43, 0.35);
-  --sx-shadow-sm: 0 1px 2px rgba(12, 26, 48, 0.05), 0 1px 3px rgba(12, 26, 48, 0.04);
-  --sx-shadow: 0 6px 20px rgba(12, 26, 48, 0.07);
-  --sx-shadow-lg: 0 24px 60px rgba(12, 26, 48, 0.12);
-  --sx-shadow-blue: 0 10px 30px rgba(22, 112, 212, 0.22);
-  --sx-scrim: rgba(12, 26, 48, 0.32);
-  --sx-header: rgba(255, 255, 255, 0.86);
-  --sx-glow: radial-gradient(60% 60% at 70% 20%, rgba(27, 127, 232, 0.14) 0%, rgba(27, 127, 232, 0) 70%);
-  --sx-grid-line: rgba(22, 112, 212, 0.06);
+  --sx-warning-soft: rgba(214, 150, 20, 0.12);
+  --sx-danger: #b8322a;
+  --sx-danger-soft: rgba(184, 50, 42, 0.07);
+  --sx-danger-border: rgba(184, 50, 42, 0.35);
+  /* Kit caps: --cap is decoration (stripes, dots, nodes); --cap-ink is the AA text version */
+  --sx-cap-lum: #12a391;
+  --sx-cap-lum-ink: #0b7366;
+  --sx-cap-gold: #e5a02e;
+  --sx-cap-gold-ink: #8a5a00;
+  --sx-cap-blue: #5a5fd8;
+  --sx-cap-blue-ink: #4146b8;
+  /* Elevation: crisp edges first, soft shadow only when something floats */
+  --sx-shadow-sm: 0 1px 0 rgba(12, 26, 48, 0.04), 0 1px 2px rgba(12, 26, 48, 0.06);
+  --sx-shadow: 0 1px 2px rgba(12, 26, 48, 0.06), 0 8px 24px -10px rgba(12, 26, 48, 0.16);
+  --sx-shadow-lg: 0 2px 4px rgba(12, 26, 48, 0.04), 0 24px 56px -18px rgba(12, 26, 48, 0.28);
+  --sx-shadow-blue: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 6px 16px -6px rgba(22, 112, 212, 0.55);
+  --sx-scrim: rgba(12, 26, 48, 0.42);
+  --sx-header: #ffffff;
+  --sx-glow: none;
+  --sx-grid-line: transparent;
+  /* Type: Bricolage Grotesque headings (the crate label), Plus Jakarta Sans for everything you read and use */
+  --font-label: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
+  --sx-fs-xs: 0.75rem; /* 12 meta */
+  --sx-fs-sm: 0.8125rem; /* 13 secondary */
+  --sx-fs-ui: 0.9375rem; /* 15 interface + body */
+  --sx-fs-md: 1rem; /* 16 reading */
+  --sx-fs-lg: 1.125rem; /* 18 row titles, lead */
+  --sx-fs-xl: 1.375rem; /* 22 h3 */
+  --sx-fs-2xl: 1.75rem; /* 28 h2 */
+  --sx-fs-3xl: 2.375rem; /* 38 h1 */
+  --sx-fs-4xl: 3.25rem; /* 52 display */
+  --sx-fs-5xl: 4.25rem; /* 68 home display */
+  /* Space: 4px steps */
+  --sx-1: 4px;
+  --sx-2: 8px;
+  --sx-3: 12px;
+  --sx-4: 16px;
+  --sx-5: 20px;
+  --sx-6: 24px;
+  --sx-8: 32px;
+  --sx-10: 40px;
+  --sx-14: 56px;
+  --sx-18: 72px;
+  --sx-24: 96px;
+  /* Shape: radius grows with the size of the thing */
+  --sx-r-xs: 6px; /* tags, NGSS codes */
+  --sx-r-sm: 10px; /* buttons, inputs */
+  --sx-r-md: 12px; /* rows, tiles */
+  --sx-r-lg: 16px; /* panels */
+  --sx-r-xl: 22px; /* crate labels, hero panels */
+  /* Motion */
+  --sx-ease: cubic-bezier(0.22, 1, 0.36, 1); /* ease-out-quint: entrances and hovers */
+  --sx-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* things that move and stay (sliders, rails) */
+  --sx-ease-exit: cubic-bezier(0.4, 0, 1, 1); /* leaving the screen */
+  /* Spring: stiffness 380, damping 28, mass 1 (zeta ~0.72, ~4% overshoot, settles ~480ms). Switches, presses, toggles. */
+  --sx-spring: linear(0, 0.063 2.4%, 0.235 5.3%, 0.482 9%, 0.735 13.4%, 0.904 17.6%, 0.998 21.7%, 1.036 25.5%, 1.045 29.2%, 1.038 33.5%, 1.015 41.9%, 1.002 50%, 0.998 60%, 1);
+  --sx-t-press: 120ms;
+  --sx-t-hover: 180ms;
+  --sx-t-toggle: 480ms;
+  --sx-t-enter: 360ms;
+  --sx-t-page: 420ms;
   color-scheme: light;
 }
 

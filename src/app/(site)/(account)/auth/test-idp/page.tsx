@@ -18,7 +18,7 @@ export default async function TestIdpPage(props: PageProps<"/auth/test-idp">) {
   return (
     <div className="container">
       <div className={styles.wrap}>
-        <PageHead center size="h1" eyebrow={`${label} · test mode`} title="Test sign-in" lead={`This page stands in for ${label} because its keys are not set. It never runs on the production site.`} />
+        <PageHead center size="h1" eyebrow={`${label} test mode`} title="Test sign-in" lead={`This page stands in for ${label} because its keys are not set. It never runs on the production site.`} />
         <form action="/api/auth/test-idp" method="post" className={`card ${styles.panel} ${styles.form}`}>
           <input type="hidden" name="provider" value={provider} />
           <input type="hidden" name="state" value={String(sp.state ?? "")} />

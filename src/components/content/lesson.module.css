@@ -22,7 +22,7 @@
   line-height: 1.65;
 }
 .list li::marker {
-  color: var(--color-accent);
+  color: var(--cap, var(--color-accent));
 }
 .steps {
   list-style: none;
@@ -45,9 +45,10 @@
 .stepN {
   font-family: var(--font-heading, var(--font-display));
   font-size: 1.15rem;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--color-accent);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  color: var(--cap-ink, var(--color-accent));
 }
 .materials ul {
   list-style: none;

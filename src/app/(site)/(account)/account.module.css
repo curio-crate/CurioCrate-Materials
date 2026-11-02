@@ -19,19 +19,28 @@
   gap: 16px;
   width: 100%;
   padding: 16px 20px;
-  border-radius: var(--radius-row);
+  border-radius: var(--sx-r-md, var(--radius-row));
   border: 1px solid var(--border-subtle);
-  background: var(--fill-faint);
+  background: var(--sx-surface, var(--fill-faint));
+  box-shadow: var(--sx-shadow-sm, none);
   color: var(--color-heading);
   font-size: var(--text-base);
   font-weight: 600;
   text-align: left;
-  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition:
+    border-color var(--sx-t-hover, 0.2s) var(--sx-ease, ease),
+    box-shadow var(--sx-t-enter, 0.3s) var(--sx-ease, ease),
+    scale var(--sx-t-toggle, 0.4s) var(--sx-spring, ease);
 }
 .provider:hover {
-  border-color: var(--border-hover);
-  background: var(--fill-active);
-  box-shadow: var(--glow-btn);
+  border-color: var(--sx-muted, var(--border-hover));
+  box-shadow: var(--sx-shadow, var(--glow-btn));
+}
+.provider:active {
+  scale: 0.99;
+}
+.provider:hover .providerArrow {
+  translate: 3px 0;
 }
 .provider img {
   width: 24px;
@@ -39,8 +48,8 @@
 }
 .providerArrow {
   margin-left: auto;
-  font-family: var(--font-mono);
   color: var(--color-accent);
+  transition: translate var(--sx-t-hover, 0.2s) var(--sx-ease, ease);
 }
 .note {
   margin-top: 24px;

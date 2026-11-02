@@ -38,7 +38,7 @@ export default async function RedeemPage(props: PageProps<"/redeem">) {
                 </p>
               )}
               <Link href={v ? `/onboarding?next=${encodeURIComponent(next)}` : `/signin?next=${encodeURIComponent(next)}`} className="btn btn-solid btn-lg btn-block">
-                {v ? "Choose my school →" : "Teacher sign in →"}
+                {v ? "Choose my school" : "Teacher sign in"}
               </Link>
             </div>
           )}

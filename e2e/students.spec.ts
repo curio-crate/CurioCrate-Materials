@@ -28,8 +28,9 @@ test("a student 13+ makes a free account, opens free material only, and deletes 
 
   await page.goto("/student");
   await page.locator("summary", { hasText: "My account" }).click();
-  await page.getByRole("checkbox", { name: /delete my account/i }).check();
+  // Deleting asks first, in a dialog.
   await page.getByRole("button", { name: "Delete my account" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Delete my account" }).click();
   await expect(page).toHaveURL(/\/\?deleted=1$/);
   await page.goto("/student");
   await expect(page).toHaveURL(/\/student\/signin$/);

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Icon } from "@/components/ui/Icon";
 import { PageHead } from "@/components/ui/PageHead";
 import { getViewer } from "@/lib/auth/viewer";
 import { safeNext } from "@/lib/auth/flow";
@@ -56,7 +57,7 @@ export default async function SignInPage(props: PageProps<"/signin">) {
                 Continue with {PROVIDERS[p].label}
                 {isTestMode(p) && <span className="badge badge-plain badge-sub">Test mode</span>}
                 <span className={styles.providerArrow} aria-hidden="true">
-                  →
+                  <Icon name="arrow" size={16} />
                 </span>
               </a>
             ))}

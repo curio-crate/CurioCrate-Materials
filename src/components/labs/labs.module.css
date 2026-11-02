@@ -7,7 +7,7 @@
 .stage {
   position: relative;
   padding: 20px;
-  border-radius: var(--radius-feature);
+  border-radius: var(--sx-r-xl, var(--radius-feature));
   border: 1px solid var(--border-card);
   background: var(--color-bg-deep);
   min-height: 340px;
@@ -19,9 +19,10 @@
   display: grid;
   gap: 18px;
   padding: 24px;
-  border-radius: var(--radius-card);
+  border-radius: var(--sx-r-lg, var(--radius-card));
   border: 1px solid var(--border-card);
   background: var(--surface-card);
+  box-shadow: var(--sx-shadow-sm, none);
 }
 .group {
   display: grid;
@@ -34,26 +35,35 @@
   color: var(--color-heading);
   margin-bottom: 8px;
 }
+/* Segmented control: a sunken track; the chosen option is a raised white key */
 .seg {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
+  justify-self: start;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--sx-r-sm, var(--radius-md));
+  background: var(--sx-sunken, var(--fill-faint));
 }
 .seg label {
-  padding: 7px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-subtle);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--color-text-muted);
   cursor: pointer;
+  transition:
+    background-color var(--sx-t-hover, 0.2s) var(--sx-ease, ease),
+    color var(--sx-t-hover, 0.2s) var(--sx-ease, ease),
+    box-shadow var(--sx-t-hover, 0.2s) var(--sx-ease, ease);
+}
+.seg label:hover {
+  color: var(--color-heading);
 }
 .seg label:has(input:checked) {
-  background: var(--fill-chip);
+  background: var(--sx-surface, var(--fill-chip));
   color: var(--color-heading);
-  border-color: var(--border-strong);
+  box-shadow: var(--sx-shadow-sm, none);
 }
 .seg label:has(input:focus-visible) {
   outline: var(--focus-ring);
@@ -67,25 +77,59 @@
   color: var(--color-heading);
   min-height: 48px;
 }
+/* Tube rack: six tactile sample tubes. The chosen tube fills with the kit color and lifts on the spring. */
 .tubes {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
 }
 .tubeBtn {
+  --tube: var(--sx-border-strong, var(--border-strong));
   display: grid;
   justify-items: center;
-  gap: 6px;
-  padding: 8px;
-  border-radius: var(--radius-row);
-  border: 1px solid transparent;
+  gap: 4px;
+  padding: 10px 2px 8px;
+  border-radius: var(--sx-r-md, var(--radius-row));
   color: var(--color-text-muted);
+  transition: background-color var(--sx-t-hover, 0.2s) var(--sx-ease, ease);
+}
+.tubeBtn::before {
+  content: "";
+  width: 16px;
+  height: 40px;
+  margin-bottom: 4px;
+  border: 2px solid var(--tube);
+  border-top: 5px solid var(--tube);
+  border-radius: 3px 3px 9px 9px;
+  background: linear-gradient(to top, var(--tube-fill, transparent) 0 45%, transparent 45%);
+  transition:
+    translate var(--sx-t-toggle, 0.4s) var(--sx-spring, ease),
+    border-color var(--sx-t-hover, 0.2s) var(--sx-ease, ease);
+}
+.tubeBtn:hover {
+  background: var(--sx-sunken, var(--fill-faint));
+}
+.tubeBtn:hover::before {
+  translate: 0 -2px;
+}
+.tubeBtn :global(.mono) {
+  font-family: var(--font-label, var(--font-body));
+  font-size: 1rem;
+  font-weight: 750;
+  color: var(--color-heading);
+}
+.tubeBtn :global(.hint) {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  text-align: center;
 }
 .tubeBtn[aria-pressed="true"] {
-  border-color: var(--border-kit-strong);
-  background: var(--tier-kit-bg);
-  color: var(--lum-text);
+  --tube: var(--cap, var(--lum-glow));
+  --tube-fill: var(--cap, var(--lum-glow));
+  background: color-mix(in srgb, var(--cap, var(--lum-glow)) 10%, transparent);
+}
+.tubeBtn[aria-pressed="true"]::before {
+  translate: 0 -5px;
 }
 .svg {
   width: 100%;
@@ -151,9 +195,11 @@
 }
 .table th {
   color: var(--color-label);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 1px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.table td {
+  font-variant-numeric: tabular-nums;
 }
 .layers {
   display: grid;
@@ -208,5 +254,10 @@
 @media (max-width: 900px) {
   .lab {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 420px) {
+  .tubes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
