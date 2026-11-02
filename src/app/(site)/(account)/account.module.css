@@ -20,24 +20,27 @@
   width: 100%;
   padding: 16px 20px;
   border-radius: var(--sx-r-md, var(--radius-row));
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-subtle);
   background: var(--sx-surface, var(--fill-faint));
-  box-shadow: var(--sx-shadow-sm, none);
+  box-shadow: 0 4px 0 var(--border-subtle);
   color: var(--color-heading);
   font-size: var(--text-base);
   font-weight: 600;
   text-align: left;
   transition:
     border-color var(--sx-t-hover, 0.2s) var(--sx-ease, ease),
-    box-shadow var(--sx-t-enter, 0.3s) var(--sx-ease, ease),
-    scale var(--sx-t-toggle, 0.4s) var(--sx-spring, ease);
+    box-shadow var(--sx-t-press, 0.12s) var(--sx-ease, ease),
+    translate var(--sx-t-press, 0.12s) var(--sx-ease, ease);
 }
 .provider:hover {
-  border-color: var(--sx-muted, var(--border-hover));
-  box-shadow: var(--sx-shadow, var(--glow-btn));
+  border-color: var(--sx-accent, var(--border-hover));
+  box-shadow: 0 5px 0 var(--sx-accent, var(--border-hover));
+  translate: 0 -1px;
 }
 .provider:active {
-  scale: 0.99;
+  translate: 0 4px;
+  box-shadow: 0 0 0 var(--sx-accent, var(--border-hover));
+  transition-duration: 60ms;
 }
 .provider:hover .providerArrow {
   translate: 3px 0;

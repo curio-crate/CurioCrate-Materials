@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { teachers } from "@/db/schema";
 import { requireSchool } from "@/lib/auth/viewer";
 import { MAX_CLASSES_PER_TEACHER } from "@/lib/class-limits";
+import { greetingName } from "@/lib/names";
 import { assignedCounts, classesFor } from "@/lib/classes";
 import { contentHref, isShipped, kitContent, listKits, TYPE_LABEL } from "@/lib/content";
 import { features } from "@/lib/features";
@@ -32,7 +33,7 @@ export default async function DashboardPage(props: PageProps<"/dashboard">) {
   const isOpen = (kitId: string) => access.grants.kitIds.has(kitId) || access.grants.subscription;
   const sortedKits = [...kitItems].sort((a, b) => Number(isOpen(b.kit.id)) - Number(isOpen(a.kit.id)));
   const capOf = new Map(kits.map((k) => [k.id, k.accent]));
-  const first = v.teacher.name.split(" ")[0];
+  const first = greetingName(v.teacher.name);
 
   // Everything the finder can search: each kit's top-level materials, with the viewer's lock state.
   const finderItems: FinderItem[] = kitItems.flatMap(({ kit, items }) => {

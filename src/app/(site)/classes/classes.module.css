@@ -80,21 +80,24 @@
   align-items: center;
   gap: var(--sx-4);
   padding: 12px 14px;
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-md);
   background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: 0 4px 0 var(--sx-border);
   transition:
     border-color var(--sx-t-hover) var(--sx-ease),
-    box-shadow var(--sx-t-enter) var(--sx-ease),
-    scale var(--sx-t-toggle) var(--sx-spring);
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
 }
 .classRow:hover {
   border-color: var(--sx-border-strong);
-  box-shadow: var(--sx-shadow);
+  box-shadow: 0 6px 0 var(--sx-border-strong);
+  translate: 0 -2px;
 }
 .classRow:active {
-  scale: 0.985;
+  translate: 0 3px;
+  box-shadow: 0 1px 0 var(--sx-border-strong);
+  transition-duration: 60ms;
 }
 .classRowMain {
   display: grid;
@@ -261,7 +264,7 @@
 .assignList {
   list-style: none;
   padding: 0;
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-md);
   background: var(--sx-surface);
   box-shadow: var(--sx-shadow-sm);
@@ -326,7 +329,7 @@
   gap: 8px;
   padding: 8px 8px 8px 14px;
   border-radius: var(--sx-r-md);
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   background: var(--sx-surface);
 }
 .student strong {

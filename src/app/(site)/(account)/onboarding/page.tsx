@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { PageHead } from "@/components/ui/PageHead";
 import { safeNext } from "@/lib/auth/flow";
 import { requireTeacher } from "@/lib/auth/viewer";
+import { greetingName } from "@/lib/names";
 import { emailDomain, isPublicEmailDomain } from "@/lib/teachers";
 import styles from "../account.module.css";
 import { OnboardingForms } from "./OnboardingForms";
@@ -21,7 +22,7 @@ export default async function OnboardingPage(props: PageProps<"/onboarding">) {
         <PageHead
           center
           size="h1"
-          eyebrow={`Welcome, ${v.teacher.name.split(" ")[0]}`}
+          eyebrow={`Welcome, ${greetingName(v.teacher.name)}`}
           title="Which school"
           accent="do you teach at?"
           lead="Kit access belongs to your school, so every teacher there shares it. Join your school or set it up."

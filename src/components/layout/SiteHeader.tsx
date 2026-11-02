@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { greetingName } from "@/lib/names";
 import styles from "./SiteHeader.module.css";
 
 export type HeaderViewer =
@@ -65,7 +66,7 @@ export function SiteHeader({ viewer }: { viewer: HeaderViewer }) {
             {viewer.name.trim().charAt(0).toUpperCase() || "T"}
           </span>
           <span className="sr-only">Account: </span>
-          <span className={styles.meName}>{viewer.name.split(" ")[0]}</span>
+          <span className={styles.meName}>{greetingName(viewer.name)}</span>
         </Link>
       </>
     ) : viewer ? (

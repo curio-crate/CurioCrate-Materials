@@ -39,7 +39,7 @@
     "copy art"
     "access access";
   margin-top: var(--sx-4);
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-xl);
   background: var(--sx-surface);
   box-shadow: var(--sx-shadow);
@@ -96,7 +96,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-top: var(--sx-2);
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-md);
 }
 .specs > div {

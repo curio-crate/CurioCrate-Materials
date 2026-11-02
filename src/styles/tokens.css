@@ -198,76 +198,94 @@
 }
 
 /*
- * Teacher & student site: "the crate label". Clean, light and functional (the main curiocrate.org site makes the
- * statement; this one is a tool). Two color jobs, never mixed:
- *   - CurioCrate blue means "you can act on this" (links, buttons, switches, focus).
- *   - A kit's cap color means "this belongs to that kit" (like the colored caps on a kit's sample tubes). It comes from
- *     the kit's Studio "Card style" (kits.accent: lum | gold | blue) and is set with data-cap on an element.
- * #1b7fe8 is decoration only (4.0:1 on white); #1670d4 (4.9:1) is used for text and filled buttons.
+ * Teacher & student site: "kit parts". Professional enough for a teacher, friendly enough for a 9-year-old.
+ * One color family built around CurioCrate blue (#1b7fe8, hue ~255):
+ *   - Blue is the brand field (hero) and the action color. Navy is the ink. Sky tints separate sections.
+ *   - Kit caps are blue's neighbors on the wheel (teal, indigo, violet), so nothing fights the blue.
+ *   - Status colors (success, warning, danger) appear only when something actually succeeded or went wrong.
+ *   - A ledge (solid bottom edge) means "you can press this". Static things stay flat.
+ * Light and dark follow the device setting (prefers-color-scheme). Blue text uses --sx-accent; filled blue buttons
+ * use --sx-fill (#1670d4, white text 4.9:1) in both modes.
  * Full spec: design/ui-system.md. Used only inside .site (src/app/(site)/site.css).
  */
-.site {
-  /* Surfaces: a cool lab bench with white paper on it */
-  --sx-bg: #f4f6fa;
-  --sx-bg-tint: #edf2f9;
+.site,
+html:has(.site) {
+  /* Surfaces: white paper, pale-sky bands */
+  --sx-bg: #ffffff;
+  --sx-bg-tint: #f4f8fe;
   --sx-surface: #ffffff;
-  --sx-surface-2: #f8fafd;
-  --sx-sunken: #eef2f7;
-  --sx-border: #dfe6ef;
-  --sx-border-strong: #c6d2e1;
-  /* Ink */
-  --sx-heading: #0c1a30;
-  --sx-text: #2a3950;
-  --sx-muted: #56667c;
-  /* Action blue */
+  --sx-surface-2: #f6f9fe;
+  --sx-sunken: #edf3fb;
+  --sx-sky: #ebf4ff;
+  --sx-sky-line: #d2e4fb;
+  --sx-border: #dfe7f2;
+  --sx-border-strong: #c7d5e8;
+  /* Ink: CurioCrate navy, not black */
+  --sx-heading: #0b1b3a;
+  --sx-text: #34445f;
+  --sx-muted: #5b6b86;
+  /* CurioCrate blue */
   --sx-brand: #1b7fe8;
+  --sx-hero: #1b7fe8;
+  --sx-fill: #1670d4;
+  --sx-fill-hover: #1262bd;
+  --sx-brand-ledge: #0c4b95;
   --sx-accent: #1670d4;
-  --sx-accent-hover: #125fb6;
+  --sx-accent-hover: #1260b3;
   --sx-accent-strong: #1260b3;
-  --sx-accent-soft: rgba(27, 127, 232, 0.09);
+  --sx-accent-soft: rgba(27, 127, 232, 0.1);
   --sx-accent-softer: rgba(27, 127, 232, 0.05);
-  --sx-accent-ring: rgba(27, 127, 232, 0.28);
+  --sx-accent-ring: rgba(27, 127, 232, 0.3);
   --sx-on-accent: #ffffff;
-  --sx-navy: #0f2044;
-  --sx-navy-2: #162a5c;
-  --sx-on-navy: #e8f2fd;
-  --sx-on-navy-muted: rgba(232, 242, 253, 0.72);
+  --sx-on-brand-muted: rgba(255, 255, 255, 0.88);
+  --sx-on-brand-line: rgba(255, 255, 255, 0.1);
+  --sx-on-brand-fill: rgba(255, 255, 255, 0.16);
+  --sx-on-brand-hover: rgba(255, 255, 255, 0.26);
+  --sx-navy: #0b1b3a;
+  --sx-navy-2: #16295a;
+  --sx-footer: #0b1b3a;
+  --sx-on-navy: #eef4ff;
+  --sx-on-navy-muted: rgba(238, 244, 255, 0.72);
+  --sx-navy-line: rgba(238, 244, 255, 0.14);
   /* Status */
-  --sx-success: #08694f; /* 5.2:1 on its own soft tint (AA with margin) */
-  --sx-success-soft: rgba(11, 122, 92, 0.09);
+  --sx-success: #0b7a62;
+  --sx-success-soft: rgba(14, 159, 130, 0.1);
   --sx-warning: #8a5a00;
   --sx-warning-soft: rgba(214, 150, 20, 0.12);
-  --sx-danger: #b8322a;
-  --sx-danger-soft: rgba(184, 50, 42, 0.07);
-  --sx-danger-border: rgba(184, 50, 42, 0.35);
-  /* Kit caps: --cap is decoration (stripes, dots, nodes); --cap-ink is the AA text version */
-  --sx-cap-lum: #12a391;
-  --sx-cap-lum-ink: #0b7366;
-  --sx-cap-gold: #e5a02e;
-  --sx-cap-gold-ink: #8a5a00;
-  --sx-cap-blue: #5a5fd8;
-  --sx-cap-blue-ink: #4146b8;
-  /* Elevation: crisp edges first, soft shadow only when something floats */
-  --sx-shadow-sm: 0 1px 0 rgba(12, 26, 48, 0.04), 0 1px 2px rgba(12, 26, 48, 0.06);
-  --sx-shadow: 0 1px 2px rgba(12, 26, 48, 0.06), 0 8px 24px -10px rgba(12, 26, 48, 0.16);
-  --sx-shadow-lg: 0 2px 4px rgba(12, 26, 48, 0.04), 0 24px 56px -18px rgba(12, 26, 48, 0.28);
-  --sx-shadow-blue: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 6px 16px -6px rgba(22, 112, 212, 0.55);
-  --sx-scrim: rgba(12, 26, 48, 0.42);
+  --sx-danger: #c23a32;
+  --sx-danger-soft: rgba(194, 58, 50, 0.08);
+  --sx-danger-border: rgba(194, 58, 50, 0.35);
+  /* Kit caps (blue's neighbors): --cap is decoration (stripes, dots, nodes); --cap-ink is the AA text version.
+     The names are the Studio card styles: lum = teal, blue = indigo, gold = violet. */
+  --sx-cap-lum: #0e9f9a;
+  --sx-cap-lum-ink: #0a7672;
+  --sx-cap-gold: #8a56d6;
+  --sx-cap-gold-ink: #6f3fbf;
+  --sx-cap-blue: #5b5bd6;
+  --sx-cap-blue-ink: #4545b8;
+  /* Elevation: ledges for pressable things; a soft shadow only when something floats (dialogs, the hero product) */
+  --sx-shadow-sm: 0 1px 2px rgba(11, 27, 58, 0.06);
+  --sx-shadow: 0 2px 4px rgba(11, 27, 58, 0.04), 0 10px 28px -12px rgba(11, 27, 58, 0.18);
+  --sx-shadow-lg: 0 3px 6px rgba(11, 27, 58, 0.05), 0 28px 60px -20px rgba(11, 27, 58, 0.34);
+  --sx-shadow-float: 0 2px 6px rgba(11, 27, 58, 0.08), 0 40px 80px -30px rgba(11, 27, 58, 0.45);
+  --sx-scrim: rgba(11, 27, 58, 0.45);
+  --sx-knob-shadow: rgba(11, 27, 58, 0.22);
   --sx-header: #ffffff;
   --sx-glow: none;
   --sx-grid-line: transparent;
-  /* Type: Bricolage Grotesque headings (the crate label), Plus Jakarta Sans for everything you read and use */
-  --font-label: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
-  --sx-fs-xs: 0.75rem; /* 12 meta */
-  --sx-fs-sm: 0.8125rem; /* 13 secondary */
-  --sx-fs-ui: 0.9375rem; /* 15 interface + body */
-  --sx-fs-md: 1rem; /* 16 reading */
-  --sx-fs-lg: 1.125rem; /* 18 row titles, lead */
-  --sx-fs-xl: 1.375rem; /* 22 h3 */
-  --sx-fs-2xl: 1.75rem; /* 28 h2 */
-  --sx-fs-3xl: 2.375rem; /* 38 h1 */
-  --sx-fs-4xl: 3.25rem; /* 52 display */
-  --sx-fs-5xl: 4.25rem; /* 68 home display */
+  /* Type: Gabarito headings (chunky, friendly), Lexend (built for reading ease) for everything you read and use */
+  --font-label: "Gabarito", "Lexend", system-ui, sans-serif;
+  --font-read: "Lexend", "Plus Jakarta Sans", system-ui, sans-serif;
+  --sx-fs-xs: 0.8125rem; /* 13 meta */
+  --sx-fs-sm: 0.875rem; /* 14 secondary */
+  --sx-fs-ui: 1rem; /* 16 interface + body */
+  --sx-fs-md: 1.0625rem; /* 17 reading */
+  --sx-fs-lg: 1.1875rem; /* 19 row titles, lead */
+  --sx-fs-xl: 1.4375rem; /* 23 h3 */
+  --sx-fs-2xl: 2rem; /* 32 h2 */
+  --sx-fs-3xl: 2.625rem; /* 42 h1 */
+  --sx-fs-4xl: 3.375rem; /* 54 display */
+  --sx-fs-5xl: 5rem; /* 80 home display */
   /* Space: 4px steps */
   --sx-1: 4px;
   --sx-2: 8px;
@@ -280,12 +298,13 @@
   --sx-14: 56px;
   --sx-18: 72px;
   --sx-24: 96px;
+  --sx-32: 128px;
   /* Shape: radius grows with the size of the thing */
-  --sx-r-xs: 6px; /* tags, NGSS codes */
-  --sx-r-sm: 10px; /* buttons, inputs */
-  --sx-r-md: 12px; /* rows, tiles */
-  --sx-r-lg: 16px; /* panels */
-  --sx-r-xl: 22px; /* crate labels, hero panels */
+  --sx-r-xs: 8px; /* tags, NGSS codes */
+  --sx-r-sm: 12px; /* buttons, inputs */
+  --sx-r-md: 16px; /* rows, tiles */
+  --sx-r-lg: 20px; /* panels */
+  --sx-r-xl: 28px; /* home tiles, floating product */
   /* Motion */
   --sx-ease: cubic-bezier(0.22, 1, 0.36, 1); /* ease-out-quint: entrances and hovers */
   --sx-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* things that move and stay (sliders, rails) */
@@ -298,6 +317,55 @@
   --sx-t-enter: 360ms;
   --sx-t-page: 420ms;
   color-scheme: light;
+}
+/* Dark: deep CurioCrate navy surfaces; the brand blue stays the same so the hero reads identically. */
+@media (prefers-color-scheme: dark) {
+  .site,
+  html:has(.site) {
+    --sx-bg: #0a1324;
+    --sx-bg-tint: #0d1a30;
+    --sx-surface: #101d35;
+    --sx-surface-2: #13223d;
+    --sx-sunken: #0d182c;
+    --sx-sky: #0e2142;
+    --sx-sky-line: #1c3762;
+    --sx-border: #1f3150;
+    --sx-border-strong: #2d446b;
+    --sx-heading: #eef4ff;
+    --sx-text: #c4d1e5;
+    --sx-muted: #93a5c2;
+    --sx-fill-hover: #1b7fe8;
+    --sx-brand-ledge: #0a3a75;
+    --sx-accent: #6cb2ff;
+    --sx-accent-hover: #8cc3ff;
+    --sx-accent-strong: #8cc3ff;
+    --sx-accent-soft: rgba(90, 165, 255, 0.14);
+    --sx-accent-softer: rgba(90, 165, 255, 0.07);
+    --sx-accent-ring: rgba(90, 165, 255, 0.4);
+    --sx-navy: #102244;
+    --sx-footer: #060d1b;
+    --sx-success: #4fd1ae;
+    --sx-success-soft: rgba(79, 209, 174, 0.12);
+    --sx-warning: #f0c070;
+    --sx-warning-soft: rgba(240, 192, 112, 0.12);
+    --sx-danger: #ff9e94;
+    --sx-danger-soft: rgba(255, 158, 148, 0.1);
+    --sx-danger-border: rgba(255, 158, 148, 0.4);
+    --sx-cap-lum: #2cc4bd;
+    --sx-cap-lum-ink: #63dad4;
+    --sx-cap-gold: #ac84f0;
+    --sx-cap-gold-ink: #c4a6ff;
+    --sx-cap-blue: #8c8cf2;
+    --sx-cap-blue-ink: #ababff;
+    --sx-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --sx-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 10px 28px -12px rgba(0, 0, 0, 0.55);
+    --sx-shadow-lg: 0 3px 6px rgba(0, 0, 0, 0.25), 0 28px 60px -20px rgba(0, 0, 0, 0.7);
+    --sx-shadow-float: 0 2px 6px rgba(0, 0, 0, 0.3), 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+    --sx-scrim: rgba(2, 6, 15, 0.65);
+    --sx-knob-shadow: rgba(0, 0, 0, 0.4);
+    --sx-header: #0a1324;
+    color-scheme: dark;
+  }
 }
 
 /*

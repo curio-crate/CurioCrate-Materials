@@ -1,11 +1,15 @@
 /*
- * The teacher & student site: "the crate label". Clean, light and functional, on the CurioCrate blue.
+ * The teacher & student site: "kit parts". Professional for teachers, friendly for 9 to 16 year olds, on CurioCrate blue.
  * The shared primitives in globals.css (.btn, .card, .input, .table, .badge, .alert…) read theme variables, so they are
  * re-skinned here by remapping those variables under .site, plus shape, type and motion overrides. Site-only
  * components are prefixed sx-. Colors come only from tokens.css (--sx-*). Spec: design/ui-system.md.
+ *
+ * The one rule that makes it feel physical: a LEDGE (solid bottom edge) means "you can press this".
+ * Buttons, chips and clickable tiles have one and sink into it when pressed. Static panels are flat.
  */
 
 .site {
+  --font-body: var(--font-read);
   --color-bg: var(--sx-bg);
   --color-bg-deep: var(--sx-navy);
   --color-text: var(--sx-text);
@@ -67,12 +71,12 @@
   --shadow-card: var(--sx-shadow);
   --shadow-dropdown: var(--sx-shadow-lg);
   --pastel1: var(--sx-accent);
-  --focus-ring: 2px solid var(--sx-brand);
+  --focus-ring: 3px solid var(--sx-brand);
   --font-heading: var(--font-label);
   --radius-btn: var(--sx-r-sm);
   --radius-card: var(--sx-r-md);
   --radius-panel: var(--sx-r-lg);
-  --header-h: 64px;
+  --header-h: 72px;
   --section-y: 96px;
   --page-gutter: 32px;
   /* Default cap (kit color) when no data-cap is set: the brand blue */
@@ -84,15 +88,22 @@
   min-height: 100vh;
   background: var(--sx-bg);
   color: var(--sx-text);
+  font-family: var(--font-body);
   font-size: var(--sx-fs-ui);
-  line-height: 1.55;
+  line-height: 1.6;
 }
+html:has(.site),
 body:has(> .site) {
   background: var(--sx-bg);
 }
 .site ::selection {
   background: var(--sx-accent-ring);
   color: var(--sx-heading);
+}
+.site :focus-visible {
+  outline: 3px solid var(--sx-brand);
+  outline-offset: 3px;
+  border-radius: var(--sx-r-xs);
 }
 .site .page {
   flex: 1;
@@ -118,48 +129,46 @@ body:has(> .site) {
 .site .sx-dot {
   display: inline-block;
   flex: none;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--cap);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cap) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cap) 20%, transparent);
 }
 
 /* ============ Type ============ */
 .site :is(h1, h2, h3, h4),
 .site :is(.display, .h1, .h2, .h3, .h4) {
   font-family: var(--font-label);
-  font-optical-sizing: auto;
   color: var(--sx-heading);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 .site .display {
   font-size: clamp(2.5rem, 5.2vw, var(--sx-fs-4xl));
-  font-stretch: 88%;
-  font-weight: 750;
+  font-weight: 800;
   line-height: 1.02;
-  letter-spacing: -0.035em;
-}
-.site .h1 {
-  font-size: clamp(2rem, 3.6vw, var(--sx-fs-3xl));
-  font-stretch: 92%;
-  line-height: 1.08;
   letter-spacing: -0.03em;
 }
-.site .h2 {
-  font-size: clamp(1.45rem, 2.4vw, var(--sx-fs-2xl));
-  line-height: 1.15;
+.site .h1 {
+  font-size: clamp(2.125rem, 3.8vw, var(--sx-fs-3xl));
+  font-weight: 800;
+  line-height: 1.06;
   letter-spacing: -0.025em;
+}
+.site .h2 {
+  font-size: clamp(1.625rem, 2.6vw, var(--sx-fs-2xl));
+  line-height: 1.12;
+  letter-spacing: -0.02em;
 }
 .site .h3 {
   font-size: var(--sx-fs-xl);
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .site .h4 {
   font-size: var(--sx-fs-lg);
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  line-height: 1.25;
 }
 .site .italic-accent {
   font-style: normal;
@@ -173,9 +182,12 @@ body:has(> .site) {
   color: var(--sx-muted);
 }
 .site .lead {
-  max-width: 62ch;
+  max-width: 60ch;
   font-size: var(--sx-fs-lg);
-  line-height: 1.6;
+  line-height: 1.55;
+  color: var(--sx-muted);
+}
+.site .muted {
   color: var(--sx-muted);
 }
 /* Small context line above a title (school name, kit name). Sentence case, never tracked-out capitals. */
@@ -185,36 +197,35 @@ body:has(> .site) {
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--sx-muted);
+  color: var(--sx-accent-strong);
 }
 .site .hint {
   color: var(--sx-muted);
 }
 .site .label {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--sx-heading);
 }
 .site .kit-title {
   font-family: var(--font-label);
   text-transform: none;
-  font-weight: 750;
-  font-stretch: 85%;
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--sx-heading);
 }
 .site .prose {
   max-width: 68ch;
   color: var(--sx-text);
   font-size: var(--sx-fs-md);
-  line-height: 1.75;
+  line-height: 1.7;
 }
 .site .text-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
@@ -231,6 +242,7 @@ body:has(> .site) {
 }
 .site .link {
   text-decoration-color: var(--sx-accent-ring);
+  text-decoration-thickness: 2px;
 }
 .site .mono,
 .site code {
@@ -251,56 +263,90 @@ body:has(> .site) {
 }
 
 /* ============ Buttons ============ */
-/* Heights: sm 34, md 40, lg 48. Hover changes color only; press scales on the spring. */
+/* Heights: sm 36, md 44, lg 52, plus the ledge. Hover lifts 1px onto a taller ledge; press sinks into it. */
 .site .btn {
-  --btn-pad-y: 9px;
-  --btn-pad-x: 16px;
+  --btn-pad-y: 10px;
+  --btn-pad-x: 18px;
+  --ledge: var(--sx-border-strong);
+  --ledge-h: 4px;
   gap: 8px;
-  min-height: 40px;
+  min-height: 44px;
   border-radius: var(--sx-r-sm);
-  border: 1px solid var(--sx-border-strong);
+  border: 2px solid var(--sx-border-strong);
   background: var(--sx-surface);
   color: var(--sx-heading);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: var(--font-label);
+  font-size: 1rem;
+  font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.3;
+  line-height: 1.2;
   text-transform: none;
   backdrop-filter: none;
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: 0 var(--ledge-h) 0 var(--ledge);
+  translate: 0 0;
   transition:
     background-color var(--sx-t-hover) var(--sx-ease),
     border-color var(--sx-t-hover) var(--sx-ease),
     color var(--sx-t-hover) var(--sx-ease),
-    box-shadow var(--sx-t-hover) var(--sx-ease),
-    scale var(--sx-t-toggle) var(--sx-spring);
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
 }
 .site .btn:hover {
   background: var(--sx-surface-2);
-  border-color: var(--sx-muted);
+  border-color: var(--sx-border-strong);
   color: var(--sx-heading);
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: 0 calc(var(--ledge-h) + 1px) 0 var(--ledge);
+  translate: 0 -1px;
   transform: none;
 }
 .site .btn:active:not(:disabled) {
-  scale: 0.97;
-  transition-duration: var(--sx-t-hover), var(--sx-t-hover), var(--sx-t-hover), var(--sx-t-hover), var(--sx-t-press);
+  box-shadow: 0 0 0 var(--ledge);
+  translate: 0 var(--ledge-h);
+  transition-duration: 60ms;
+}
+.site .btn:disabled,
+.site .btn[aria-disabled="true"] {
+  opacity: 0.5;
+  box-shadow: none;
+  translate: 0 var(--ledge-h);
 }
 .site .btn svg {
   flex: none;
 }
 .site .btn-solid {
-  background: var(--sx-accent);
-  border-color: var(--sx-accent);
+  --ledge: var(--sx-brand-ledge);
+  background: var(--sx-fill);
+  border-color: var(--sx-fill);
   color: var(--sx-on-accent);
-  box-shadow: var(--sx-shadow-blue);
 }
 .site .btn-solid:hover {
-  background: var(--sx-accent-hover);
-  border-color: var(--sx-accent-hover);
+  background: var(--sx-fill-hover);
+  border-color: var(--sx-fill-hover);
   color: var(--sx-on-accent);
-  box-shadow: var(--sx-shadow-blue);
+}
+/* The main action on a blue field: white with blue text (same in light and dark). */
+.site .btn-white {
+  --ledge: var(--sx-brand-ledge);
+  background: var(--sx-on-accent);
+  border-color: var(--sx-on-accent);
+  color: var(--sx-fill);
+}
+.site .btn-white:hover {
+  background: var(--sx-on-accent);
+  border-color: var(--sx-on-accent);
+  color: var(--sx-fill-hover);
+}
+/* Secondary action on a blue field: see-through white. */
+.site .btn-on-blue {
+  --ledge: var(--sx-brand-ledge);
+  background: var(--sx-on-brand-fill);
+  border-color: transparent;
+  color: var(--sx-on-accent);
+}
+.site .btn-on-blue:hover {
+  background: var(--sx-on-brand-hover);
+  border-color: transparent;
+  color: var(--sx-on-accent);
 }
 .site .btn-glass,
 .site .btn-outline {
@@ -316,23 +362,25 @@ body:has(> .site) {
   background: var(--sx-sunken);
   border-color: transparent;
   box-shadow: none;
+  translate: 0 0;
   color: var(--sx-heading);
 }
+.site .btn-ghost:active:not(:disabled) {
+  translate: 0 1px;
+}
 .site .btn-kit {
+  --ledge: var(--sx-accent-ring);
   background: var(--sx-accent-soft);
   border-color: var(--sx-accent-ring);
   color: var(--sx-accent-strong);
-  font-weight: 600;
-  letter-spacing: 0;
-  box-shadow: none;
 }
 .site .btn-kit:hover {
   background: var(--sx-accent-soft);
   border-color: var(--sx-accent);
   color: var(--sx-accent-strong);
-  box-shadow: none;
 }
 .site .btn-danger {
+  --ledge: var(--sx-danger-border);
   color: var(--sx-danger);
   border-color: var(--sx-danger-border);
 }
@@ -340,9 +388,9 @@ body:has(> .site) {
   background: var(--sx-danger-soft);
   border-color: var(--sx-danger);
   color: var(--sx-danger);
-  box-shadow: none;
 }
 .site .btn-danger-solid {
+  --ledge: color-mix(in srgb, var(--sx-danger) 70%, var(--sx-heading));
   background: var(--sx-danger);
   border-color: var(--sx-danger);
   color: var(--sx-on-accent);
@@ -351,61 +399,70 @@ body:has(> .site) {
   background: var(--sx-danger);
   border-color: var(--sx-danger);
   color: var(--sx-on-accent);
-  filter: brightness(0.92);
+  filter: brightness(1.06);
 }
 .site .btn-sm {
   --btn-pad-y: 6px;
-  --btn-pad-x: 12px;
-  min-height: 34px;
-  font-size: 0.8125rem;
-  border-radius: 9px;
+  --btn-pad-x: 14px;
+  --ledge-h: 3px;
+  min-height: 36px;
+  font-size: 0.9375rem;
+  border-radius: 11px;
 }
 .site .btn-xs {
-  --btn-pad-y: 4px;
+  --btn-pad-y: 3px;
   --btn-pad-x: 10px;
-  min-height: 28px;
-  font-size: 0.75rem;
+  --ledge-h: 2px;
+  min-height: 30px;
+  font-size: 0.8125rem;
   letter-spacing: 0;
-  border-radius: 8px;
+  border-radius: 9px;
 }
 .site .btn-lg {
-  --btn-pad-y: 12px;
-  --btn-pad-x: 22px;
-  min-height: 48px;
-  font-size: 0.9375rem;
-  border-radius: 12px;
+  --btn-pad-y: 13px;
+  --btn-pad-x: 24px;
+  --ledge-h: 5px;
+  min-height: 54px;
+  font-size: 1.0625rem;
+  border-radius: 15px;
 }
 
 /* ============ Surfaces ============ */
+/* Panels are flat: a 2px edge and no shadow. Only things you can press get a ledge. */
 .site .card {
   background: var(--sx-surface);
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-lg);
   backdrop-filter: none;
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: none;
 }
 .site .card-pad {
   padding: var(--sx-8);
 }
-/* Clickable panels: the border darkens and the shadow deepens. No lift, so lists stay calm. */
+/* Clickable tiles: a ledge in the border color. Hover lifts 2px and the edge darkens; press sinks. */
 .site .card-link {
+  box-shadow: 0 4px 0 var(--sx-border);
+  translate: 0 0;
   transition:
     border-color var(--sx-t-hover) var(--sx-ease),
-    box-shadow var(--sx-t-enter) var(--sx-ease),
-    scale var(--sx-t-toggle) var(--sx-spring);
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
 }
 .site .card-link:hover {
   border-color: var(--sx-border-strong);
   transform: none;
-  box-shadow: var(--sx-shadow);
+  translate: 0 -2px;
+  box-shadow: 0 6px 0 var(--sx-border-strong);
 }
 .site .card-link:active {
-  scale: 0.99;
+  translate: 0 3px;
+  box-shadow: 0 1px 0 var(--sx-border-strong);
+  transition-duration: 60ms;
 }
 .site .feature-card {
   background: var(--sx-surface);
-  border-color: var(--sx-border);
-  box-shadow: var(--sx-shadow);
+  border: 2px solid var(--sx-border);
+  box-shadow: none;
   color: var(--sx-text);
 }
 
@@ -416,7 +473,7 @@ body:has(> .site) {
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
-  padding: 2px 9px;
+  padding: 3px 10px;
   border-color: transparent;
   background: var(--sx-sunken);
   color: var(--sx-muted);
@@ -444,10 +501,10 @@ body:has(> .site) {
   color: var(--sx-danger);
 }
 .site .chip {
-  padding: 4px 11px;
+  padding: 4px 12px;
   font-size: var(--sx-fs-sm);
-  font-weight: 500;
-  border-color: var(--sx-border);
+  font-weight: 600;
+  border: 2px solid var(--sx-border);
   background: var(--sx-surface-2);
   color: var(--sx-text);
 }
@@ -456,19 +513,20 @@ body:has(> .site) {
 .site .sx-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   list-style: none;
-  padding: 0;
+  padding: 0 0 3px;
 }
 .site .sx-chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 34px;
-  padding: 0 12px;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--sx-border-strong);
+  border: 2px solid var(--sx-border-strong);
   background: var(--sx-surface);
+  box-shadow: 0 3px 0 var(--sx-border-strong);
   font-size: var(--sx-fs-sm);
   font-weight: 600;
   color: var(--sx-text);
@@ -476,44 +534,48 @@ body:has(> .site) {
     background-color var(--sx-t-hover) var(--sx-ease),
     border-color var(--sx-t-hover) var(--sx-ease),
     color var(--sx-t-hover) var(--sx-ease),
-    scale var(--sx-t-toggle) var(--sx-spring);
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
 }
 .site .sx-chip:hover {
-  border-color: var(--sx-muted);
+  background: var(--sx-surface-2);
 }
 .site .sx-chip:active {
-  scale: 0.96;
+  translate: 0 3px;
+  box-shadow: 0 0 0 var(--sx-border-strong);
 }
 .site .sx-chip[aria-pressed="true"] {
-  background: var(--sx-heading);
-  border-color: var(--sx-heading);
-  color: var(--sx-surface);
+  background: var(--sx-fill);
+  border-color: var(--sx-fill);
+  box-shadow: 0 3px 0 var(--sx-brand-ledge);
+  color: var(--sx-on-accent);
 }
 .site .sx-chip-count {
-  min-width: 20px;
+  min-width: 22px;
   padding: 0 6px;
   border-radius: var(--radius-pill);
   background: var(--sx-sunken);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  line-height: 18px;
+  line-height: 20px;
   text-align: center;
   color: var(--sx-muted);
 }
 .site .sx-chip[aria-pressed="true"] .sx-chip-count {
-  background: color-mix(in srgb, var(--sx-surface) 18%, transparent);
-  color: var(--sx-surface);
+  background: var(--sx-on-brand-fill);
+  color: var(--sx-on-accent);
 }
 
 /* ============ Switch (assign / unassign) ============ */
-/* A real toggle: 42x24 track, knob travels on the spring. Used on class pages, lesson pages and the home preview. */
+/* A chunky toggle: 50x30 track, the knob travels on the spring and squashes while pressed. */
 .site .sx-switch {
   position: relative;
   flex: none;
-  width: 42px;
-  height: 24px;
-  border-radius: 24px;
+  width: 50px;
+  height: 30px;
+  border-radius: 30px;
   background: var(--sx-border-strong);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--sx-heading) 10%, transparent);
   transition: background-color var(--sx-t-hover) var(--sx-ease);
 }
 .site .sx-switch::after {
@@ -521,11 +583,11 @@ body:has(> .site) {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: var(--sx-surface);
-  box-shadow: 0 1px 2px var(--sx-scrim);
+  background: var(--sx-on-accent);
+  box-shadow: 0 2px 0 var(--sx-knob-shadow);
   transition:
     translate var(--sx-t-toggle) var(--sx-spring),
     width var(--sx-t-press) var(--sx-ease);
@@ -534,16 +596,19 @@ body:has(> .site) {
   background: var(--sx-muted);
 }
 .site .sx-switch:active::after {
-  width: 22px;
+  width: 29px;
 }
 .site .sx-switch[aria-pressed="true"] {
-  background: var(--sx-accent);
+  background: var(--sx-fill);
+}
+.site .sx-switch[aria-pressed="true"]:hover {
+  background: var(--sx-fill-hover);
 }
 .site .sx-switch[aria-pressed="true"]::after {
-  translate: 18px 0;
+  translate: 20px 0;
 }
 .site .sx-switch[aria-pressed="true"]:active::after {
-  translate: 14px 0;
+  translate: 15px 0;
 }
 .site .sx-switch[aria-busy="true"] {
   opacity: 0.7;
@@ -556,13 +621,13 @@ body:has(> .site) {
   display: inline-flex;
   align-items: center;
   padding: 7px 16px;
-  border-radius: 8px;
-  background: var(--sx-surface);
-  border: 1.5px dashed var(--sx-border-strong);
+  border-radius: 10px;
+  background: var(--sx-sky);
+  border: 2px dashed var(--sx-accent-ring);
   font-family: var(--font-mono);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.125rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   color: var(--sx-heading);
   white-space: nowrap;
 }
@@ -571,26 +636,26 @@ body:has(> .site) {
   content: "";
   position: absolute;
   top: 50%;
-  width: 10px;
-  height: 10px;
-  margin-top: -5px;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
   border-radius: 50%;
-  background: var(--sx-bg);
-  border: 1.5px dashed var(--sx-border-strong);
+  background: var(--sx-surface);
+  border: 2px dashed var(--sx-accent-ring);
   clip-path: inset(0 0 0 50%);
 }
 .site .sx-ticket::before {
-  left: -6px;
+  left: -7px;
 }
 .site .sx-ticket::after {
-  right: -6px;
+  right: -7px;
   clip-path: inset(0 50% 0 0);
 }
 .site .sx-ticket-sm {
   padding: 3px 10px;
-  font-size: 0.8125rem;
-  letter-spacing: 0.16em;
-  border-width: 1px;
+  font-size: 0.875rem;
+  letter-spacing: 0.14em;
+  border-width: 1.5px;
 }
 .site .sx-ticket-sm::before,
 .site .sx-ticket-sm::after {
@@ -601,13 +666,21 @@ body:has(> .site) {
 .site .input,
 .site .select,
 .site .textarea {
-  min-height: 44px;
+  min-height: 50px;
+  border: 2px solid var(--sx-border-strong);
   border-radius: var(--sx-r-sm);
-  border-color: var(--sx-border-strong);
-  background-color: var(--sx-surface);
+  background-color: var(--sx-surface-2);
   color: var(--sx-heading);
   font-size: var(--sx-fs-ui);
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: none;
+  transition:
+    border-color var(--sx-t-hover) var(--sx-ease),
+    background-color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-hover) var(--sx-ease);
+}
+.site .input::placeholder,
+.site .textarea::placeholder {
+  color: color-mix(in srgb, var(--sx-muted) 75%, var(--sx-surface));
 }
 .site .input:hover,
 .site .select:hover,
@@ -617,20 +690,26 @@ body:has(> .site) {
 .site .input:focus-visible,
 .site .select:focus-visible,
 .site .textarea:focus-visible {
+  outline: none;
   border-color: var(--sx-accent);
+  background-color: var(--sx-surface);
   box-shadow: 0 0 0 4px var(--sx-accent-ring);
 }
 .site .input-code {
-  min-height: 56px;
-  font-size: 1.2rem;
+  min-height: 60px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.3rem;
 }
 .site .checkbox {
   color: var(--sx-text);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   align-items: flex-start;
   line-height: 1.5;
 }
 .site .checkbox input {
+  width: 18px;
+  height: 18px;
   margin-top: 2px;
   flex: none;
   accent-color: var(--sx-accent);
@@ -638,11 +717,11 @@ body:has(> .site) {
 
 /* ============ Alerts & tables ============ */
 .site .alert {
+  border: 2px solid var(--sx-sky-line);
   border-radius: var(--sx-r-md);
-  border-color: var(--sx-accent-ring);
-  background: var(--sx-accent-softer);
-  color: var(--sx-text);
-  font-size: 0.875rem;
+  background: var(--sx-sky);
+  color: var(--sx-heading);
+  font-size: 0.9375rem;
   animation: sx-in var(--sx-t-enter) var(--sx-ease) both;
 }
 .site .alert-success {
@@ -651,7 +730,7 @@ body:has(> .site) {
   color: var(--sx-success);
 }
 .site .alert-warning {
-  border: 1px solid transparent;
+  border-color: transparent;
   background: var(--sx-warning-soft);
   color: var(--sx-warning);
 }
@@ -661,9 +740,10 @@ body:has(> .site) {
   color: var(--sx-danger);
 }
 .site .table-wrap {
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-md);
   background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: none;
 }
 .site .table th {
   font-family: var(--font-body);
@@ -691,31 +771,34 @@ body:has(> .site) {
   justify-items: start;
   gap: var(--sx-2);
   padding: var(--sx-6);
-  border-radius: var(--sx-r-md);
-  border: 1.5px dashed var(--sx-border-strong);
+  border-radius: var(--sx-r-lg);
+  border: 2px dashed var(--sx-sky-line);
+  background: var(--sx-surface-2);
   color: var(--sx-muted);
 }
 .site .sx-empty strong {
+  font-family: var(--font-label);
+  font-size: var(--sx-fs-lg);
+  font-weight: 750;
   color: var(--sx-heading);
-  font-size: var(--sx-fs-ui);
 }
 .site .sx-empty > :last-child:is(a, button) {
-  margin-top: var(--sx-1);
+  margin-top: var(--sx-2);
 }
 
 /* ============ Dialog ============ */
-/* Native <dialog>: scales in from 0.96 on the spring; the scrim fades. Closing fades out quickly. */
+/* Native <dialog>: scales in from 0.94 on the spring; the scrim fades. Closing fades out quickly. */
 .site .sx-dialog {
-  width: min(440px, calc(100vw - 32px));
+  width: min(460px, calc(100vw - 32px));
   margin: auto;
   padding: var(--sx-6);
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   border-radius: var(--sx-r-lg);
   background: var(--sx-surface);
   color: var(--sx-text);
   box-shadow: var(--sx-shadow-lg);
   opacity: 0;
-  scale: 0.96;
+  scale: 0.94;
   transition:
     opacity 140ms var(--sx-ease-exit),
     scale 140ms var(--sx-ease-exit),
@@ -734,7 +817,7 @@ body:has(> .site) {
 @starting-style {
   .site .sx-dialog[open] {
     opacity: 0;
-    scale: 0.96;
+    scale: 0.94;
   }
 }
 .site .sx-dialog::backdrop {
@@ -761,7 +844,7 @@ body:has(> .site) {
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: var(--sx-2);
+  gap: var(--sx-3);
   margin-top: var(--sx-6);
 }
 
@@ -835,7 +918,7 @@ html[data-reveal="on"] .site .reveal:not(.is-in) {
 
 @media (max-width: 720px) {
   .site {
-    --header-h: 58px;
+    --header-h: 62px;
     --section-y: 64px;
     --page-gutter: 16px;
   }
@@ -849,6 +932,11 @@ html[data-reveal="on"] .site .reveal:not(.is-in) {
 @media (prefers-reduced-motion: reduce) {
   .site .sx-skel {
     animation: none;
+  }
+  .site .btn,
+  .site .card-link,
+  .site .sx-chip {
+    translate: none !important;
   }
 }
 /* The header isn't fixed, so anchors don't need room for it. */

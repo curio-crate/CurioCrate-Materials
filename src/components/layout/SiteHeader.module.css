@@ -2,13 +2,12 @@
 .header {
   position: relative;
   z-index: 50;
-  border-bottom: 1px solid var(--sx-border);
   background: var(--sx-header);
 }
 .nav {
   display: flex;
-  align-items: stretch;
-  gap: var(--sx-8);
+  align-items: center;
+  gap: var(--sx-6);
   max-width: calc(var(--page-wide) + 2 * var(--page-gutter));
   height: var(--header-h);
   margin-inline: auto;
@@ -22,8 +21,8 @@
   color: var(--sx-heading);
 }
 .mark {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   transition: rotate 700ms var(--sx-spring);
 }
 .brand:hover .mark {
@@ -31,25 +30,24 @@
 }
 .brandName {
   font-family: var(--font-label);
-  font-size: 1.125rem;
-  font-weight: 750;
-  font-stretch: 90%;
-  letter-spacing: -0.03em;
+  font-size: 1.3125rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 .brandTag {
-  padding: 1px 8px;
+  padding: 2px 9px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--sx-border-strong);
-  color: var(--sx-muted);
-  font-size: 0.6875rem;
+  background: var(--sx-sky);
+  color: var(--sx-accent-strong);
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
-/* Nav links fill the header's height so the current-page bar sits on the header's bottom edge. */
+/* Nav links are soft pills: the current page sits in a pale-sky pill with blue text. */
 .links {
   display: flex;
-  align-items: stretch;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
   list-style: none;
   padding: 0;
   flex: 1;
@@ -58,44 +56,29 @@
   display: flex;
 }
 .link {
-  position: relative;
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--sx-muted);
-  transition: color var(--sx-t-hover) var(--sx-ease);
-}
-.link::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -1px;
-  height: 2px;
-  border-radius: 2px 2px 0 0;
-  background: var(--sx-heading);
-  scale: 0 1;
-  transition: scale 240ms var(--sx-ease);
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--sx-text);
+  transition:
+    color var(--sx-t-hover) var(--sx-ease),
+    background-color var(--sx-t-hover) var(--sx-ease);
 }
 .link:hover {
   color: var(--sx-heading);
-}
-.link:hover::after {
-  scale: 0.4 1;
-  background: var(--sx-border-strong);
+  background: var(--sx-sunken);
 }
 .link[aria-current="page"] {
-  color: var(--sx-heading);
-  font-weight: 600;
-}
-.link[aria-current="page"]::after {
-  scale: 1 1;
-  background: var(--sx-brand);
+  color: var(--sx-accent-strong);
+  background: var(--sx-sky);
 }
 .link:focus-visible {
-  outline-offset: -6px;
+  outline-offset: 2px;
+  border-radius: var(--radius-pill);
 }
 
 .actions {
@@ -108,11 +91,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 3px 12px 3px 3px;
+  padding: 3px 14px 3px 3px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--sx-border);
+  border: 2px solid var(--sx-border);
   background: var(--sx-surface);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--sx-heading);
   transition: border-color var(--sx-t-hover) var(--sx-ease);
@@ -123,14 +106,14 @@ a.me:hover {
 .avatar {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--sx-heading);
-  color: var(--sx-surface);
+  background: var(--sx-fill);
+  color: var(--sx-on-accent);
   font-family: var(--font-label);
-  font-weight: 700;
-  font-size: 0.8125rem;
+  font-weight: 800;
+  font-size: 0.9375rem;
 }
 .meName {
   max-width: 140px;
@@ -191,7 +174,8 @@ a.me:hover {
 /* Mobile menu: opens under the header (it pushes the page down rather than covering it). */
 .mobile {
   padding: var(--sx-2) var(--page-gutter) var(--sx-5);
-  border-top: 1px solid var(--sx-border);
+  border-top: 2px solid var(--sx-border);
+  border-bottom: 2px solid var(--sx-border);
   animation: drop 280ms var(--sx-ease);
 }
 @keyframes drop {
@@ -208,9 +192,11 @@ a.me:hover {
 .mobileLink {
   display: flex;
   align-items: center;
-  min-height: 48px;
-  border-bottom: 1px solid var(--sx-border);
-  font-weight: 600;
+  min-height: 52px;
+  border-bottom: 2px solid var(--sx-border);
+  font-family: var(--font-label);
+  font-size: 1.125rem;
+  font-weight: 700;
   color: var(--sx-heading);
 }
 .mobileLink[aria-current="page"] {

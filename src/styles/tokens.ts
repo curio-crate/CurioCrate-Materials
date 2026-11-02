@@ -9,7 +9,8 @@ export const THEME = {
   lumGlow: "#46e3d3",
   gold: "#f0c070",
   brandBlue: "#1b7fe8",
-  siteBg: "#f4f6fa", // the teacher & student site background (tokens.css --sx-bg)
+  siteBg: "#ffffff", // the teacher & student site background (tokens.css --sx-bg)
+  siteBgDark: "#0a1324", // the same in dark mode
   // Print colors for generated PDFs (light paper for school printers)
   printInk: "#0f2044",
   printMuted: "#4a5a72",
