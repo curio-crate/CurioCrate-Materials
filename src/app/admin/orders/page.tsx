@@ -2,8 +2,9 @@ import Link from "next/link";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { listAllKits } from "@/lib/content";
 import { recentOrders } from "@/lib/orders";
-import { createOrderAction } from "../actions";
+import { createOrderAction, deleteOrderAction } from "../actions";
 import styles from "../admin.module.css";
+import { ConfirmSubmit } from "../Confirm";
 import { Notice } from "../Notice";
 import { requireAdmin } from "@/lib/auth/viewer";
 
@@ -36,6 +37,9 @@ export default async function OrdersPage(props: PageProps<"/admin/orders">) {
                   <th scope="col">Source</th>
                   <th scope="col">Reference</th>
                   <th scope="col">Customer / school</th>
+                  <th scope="col">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -49,11 +53,25 @@ export default async function OrdersPage(props: PageProps<"/admin/orders">) {
                       </Link>
                     </td>
                     <td>{order.customerName ?? orgName ?? "—"}</td>
+                    <td>
+                      <form action={deleteOrderAction}>
+                        <input type="hidden" name="orderId" value={order.id} />
+                        <ConfirmSubmit
+                          className="btn btn-xs btn-danger"
+                          aria-label={`Delete ${order.reference ?? "order"}`}
+                          title={`Are you sure you want to delete ${order.reference ?? "this order"}?`}
+                          message="All its codes stop working and are removed, and schools that already redeemed them lose that kit access. This can't be undone."
+                          confirmLabel="Delete order"
+                        >
+                          Delete
+                        </ConfirmSubmit>
+                      </form>
+                    </td>
                   </tr>
                 ))}
                 {!orders.length && (
                   <tr>
-                    <td colSpan={4} className={styles.empty}>
+                    <td colSpan={5} className={styles.empty}>
                       No orders yet.
                     </td>
                   </tr>
