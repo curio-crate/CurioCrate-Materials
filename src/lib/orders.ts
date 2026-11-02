@@ -1,7 +1,7 @@
 import "server-only";
-import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, isNull, or } from "drizzle-orm";
 import { db, type Tx } from "@/db";
-import { auditLog, kits, orderLines, orders, organizations, redemptionCodes, teachers } from "@/db/schema";
+import { auditLog, entitlements, kits, orderLines, orders, organizations, redemptionCodes, teachers } from "@/db/schema";
 import { newRedemptionCode, normalizeCode } from "./codes";
 import type { Actor } from "./entitlements";
 
@@ -83,6 +83,29 @@ export async function voidCode(actor: Actor, codeId: string, reason: string) {
   const [row] = await d.update(redemptionCodes).set({ status: "void", voidReason: reason }).where(and(eq(redemptionCodes.id, codeId), eq(redemptionCodes.status, "active"))).returning();
   if (row) await d.insert(auditLog).values({ actorTeacherId: actor.teacherId, actorEmail: actor.email, action: "code.void", targetType: "redemption_code", targetId: row.id, details: { reason } });
   return row ?? null;
+}
+
+/**
+ * Deletes an order and every code in it. Codes that were already redeemed had granted their school kit access, so
+ * that access is revoked too (kept on record as revoked, not erased). Unredeemed codes simply stop existing.
+ */
+export async function deleteOrder(actor: Actor, orderId: string) {
+  const d = await db();
+  return d.transaction(async (tx) => {
+    const [order] = await tx.select().from(orders).where(eq(orders.id, orderId));
+    if (!order) return null;
+    const codes = await tx.select({ id: redemptionCodes.id, status: redemptionCodes.status }).from(redemptionCodes).where(eq(redemptionCodes.orderId, orderId));
+    const revoked = codes.length
+      ? await tx
+          .update(entitlements)
+          .set({ revokedAt: new Date(), revokedReason: `order deleted (${order.reference ?? order.id})` })
+          .where(and(eq(entitlements.source, "redemption"), inArray(entitlements.sourceRef, codes.map((c) => c.id)), isNull(entitlements.revokedAt)))
+          .returning({ id: entitlements.id })
+      : [];
+    await tx.delete(orders).where(eq(orders.id, orderId)); // order lines and codes cascade
+    await tx.insert(auditLog).values({ actorTeacherId: actor.teacherId, actorEmail: actor.email, action: "order.delete", targetType: "order", targetId: order.id, orgId: order.orgId, details: { source: order.source, reference: order.reference, codes: codes.length, redeemed: codes.filter((c) => c.status === "redeemed").length, accessRevoked: revoked.length } });
+    return { order, codes: codes.length, revoked: revoked.length };
+  });
 }
 
 /** Support lookup: by code (any format), order reference, customer/teacher email, or school name. */

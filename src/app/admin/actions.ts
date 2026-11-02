@@ -8,7 +8,7 @@ import { kits, organizations } from "@/db/schema";
 import { createOrg, moveTeacher, setEmailDomain, setParent } from "@/lib/admin";
 import { requireAdmin } from "@/lib/auth/viewer";
 import { grantKitAccess, restoreEntitlement, revokeEntitlement } from "@/lib/entitlements";
-import { createOrder, reissueCode, voidCode, type OrderSource } from "@/lib/orders";
+import { createOrder, deleteOrder, reissueCode, voidCode, type OrderSource } from "@/lib/orders";
 
 const actor = requireAdmin; // each action names the permission it needs (lib/auth/roles.ts)
 
@@ -60,6 +60,14 @@ export async function voidAction(form: FormData) {
   const a = await actor("codes");
   const r = await voidCode(a, str(form, "codeId"), str(form, "reason") || "voided by support");
   back(str(form, "back") || "/admin", r ? "Code voided." : "Only active codes can be voided.", r ? "ok" : "err");
+}
+
+export async function deleteOrderAction(form: FormData) {
+  const a = await actor("codes");
+  const r = await deleteOrder(a, str(form, "orderId"));
+  if (!r) back("/admin/orders", "That order no longer exists.", "err");
+  revalidatePath("/admin");
+  back("/admin/orders", `Order deleted: ${r.codes} code(s) removed${r.revoked ? ` and ${r.revoked} school access grant(s) revoked` : ""}.`);
 }
 
 export async function grantAction(form: FormData) {

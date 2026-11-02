@@ -385,15 +385,19 @@ export function LessonPanel({ lesson, kits, defaultKitId, onClose, onSaved }: { 
                     </span>
                     <button
                       type="button"
-                      className="st-close"
-                      aria-label={`Remove ${m.title}`}
+                      className="btn btn-xs btn-danger"
+                      aria-label={`Delete ${m.title}`}
                       onClick={async () => {
-                        if (await confirm({ title: `Are you sure you want to delete “${m.title}”?`, message: "It is removed from the lesson when you save. It then moves to Recently deleted, where an admin can restore it for 30 days." }))
-                          setExisting((l) => l.map((x) => (x.id === m.id ? { ...x, removed: true } : x)));
+                        if (!(await confirm({ title: `Are you sure you want to delete “${m.title}”?`, message: "Teachers lose it right away. It moves to Recently deleted, where an admin can restore it for 30 days." }))) return;
+                        setBusy(true);
+                        const r = await removeContentAction(m.id);
+                        setBusy(false);
+                        if (r.ok) setExisting((l) => l.filter((x) => x.id !== m.id));
+                        else setError(r.error);
                       }}
                       disabled={busy}
                     >
-                      <Icon name="x" size={16} />
+                      <Icon name="trash" size={14} /> Delete
                     </button>
                   </li>
                 ))}
