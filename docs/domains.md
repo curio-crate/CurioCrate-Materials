@@ -15,6 +15,7 @@ Content-Security-Policy. A unit test (`tests/domains.test.ts`) fails if the code
 | clever.com | Teacher sign-in with Clever | If the school uses Clever |
 | launchpad.classlink.com | Teacher sign-in with ClassLink | If the school uses ClassLink |
 | checkout.stripe.com | Card payments for kits and subscriptions (staff and purchasers only) | Only for purchasers |
+| billing.stripe.com | Managing or cancelling a subscription (purchasers only) | Only for purchasers |
 | classroom.google.com | Share lessons to Google Classroom | If the school uses Google Classroom |
 | *.r2.cloudflarestorage.com | Files, manuals and videos in Curiocrate's cloud storage (Cloudflare R2, presigned short-lived links) | Always |
 | storage.googleapis.com | Curiocrate staff video uploads to Mux (Studio only, never students) | Only for Curiocrate staff |

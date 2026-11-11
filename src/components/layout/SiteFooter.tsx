@@ -60,7 +60,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className={styles.bottom}>
-        <span>© 2026 Curiocrate · 501(c)(3) nonprofit</span>
+        <span>© {new Date().getFullYear()} Curiocrate · NGSS® is a trademark of WestEd, which does not endorse this product.</span>
         <span className={styles.bottomLinks}>
           <a href="https://curiocrate.org">curiocrate.org</a>
           <Link href="/company/login">Team login</Link>

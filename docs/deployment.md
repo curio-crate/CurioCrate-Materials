@@ -77,6 +77,19 @@ Copy every variable from `.env.example`. Required for production:
 
 Optional: Mux (adaptive video), Stripe (payments), Anthropic (Curie.AI), Clever, ClassLink.
 
+**Before taking live payments (Stripe), required by the Terms of Use:**
+
+- Stripe → Settings → Billing → **Customer portal**: activate it and allow **cancel subscriptions** (at period end) and
+  updating payment methods. Teachers reach it from **My account → Manage or cancel subscription** (`/api/billing/portal`).
+- Stripe → Settings → Billing → Subscriptions and emails: turn on **emails about upcoming renewals**. The Terms promise
+  an email before every renewal.
+- Refunds: the Terms give a full refund within 30 days of any charge (`REFUND_DAYS` in `src/lib/legal.ts`). Issue them
+  from the Stripe dashboard and cancel the subscription.
+
+**Before launch, legal:** set `GOVERNING_STATE` and `MAILING_ADDRESS` in `src/lib/legal.ts`, and have counsel review
+`/terms` and `/privacy`. When a school's or district's contract ends, delete its data in Studio → Schools → Danger zone
+within 60 days (`CONTRACT_END_DELETE_DAYS`): the Privacy Policy promises it.
+
 ## 7. Domain via Cloudflare
 
 1. In Vercel → Settings → Domains, add `materials.curiocrate.org`.

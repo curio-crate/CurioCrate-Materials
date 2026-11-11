@@ -71,3 +71,13 @@ export async function expireSubscriptions(now = new Date()) {
   }
   return n;
 }
+
+/**
+ * Subscriptions a teacher may manage or cancel in the Stripe billing portal: their own Teacher plan, and their
+ * school's or district's plan when they are that organization's admin. Only ones still running are listed.
+ */
+export async function manageableSubscriptions(v: { teacher: { id: string; isOrgAdmin: boolean }; org: { id: string } | null }) {
+  const d = await db();
+  const rows = await d.select().from(subscriptions);
+  return rows.filter((s) => ["active", "trialing", "past_due"].includes(s.status) && (s.teacherId === v.teacher.id || (!s.teacherId && v.teacher.isOrgAdmin && s.orgId === v.org?.id)));
+}

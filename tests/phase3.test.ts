@@ -7,10 +7,10 @@ import { adminLogin } from "@/lib/auth/admin";
 import { createClass, updateClass } from "@/lib/classes";
 import { askCurie, checkStudentMessage, purgeOldChats } from "@/lib/curie";
 import { handleStripeEvent, signTestEvent, verifyWebhook } from "@/lib/payments";
-import { handleSubscriptionEvent } from "@/lib/subscriptions";
+import { handleSubscriptionEvent, manageableSubscriptions } from "@/lib/subscriptions";
 import { joinOrFail } from "./helpers/classes";
 import { freshDb } from "./helpers/db";
-import { content, makeTeacher, principal } from "./helpers/factory";
+import { addColleague, content, makeTeacher, principal } from "./helpers/factory";
 
 beforeAll(async () => {
   delete process.env.ANTHROPIC_API_KEY; // local tutor stand-in; filters are ours either way
@@ -115,6 +115,18 @@ describe("subscriptions (Stripe test mode)", () => {
     // Cancellation ends access now.
     await handleStripeEvent(event("customer.subscription.deleted", "evt_s3", "sub_1", t.orgId!, renewed), handleSubscriptionEvent);
     expect((await checkAccess(principal(t), training, new Date(Date.now() + 5000))).allowed).toBe(false);
+  });
+
+  it("only the school admin can manage a school subscription, and only while it is running", async () => {
+    const t = await makeTeacher();
+    const colleague = await addColleague(t.orgId!, { approve: true });
+    const org = { id: t.orgId! };
+    const end = Math.floor(Date.now() / 1000) + 300 * 86400;
+    await handleStripeEvent(event("customer.subscription.created", "evt_m1", "sub_m", t.orgId!, end), handleSubscriptionEvent);
+    expect((await manageableSubscriptions({ teacher: t, org })).map((s) => s.stripeSubscriptionId)).toEqual(["sub_m"]);
+    expect(await manageableSubscriptions({ teacher: colleague, org })).toEqual([]);
+    await handleStripeEvent(event("customer.subscription.deleted", "evt_m2", "sub_m", t.orgId!, end), handleSubscriptionEvent);
+    expect(await manageableSubscriptions({ teacher: t, org })).toEqual([]);
   });
 });
 

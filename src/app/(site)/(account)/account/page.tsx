@@ -5,6 +5,8 @@ import { PageHead } from "@/components/ui/PageHead";
 import { accountData, deleteTeacherAccount } from "@/lib/account";
 import { SESSION_COOKIE } from "@/lib/auth/session";
 import { requireTeacher } from "@/lib/auth/viewer";
+import { REFUND_DAYS } from "@/lib/legal";
+import { manageableSubscriptions } from "@/lib/subscriptions";
 import styles from "../account.module.css";
 
 export const metadata: Metadata = { title: "My account", robots: { index: false } };
@@ -24,6 +26,7 @@ export default async function AccountPage(props: PageProps<"/account">) {
   const sp = await props.searchParams;
   const v = await requireTeacher("/account");
   const data = (await accountData(v.teacher.id))!;
+  const subs = await manageableSubscriptions(v);
   return (
     <div className="container">
       <div className={styles.wide}>
@@ -69,6 +72,27 @@ export default async function AccountPage(props: PageProps<"/account">) {
             Download my data (JSON)
           </a>
         </section>
+
+        {subs.length > 0 && (
+          <section className={`card ${styles.panel}`} aria-labelledby="billing-h" style={{ marginBottom: 24 }}>
+            <h2 id="billing-h" className="h3">
+              Subscription and billing
+            </h2>
+            <ul className="stack" style={{ gap: 6, marginTop: 12 }}>
+              {subs.map((s) => (
+                <li key={s.id}>
+                  {s.plan[0].toUpperCase() + s.plan.slice(1)} plan · renews automatically on {day(s.currentPeriodEnd)}
+                </li>
+              ))}
+            </ul>
+            <p className="hint">
+              Cancel any time: you keep access until the end of the year you paid for. Full refund if you ask within {REFUND_DAYS} days of a charge, including a renewal.
+            </p>
+            <form action="/api/billing/portal" method="post" style={{ marginTop: 12 }}>
+              <button className="btn btn-outline btn-sm">Manage or cancel subscription</button>
+            </form>
+          </section>
+        )}
 
         <section className={`card ${styles.panel}`} aria-labelledby="del-h">
           <h2 id="del-h" className="h3">

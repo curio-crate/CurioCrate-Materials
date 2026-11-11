@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHead } from "@/components/ui/PageHead";
 import { getViewer } from "@/lib/auth/viewer";
 import { features } from "@/lib/features";
+import { REFUND_DAYS } from "@/lib/legal";
 import { PLANS } from "@/lib/plans";
 import styles from "../info.module.css";
 import { PlanCta } from "./PlanCta";
@@ -18,7 +19,7 @@ export default async function PlansPage(props: PageProps<"/plans">) {
         eyebrow="Plans"
         title="Start free."
         accent="Grow into everything."
-        lead="Kit access comes free with every physical kit and never expires. A subscription adds every kit's online materials, teacher training, new content and Curie.AI."
+        lead="Kit access comes free with every physical kit and doesn't expire. A subscription adds every kit's online materials, teacher training, new content and Curie.AI."
       />
       {sp.status === "success" && (
         <p className="alert alert-success" role="status" style={{ marginBottom: 24 }}>
@@ -50,6 +51,21 @@ export default async function PlansPage(props: PageProps<"/plans">) {
           </li>
         ))}
       </ul>
+      <p className="hint" style={{ marginTop: 20 }}>
+        Subscriptions renew automatically every year at the price shown, plus any tax, until you cancel. Cancel any time online from{" "}
+        <Link className="link" href="/account">
+          your account page
+        </Link>{" "}
+        or by emailing{" "}
+        <a className="link" href="mailto:contact@curiocrate.org">
+          contact@curiocrate.org
+        </a>
+        ; you keep access until the end of the year you paid for. Full refund if you ask within {REFUND_DAYS} days of any charge, including a renewal. See the{" "}
+        <Link className="link" href="/terms#payments">
+          Terms of Use
+        </Link>
+        .
+      </p>
       <section className={`card ${styles.block} ${styles.section}`} aria-labelledby="po">
         <h2 id="po" className="h3">
           Paying by purchase order?

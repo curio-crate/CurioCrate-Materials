@@ -1,5 +1,5 @@
 // User agreements. Bump TERMS_VERSION whenever /terms changes in substance; accounts store the version they accepted.
-export const TERMS_VERSION = "2026-11-01";
+export const TERMS_VERSION = "2026-11-11";
 
 /**
  * Students younger than this can't make their own account: an email address from a child under 13 would need
