@@ -8,7 +8,8 @@ import { getStudioKit, kitProfile } from "@/lib/kit-studio";
 import { Activities } from "../../files/Activities";
 import { Notice } from "../../Notice";
 import { StudioHead } from "../../StudioHead";
-import { saveKitIdentityAction } from "../actions";
+import { ConfirmSubmit } from "../../Confirm";
+import { deleteKitAction, saveKitIdentityAction } from "../actions";
 
 export const metadata = { title: "Kit" };
 
@@ -176,6 +177,26 @@ export default async function KitPage(props: PageProps<"/admin/kits/[id]">) {
           </div>
         </form>
       </details>
+
+      <section style={{ marginTop: 32 }} aria-labelledby="danger-h">
+        <h2 id="danger-h" className="st-h2">
+          Delete this kit
+        </h2>
+        <p className="hint" style={{ maxWidth: 640 }}>
+          Removes the kit with all {p.lessons.length} lesson(s), {p.files.length} manual(s) and file(s), parts and uploaded files, plus its redemption codes and every school&apos;s access to it. Orders that only contained this kit are deleted too.
+        </p>
+        <form action={deleteKitAction}>
+          <input type="hidden" name="id" value={kit.id} />
+          <ConfirmSubmit
+            className="btn btn-sm btn-danger"
+            title={`Are you sure you want to delete “${kit.name}”?`}
+            message="The whole kit, its lessons, materials, files, codes and orders are erased and schools lose access. This is permanent and does not go to Recently deleted."
+            confirmLabel="Delete kit"
+          >
+            <Icon name="trash" size={15} /> Delete kit
+          </ConfirmSubmit>
+        </form>
+      </section>
     </>
   );
 }

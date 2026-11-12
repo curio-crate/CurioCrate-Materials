@@ -19,6 +19,7 @@ import { fileLabel } from "@/lib/files";
 import { isTeacherOnly, MATERIAL, asMaterialKind } from "@/lib/materials";
 import { packageUrl } from "@/lib/packages";
 import { LessonExtras } from "./LessonExtras";
+import { LessonToc, type TocItem } from "./LessonToc";
 import styles from "./lesson-page.module.css";
 
 export async function generateMetadata(props: PageProps<"/lessons/[slug]">): Promise<Metadata> {
@@ -49,46 +50,47 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
     <header className={styles.head}>
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
         {viewer ? <Link href="/dashboard">Dashboard</Link> : learner ? <Link href="/student">My learning</Link> : classStudent ? <Link href="/class">My class</Link> : <Link href="/">Home</Link>}
+        <Icon name="chevron" size={14} />
         {kit && viewer ? (
-          <>
-            <span aria-hidden="true">/</span>
-            <Link href={`/kits/${kit.slug}`}>{kit.shortName}</Link>
-          </>
+          <Link href={`/kits/${kit.slug}`} className={styles.crumbKit}>
+            <span className="sx-dot" aria-hidden="true" /> {kit.shortName}
+          </Link>
         ) : kit ? (
-          <>
-            <span aria-hidden="true">/</span>
-            <span>{kit.shortName}</span>
-          </>
+          <span className={styles.crumbKit}>
+            <span className="sx-dot" aria-hidden="true" /> {kit.shortName}
+          </span>
         ) : (
-          <>
-            <span aria-hidden="true">/</span>
-            <Link href="/training">Training</Link>
-          </>
+          <Link href="/training">Training</Link>
         )}
-        <span aria-hidden="true">/</span>
+        <Icon name="chevron" size={14} />
         <span aria-current="page">{item.section ?? TYPE_LABEL[item.type]}</span>
       </nav>
-      <span className="eyebrow">
-        {kit ? `${kit.name} · ` : "Professional learning · "}
-        {TYPE_LABEL[item.type]}
-      </span>
-      <h1 className={`h1 ${styles.title}`}>{item.title}</h1>
-      <p className="lead">{item.summary}</p>
-      <div className={styles.meta}>
+      <p className={styles.kicker}>
+        <span className={styles.kickerKit}>{kit ? kit.name : "Professional learning"}</span>
+        <span>
+          {TYPE_LABEL[item.type]}
+          {item.section ? ` ${item.section}` : ""}
+        </span>
         {item.minutes && (
           <span className={styles.metaItem}>
-            <Icon name="clock" size={15} /> {item.minutes} minutes
+            <Icon name="clock" size={14} /> {item.minutes} minutes
           </span>
         )}
-        <NgssTags codes={item.ngss} />
-      </div>
+      </p>
+      <h1 className={`h1 ${styles.title}`}>{item.title}</h1>
+      <p className="lead">{item.summary}</p>
+      {!!item.ngss.length && (
+        <div className={styles.meta}>
+          <NgssTags codes={item.ngss} />
+        </div>
+      )}
     </header>
   );
 
   if (!gate.ok) {
     if (gate.status === 404) notFound();
     return (
-      <div className="container">
+      <div className="container" data-cap={kit?.accent}>
         {header}
         <LockedPanel reason={gate.reason as "sign_in" | "needs_kit" | "needs_subscription" | "not_assigned" | "student_locked"} kitSlug={kit?.slug} kitName={kit?.name} next={`/lessons/${slug}`} tier={item.requiredTier} />
       </div>
@@ -110,9 +112,16 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const pdfs = childAccess.filter((x) => x.c.type === "pdf" && !["training_video", "manual", "teacher_manual"].includes(kindOf(x.c) ?? ""));
   const interactiveSrc = item.type === "interactive" ? await packageUrl(item) : null;
   const headings = item.body.filter((b) => b.type === "h").map((b) => (b as { text: string }).text);
+  const toc: TocItem[] = [
+    ...videos.map(({ c }) => ({ id: c.slug, label: c.title, icon: "video" })),
+    ...headings.map((h) => ({ id: slugify(h), label: h })),
+    ...(training.length ? [{ id: "training", label: "Teacher training", icon: "training" }] : []),
+    ...(manuals.length ? [{ id: "manuals", label: "Manuals", icon: "manual" }] : []),
+    ...(pdfs.length ? [{ id: "handouts", label: "Handouts", icon: "pdf" }] : []),
+  ];
 
   return (
-    <div className="container">
+    <div className="container" data-cap={kit?.accent}>
       {header}
       <div className={styles.layout}>
         <article className={styles.article} aria-label={item.title}>
@@ -171,7 +180,9 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
           <nav className={styles.pager} aria-label={`More ${TYPE_LABEL[item.type].toLowerCase()}s`}>
             {prev ? (
               <Link href={`/lessons/${prev.slug}`} className={styles.pagerLink}>
-                <span className="eyebrow">← Previous</span>
+                <span className={styles.pagerDir}>
+                  <Icon name="back" size={14} /> Previous
+                </span>
                 <span>{prev.title}</span>
               </Link>
             ) : (
@@ -179,60 +190,26 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
             )}
             {next && (
               <Link href={`/lessons/${next.slug}`} className={`${styles.pagerLink} ${styles.pagerNext}`}>
-                <span className="eyebrow">Next →</span>
+                <span className={styles.pagerDir}>
+                  Next <Icon name="arrow" size={14} />
+                </span>
                 <span>{next.title}</span>
               </Link>
             )}
           </nav>
         </article>
 
-        <aside className={styles.aside} aria-label="On this page">
-          <div className={`card ${styles.asideCard}`}>
-            <h2 className="eyebrow">On this page</h2>
-            <ul className={styles.toc}>
-              {videos.map(({ c }) => (
-                <li key={c.id}>
-                  <a href={`#${c.slug}`}>
-                    <Icon name="video" size={14} /> {c.title}
-                  </a>
-                </li>
-              ))}
-              {headings.map((h) => (
-                <li key={h}>
-                  <a href={`#${slugify(h)}`}>{h}</a>
-                </li>
-              ))}
-              {!!training.length && (
-                <li>
-                  <a href="#training">
-                    <Icon name="training" size={14} /> Teacher training
-                  </a>
-                </li>
-              )}
-              {!!manuals.length && (
-                <li>
-                  <a href="#manuals">
-                    <Icon name="manual" size={14} /> Manuals
-                  </a>
-                </li>
-              )}
-              {!!pdfs.length && (
-                <li>
-                  <a href="#handouts">
-                    <Icon name="pdf" size={14} /> Handouts
-                  </a>
-                </li>
-              )}
-            </ul>
-          </div>
+        <aside className={styles.aside} aria-label="Lesson tools">
           {viewer && (
             <LessonExtras
               slug={item.slug}
+              contentId={item.id}
               title={item.title}
               lms={features.lms}
               classes={features.classes ? await Promise.all((await classesFor(viewer.teacher.id)).map(async ({ c }) => ({ id: c.id, name: c.name, assigned: await isAssigned(c.id, [item.id]) }))) : undefined}
             />
           )}
+          <LessonToc items={toc} />
         </aside>
       </div>
     </div>
@@ -247,7 +224,7 @@ function DownloadCard({ item, tag }: { item: ContentItem; tag?: string }) {
       </span>
       <span className={styles.downloadBody}>
         <span className={styles.downloadTitle}>{item.title}</span>
-        {tag && tag !== item.title && <span className="eyebrow">{tag}</span>}
+        {tag && tag !== item.title && <span className={styles.downloadTag}>{tag}</span>}
         <span className="hint">{item.summary}</span>
       </span>
       <span className={styles.downloadAction}>
@@ -265,7 +242,7 @@ function LockedInline({ item }: { item: ContentItem }) {
         <strong>{item.title}</strong> is part of the {item.requiredTier === "subscription" ? "subscription" : "full kit"}.
       </span>
       <Link href={item.requiredTier === "subscription" ? "/plans" : "/redeem"} className="text-link">
-        {item.requiredTier === "subscription" ? "See plans" : "Redeem code"} →
+        {item.requiredTier === "subscription" ? "See plans" : "Redeem code"}
       </Link>
     </div>
   );

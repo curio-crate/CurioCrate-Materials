@@ -1,105 +1,140 @@
 import Link from "next/link";
+import { KitArt } from "@/components/kit/KitArt";
 import { Icon } from "@/components/ui/Icon";
 import { MAX_CLASSES_PER_TEACHER, MAX_STUDENTS_PER_CLASS } from "@/lib/class-limits";
 import { HeroPreview } from "./HeroPreview";
 import styles from "./home.module.css";
 
-const STEPS = [
-  { icon: "key", title: "Redeem your kit", text: "The code inside the kit box unlocks its lessons, labs, videos and teacher guide on your account." },
-  { icon: "users", title: "Set up your classes", text: `Up to ${MAX_CLASSES_PER_TEACHER} classes with ${MAX_STUDENTS_PER_CLASS} students each. Every class gets its own join code.` },
-  { icon: "check", title: "Assign and teach", text: "Pick what each class sees. Students open it on any Chromebook, and you see their lab results." },
-] as const;
-
+/*
+ * The landing page, read top to bottom in three seconds:
+ *   1. What it is (one headline on CurioCrate blue) and the product itself, big.
+ *   2. Where to go: one tile per kind of visitor (teachers, students, try it).
+ *   3. How it works, then the two promises (standards, privacy).
+ */
 export default function HomePage() {
   return (
     <>
       <section className={styles.hero} aria-labelledby="hero-title">
-        <div className={`container-wide ${styles.heroInner}`}>
-          <div className={styles.heroCopy}>
-            <p className={`${styles.pill} rise`}>
-              <Icon name="ngss" size={14} /> NGSS-aligned · Grades 4–10
-            </p>
-            <h1 id="hero-title" className={`display rise-2`}>
-              Hands-on science, <span className="italic-accent">ready to teach.</span>
-            </h1>
-            <p className={`lead ${styles.heroLead} rise-3`}>Every CurioCrate kit comes with online lessons, labs, videos and a teacher guide. Set up a class in a minute and assign exactly what your students need.</p>
-            <div className={`${styles.ctas} rise-4`}>
-              <Link href="/signin" className="btn btn-solid btn-lg">
-                Teacher sign in
-              </Link>
-              <Link href="/demo" className="btn btn-lg">
-                Try our demo <Icon name="arrow" size={16} />
-              </Link>
-            </div>
-            <p className={`${styles.studentNote} rise-4`}>
-              Student? <Link href="/join">Join your class or sign in →</Link>
-            </p>
-          </div>
-          <div className={`${styles.heroArt} rise-3`}>
-            <HeroPreview maxStudents={MAX_STUDENTS_PER_CLASS} />
+        <div className={styles.heroCopy}>
+          <p className={`${styles.product} rise`}>CurioCrate Materials</p>
+          <h1 id="hero-title" className={`${styles.display} rise-2`}>
+            Hands-on science, ready to teach.
+          </h1>
+          <p className={`${styles.heroLead} rise-3`}>Lessons, labs, videos and teacher guides for every CurioCrate kit. NGSS-aligned for grades 4&nbsp;to&nbsp;10.</p>
+          <div className={`${styles.ctas} rise-4`}>
+            <Link href="/signin" className="btn btn-white btn-lg">
+              Teacher sign in
+            </Link>
+            <Link href="/demo" className="btn btn-on-blue btn-lg">
+              Try the demo
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className={styles.section} id="how" aria-labelledby="how-title">
-        <div className="container-wide">
-          <div className={`${styles.head} reveal`}>
-            <span className="eyebrow">How it works</span>
-            <h2 id="how-title" className="h2">
-              From the box to the classroom in three steps.
-            </h2>
+      <div className={`container-wide ${styles.productShot} rise-3`}>
+        <HeroPreview maxStudents={MAX_STUDENTS_PER_CLASS} />
+      </div>
+
+      <section className={`container-wide ${styles.paths}`} aria-label="Where to start">
+        <div className={`${styles.tile} reveal`}>
+          <span className={styles.tileIcon} aria-hidden="true">
+            <Icon name="school" size={26} />
+          </span>
+          <h2 className={styles.tileTitle}>Teachers</h2>
+          <p className={styles.tileText}>Your kits, classes and lessons in one place. Sign in with your school Google, Clever or ClassLink account.</p>
+          <div className={styles.tileCtas}>
+            <Link href="/signin" className="btn btn-solid">
+              Sign in
+            </Link>
+            <Link href="/redeem" className="btn">
+              Redeem a kit code
+            </Link>
           </div>
+        </div>
+        <div className={`${styles.tile} reveal`}>
+          <span className={styles.tileIcon} aria-hidden="true">
+            <Icon name="users" size={26} />
+          </span>
+          <h2 className={styles.tileTitle}>Students</h2>
+          <p className={styles.tileText}>Got a code from your teacher? Type it in and you&apos;re in. No account, no name, no email.</p>
+          <div className={styles.tileCtas}>
+            <Link href="/join" className="btn btn-solid">
+              Join a class
+            </Link>
+            <Link href="/student/signin" className="btn">
+              Student sign in
+            </Link>
+          </div>
+        </div>
+        <div className={`${styles.tile} ${styles.tileDemo} reveal`} data-cap="lum">
+          <div className={styles.demoCopy}>
+            <h2 className={styles.tileTitle}>Try a real lab</h2>
+            <p className={styles.tileText}>Six tubes, one blackout sleeve. Find the faintest stain luminol can detect, right in your browser.</p>
+            <div className={styles.tileCtas}>
+              <Link href="/demo" className="btn btn-white">
+                Try the demo
+              </Link>
+            </div>
+          </div>
+          <div className={styles.demoArt} aria-hidden="true">
+            <KitArt kit="luminol" />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.how} id="how" aria-labelledby="how-title">
+        <div className="container-wide">
+          <h2 id="how-title" className={`${styles.howTitle} reveal`}>
+            From the box to the classroom
+          </h2>
+          {/* A procedure, so it is numbered: each step shows the real thing you handle at that step. */}
           <ol className={styles.steps}>
-            {STEPS.map((s, i) => (
-              <li key={s.title} className={`${styles.step} reveal`}>
-                <span className={styles.stepIcon} aria-hidden="true">
-                  <Icon name={s.icon} size={20} />
-                </span>
-                <span className={styles.stepNum}>Step {i + 1}</span>
-                <h3 className="h3">{s.title}</h3>
-                <p className="muted">{s.text}</p>
-              </li>
-            ))}
+            <li className={`${styles.step} reveal`}>
+              <span className={styles.stepNum} aria-hidden="true">
+                1
+              </span>
+              <h3 className={styles.stepTitle}>Redeem your kit</h3>
+              <p>The code inside the kit box unlocks its lessons, labs, videos and teacher guide.</p>
+              <span className={styles.stepThing} aria-hidden="true">
+                <code className="sx-ticket sx-ticket-sm">LMN-7K3D-Q9TX</code>
+              </span>
+            </li>
+            <li className={`${styles.step} reveal`}>
+              <span className={styles.stepNum} aria-hidden="true">
+                2
+              </span>
+              <h3 className={styles.stepTitle}>Set up your classes</h3>
+              <p>
+                Up to {MAX_CLASSES_PER_TEACHER} classes with {MAX_STUDENTS_PER_CLASS} students each. Every class gets its own join code.
+              </p>
+              <span className={styles.stepThing} aria-hidden="true">
+                <code className="sx-ticket sx-ticket-sm">KQWMTR</code>
+              </span>
+            </li>
+            <li className={`${styles.step} reveal`}>
+              <span className={styles.stepNum} aria-hidden="true">
+                3
+              </span>
+              <h3 className={styles.stepTitle}>Assign and teach</h3>
+              <p>Switch on what each class sees. Students open it on any Chromebook, and you see their results.</p>
+              <span className={styles.stepThing} aria-hidden="true">
+                <span className="sx-switch" aria-pressed="true" />
+              </span>
+            </li>
           </ol>
         </div>
       </section>
 
-      <section className={styles.section} aria-labelledby="students-title">
-        <div className="container-wide">
-          <div className={`${styles.students} reveal`}>
-            <div className={styles.studentsHead}>
-              <span className="eyebrow">For students</span>
-              <h2 id="students-title" className="h2">
-                Two simple ways in.
-              </h2>
-            </div>
-            <div className={styles.studentCards}>
-              <Link href="/join" className={`card card-link ${styles.studentCard}`}>
-                <Icon name="users" size={22} />
-                <h3 className="h4">In a class</h3>
-                <p className="muted">Type the code from your teacher. No account, no name, no email.</p>
-                <span className="text-link">Join a class →</span>
-              </Link>
-              <Link href="/student/signup" className={`card card-link ${styles.studentCard}`}>
-                <Icon name="user" size={22} />
-                <h3 className="h4">On your own (13+)</h3>
-                <p className="muted">Make a free student account to explore the free lessons and labs from every kit.</p>
-                <span className="text-link">Create a free account →</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className={styles.trust} aria-label="Standards and privacy">
-        <div className={`container-wide ${styles.trustInner} reveal`}>
+        <div className={`container-wide ${styles.trustInner}`}>
           <p>
-            <Icon name="ngss" size={16} /> Every lesson lists its NGSS performance expectations.
+            <Icon name="ngss" size={18} /> Every lesson lists its NGSS performance expectations.
           </p>
           <p>
-            <Icon name="shield" size={16} /> Student data is never sold, never used for ads, never used to train AI.{" "}
+            <Icon name="shield" size={18} /> Student data is never sold, never used for ads, never used to train AI.{" "}
             <Link href="/privacy" className="text-link">
-              Privacy →
+              Privacy
             </Link>
           </p>
         </div>

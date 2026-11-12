@@ -5,10 +5,6 @@
 
 # testing
 /coverage
-/test-results
-/playwright-report
-/blob-report
-/test-results-run.log
 
 # next.js
 /.next/
@@ -19,9 +15,6 @@ next-env.d.ts
 # local data: embedded database and generated media (regenerate with npm run media:generate)
 /.data
 /.media
-
-# large comparison artifacts (side-by-side sheets are kept)
-/design/compare/*.full.png
 
 # misc
 .DS_Store

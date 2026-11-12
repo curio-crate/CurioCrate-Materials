@@ -86,7 +86,7 @@
   font-size: clamp(2rem, 3.4vw, 2.75rem);
 }
 .successText {
-  color: var(--lum-muted);
+  color: var(--sx-muted);
   line-height: 1.6;
 }
 .successArt {
@@ -94,12 +94,12 @@
 }
 .share {
   font-size: var(--text-sm);
-  color: var(--lum-muted);
+  color: var(--sx-muted);
   padding-top: 14px;
-  border-top: 1px solid var(--border-kit-soft);
+  border-top: 1px dashed var(--sx-border-strong);
 }
 .share strong {
-  color: var(--lum-text);
+  color: var(--sx-heading);
   letter-spacing: 0.15em;
 }
 @media (max-width: 960px) {

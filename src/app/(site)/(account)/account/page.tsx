@@ -44,7 +44,7 @@ export default async function AccountPage(props: PageProps<"/account">) {
             <div>
               <dt className="eyebrow">You</dt>
               <dd>
-                {data.profile.name} · {data.profile.email} · member since {day(data.profile.createdAt)}
+                {data.profile.name}, {data.profile.email}, member since {day(data.profile.createdAt)}
               </dd>
             </div>
             <div>
@@ -53,7 +53,7 @@ export default async function AccountPage(props: PageProps<"/account">) {
             </div>
             <div>
               <dt className="eyebrow">School</dt>
-              <dd>{data.school ? `${data.school.name}${data.school.schoolAdmin ? " (school admin)" : ""}${data.school.membership === "pending" ? " · waiting for approval" : ""}` : "None yet"}</dd>
+              <dd>{data.school ? `${data.school.name}${data.school.schoolAdmin ? " (school admin)" : ""}${data.school.membership === "pending" ? ", waiting for approval" : ""}` : "None yet"}</dd>
             </div>
             <div>
               <dt className="eyebrow">Kits on your account</dt>

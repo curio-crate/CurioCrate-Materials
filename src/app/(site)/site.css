@@ -1,11 +1,15 @@
 /*
- * The teacher & student site: clean, light and functional, on the CurioCrate blue. Same method as Studio: the
- * shared primitives in globals.css (.btn, .card, .input, .table, .badge, .alert…) read theme variables, so they are
- * re-skinned here by remapping those variables under .site, plus a few shape and type overrides. Colors come only
- * from tokens.css (--sx-*). Labs and kit art keep their night-sky drawing on a navy "screen" panel.
+ * The teacher & student site: "kit parts". Professional for teachers, friendly for 9 to 16 year olds, on CurioCrate blue.
+ * The shared primitives in globals.css (.btn, .card, .input, .table, .badge, .alert…) read theme variables, so they are
+ * re-skinned here by remapping those variables under .site, plus shape, type and motion overrides. Site-only
+ * components are prefixed sx-. Colors come only from tokens.css (--sx-*). Spec: design/ui-system.md.
+ *
+ * The one rule that makes it feel physical: a LEDGE (solid bottom edge) means "you can press this".
+ * Buttons, chips and clickable tiles have one and sink into it when pressed. Static panels are flat.
  */
 
 .site {
+  --font-body: var(--font-read);
   --color-bg: var(--sx-bg);
   --color-bg-deep: var(--sx-navy);
   --color-text: var(--sx-text);
@@ -53,7 +57,7 @@
   --fill-faint: var(--sx-surface-2);
   --fill-kit-hover: var(--sx-accent-soft);
   --surface-card: var(--sx-surface);
-  --surface-card-2: var(--sx-surface);
+  --surface-card-2: var(--sx-surface-2);
   --surface-raised: var(--sx-surface);
   --surface-input: var(--sx-surface);
   --surface-input-blue: var(--sx-surface);
@@ -67,22 +71,28 @@
   --shadow-card: var(--sx-shadow);
   --shadow-dropdown: var(--sx-shadow-lg);
   --pastel1: var(--sx-accent);
-  --focus-ring: 2px solid var(--sx-brand);
-  --font-heading: var(--font-body);
-  --sx-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius-btn: 10px;
-  --radius-card: 14px;
-  --radius-panel: 16px;
-  --header-h: 68px;
+  --focus-ring: 3px solid var(--sx-brand);
+  --font-heading: var(--font-label);
+  --radius-btn: var(--sx-r-sm);
+  --radius-card: var(--sx-r-md);
+  --radius-panel: var(--sx-r-lg);
+  --header-h: 72px;
   --section-y: 96px;
+  --page-gutter: 32px;
+  /* Default cap (kit color) when no data-cap is set: the brand blue */
+  --cap: var(--sx-brand);
+  --cap-ink: var(--sx-accent-strong);
 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background: var(--sx-bg);
   color: var(--sx-text);
-  font-size: 0.9375rem;
+  font-family: var(--font-body);
+  font-size: var(--sx-fs-ui);
+  line-height: 1.6;
 }
+html:has(.site),
 body:has(> .site) {
   background: var(--sx-bg);
 }
@@ -90,163 +100,253 @@ body:has(> .site) {
   background: var(--sx-accent-ring);
   color: var(--sx-heading);
 }
+.site :focus-visible {
+  outline: 3px solid var(--sx-brand);
+  outline-offset: 3px;
+  border-radius: var(--sx-r-xs);
+}
 .site .page {
   flex: 1;
   padding-top: 0;
-  padding-bottom: 96px;
+  padding-bottom: var(--sx-24);
 }
-/* Every navigation: (site)/template.tsx remounts this wrapper, so each page eases in. */
-.site .sx-enter {
-  animation: sx-page 0.45s var(--sx-ease) both;
+
+/* ============ Kit caps ============ */
+/* Any element can take a kit's color: data-cap="lum|gold|blue" sets --cap (decoration) and --cap-ink (text). */
+.site [data-cap="lum"] {
+  --cap: var(--sx-cap-lum);
+  --cap-ink: var(--sx-cap-lum-ink);
 }
-@keyframes sx-page {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
+.site [data-cap="gold"] {
+  --cap: var(--sx-cap-gold);
+  --cap-ink: var(--sx-cap-gold-ink);
+}
+.site [data-cap="blue"] {
+  --cap: var(--sx-cap-blue);
+  --cap-ink: var(--sx-cap-blue-ink);
+}
+/* A small colored dot that names a kit wherever it appears (crumbs, search results, class lists). */
+.site .sx-dot {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cap);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cap) 20%, transparent);
 }
 
 /* ============ Type ============ */
 .site :is(h1, h2, h3, h4),
 .site :is(.display, .h1, .h2, .h3, .h4) {
-  font-family: var(--font-body);
+  font-family: var(--font-label);
   color: var(--sx-heading);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 .site .display {
-  font-size: clamp(2.5rem, 5vw, 3.75rem);
-  line-height: 1.06;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.5rem, 5.2vw, var(--sx-fs-4xl));
   font-weight: 800;
-}
-.site .h1 {
-  font-size: clamp(2rem, 3.6vw, 2.75rem);
-  line-height: 1.12;
+  line-height: 1.02;
   letter-spacing: -0.03em;
 }
-.site .h2 {
-  font-size: clamp(1.6rem, 2.6vw, 2rem);
-  line-height: 1.18;
+.site .h1 {
+  font-size: clamp(2.125rem, 3.8vw, var(--sx-fs-3xl));
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
 }
-.site .h3 {
-  font-size: 1.3rem;
-  line-height: 1.3;
+.site .h2 {
+  font-size: clamp(1.625rem, 2.6vw, var(--sx-fs-2xl));
+  line-height: 1.12;
   letter-spacing: -0.02em;
 }
+.site .h3 {
+  font-size: var(--sx-fs-xl);
+  line-height: 1.2;
+}
 .site .h4 {
-  font-size: 1.05rem;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
+  font-size: var(--sx-fs-lg);
+  line-height: 1.25;
 }
 .site .italic-accent {
   font-style: normal;
   font-weight: inherit;
-  color: var(--sx-accent);
+  color: inherit;
 }
 .site .subtitle {
   font-family: var(--font-body);
   font-style: normal;
-  font-size: 1.125rem;
+  font-size: var(--sx-fs-lg);
   color: var(--sx-muted);
 }
 .site .lead {
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  max-width: 60ch;
+  font-size: var(--sx-fs-lg);
+  line-height: 1.55;
   color: var(--sx-muted);
 }
+.site .muted {
+  color: var(--sx-muted);
+}
+/* Small context line above a title (school name, kit name). Sentence case, never tracked-out capitals. */
 .site .eyebrow {
   font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--sx-accent-strong);
 }
 .site .hint {
   color: var(--sx-muted);
 }
 .site .label {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--sx-heading);
 }
 .site .kit-title {
-  font-family: var(--font-body);
+  font-family: var(--font-label);
   text-transform: none;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--sx-heading);
 }
 .site .prose {
+  max-width: 68ch;
   color: var(--sx-text);
+  font-size: var(--sx-fs-md);
+  line-height: 1.7;
 }
 .site .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
   color: var(--sx-accent);
 }
+.site .text-link svg {
+  transition: transform var(--sx-t-hover) var(--sx-ease);
+}
 .site .text-link:hover {
   color: var(--sx-accent-hover);
 }
+.site .text-link:hover svg {
+  transform: translateX(3px);
+}
 .site .link {
   text-decoration-color: var(--sx-accent-ring);
+  text-decoration-thickness: 2px;
+}
+.site .mono,
+.site code {
+  font-variant-ligatures: none;
 }
 
 /* ============ Page header ============ */
 .site .page-head {
-  padding-top: 56px;
-  padding-bottom: 36px;
+  padding-top: var(--sx-14);
+  padding-bottom: var(--sx-8);
 }
 .site .page-head .display,
 .site .page-head .h1 {
-  margin-top: 10px;
+  margin-top: var(--sx-2);
 }
 .site .page-head .lead {
-  margin-top: 12px;
+  margin-top: var(--sx-3);
 }
 
 /* ============ Buttons ============ */
+/* Heights: sm 36, md 44, lg 52, plus the ledge. Hover lifts 1px onto a taller ledge; press sinks into it. */
 .site .btn {
   --btn-pad-y: 10px;
   --btn-pad-x: 18px;
+  --ledge: var(--sx-border-strong);
+  --ledge-h: 4px;
   gap: 8px;
-  border-radius: var(--radius-btn);
-  border: 1px solid var(--sx-border-strong);
+  min-height: 44px;
+  border-radius: var(--sx-r-sm);
+  border: 2px solid var(--sx-border-strong);
   background: var(--sx-surface);
   color: var(--sx-heading);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: var(--font-label);
+  font-size: 1rem;
+  font-weight: 700;
   letter-spacing: 0;
+  line-height: 1.2;
   text-transform: none;
   backdrop-filter: none;
-  box-shadow: var(--sx-shadow-sm);
-  transition: background-color 0.2s var(--sx-ease), border-color 0.2s var(--sx-ease), color 0.2s var(--sx-ease), box-shadow 0.25s var(--sx-ease), transform 0.25s var(--sx-ease);
+  box-shadow: 0 var(--ledge-h) 0 var(--ledge);
+  translate: 0 0;
+  transition:
+    background-color var(--sx-t-hover) var(--sx-ease),
+    border-color var(--sx-t-hover) var(--sx-ease),
+    color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
 }
 .site .btn:hover {
   background: var(--sx-surface-2);
-  border-color: var(--sx-accent);
-  color: var(--sx-accent-strong);
-  box-shadow: var(--sx-shadow);
-  transform: translateY(-1px);
+  border-color: var(--sx-border-strong);
+  color: var(--sx-heading);
+  box-shadow: 0 calc(var(--ledge-h) + 1px) 0 var(--ledge);
+  translate: 0 -1px;
+  transform: none;
 }
-.site .btn:active {
-  transform: translateY(0);
-  box-shadow: var(--sx-shadow-sm);
+.site .btn:active:not(:disabled) {
+  box-shadow: 0 0 0 var(--ledge);
+  translate: 0 var(--ledge-h);
+  transition-duration: 60ms;
+}
+.site .btn:disabled,
+.site .btn[aria-disabled="true"] {
+  opacity: 0.5;
+  box-shadow: none;
+  translate: 0 var(--ledge-h);
+}
+.site .btn svg {
+  flex: none;
 }
 .site .btn-solid {
-  background: var(--sx-accent);
-  border-color: var(--sx-accent);
+  --ledge: var(--sx-brand-ledge);
+  background: var(--sx-fill);
+  border-color: var(--sx-fill);
   color: var(--sx-on-accent);
 }
 .site .btn-solid:hover {
-  background: var(--sx-accent-hover);
-  border-color: var(--sx-accent-hover);
+  background: var(--sx-fill-hover);
+  border-color: var(--sx-fill-hover);
   color: var(--sx-on-accent);
-  box-shadow: var(--sx-shadow-blue);
+}
+/* The main action on a blue field: white with blue text (same in light and dark). */
+.site .btn-white {
+  --ledge: var(--sx-brand-ledge);
+  background: var(--sx-on-accent);
+  border-color: var(--sx-on-accent);
+  color: var(--sx-fill);
+}
+.site .btn-white:hover {
+  background: var(--sx-on-accent);
+  border-color: var(--sx-on-accent);
+  color: var(--sx-fill-hover);
+}
+/* Secondary action on a blue field: see-through white. */
+.site .btn-on-blue {
+  --ledge: var(--sx-brand-ledge);
+  background: var(--sx-on-brand-fill);
+  border-color: transparent;
+  color: var(--sx-on-accent);
+}
+.site .btn-on-blue:hover {
+  background: var(--sx-on-brand-hover);
+  border-color: transparent;
+  color: var(--sx-on-accent);
 }
 .site .btn-glass,
 .site .btn-outline {
@@ -262,23 +362,25 @@ body:has(> .site) {
   background: var(--sx-sunken);
   border-color: transparent;
   box-shadow: none;
+  translate: 0 0;
   color: var(--sx-heading);
 }
+.site .btn-ghost:active:not(:disabled) {
+  translate: 0 1px;
+}
 .site .btn-kit {
+  --ledge: var(--sx-accent-ring);
   background: var(--sx-accent-soft);
   border-color: var(--sx-accent-ring);
   color: var(--sx-accent-strong);
-  font-weight: 600;
-  letter-spacing: 0;
-  box-shadow: none;
 }
 .site .btn-kit:hover {
   background: var(--sx-accent-soft);
   border-color: var(--sx-accent);
   color: var(--sx-accent-strong);
-  box-shadow: none;
 }
 .site .btn-danger {
+  --ledge: var(--sx-danger-border);
   color: var(--sx-danger);
   border-color: var(--sx-danger-border);
 }
@@ -286,61 +388,92 @@ body:has(> .site) {
   background: var(--sx-danger-soft);
   border-color: var(--sx-danger);
   color: var(--sx-danger);
-  box-shadow: none;
+}
+.site .btn-danger-solid {
+  --ledge: color-mix(in srgb, var(--sx-danger) 70%, var(--sx-heading));
+  background: var(--sx-danger);
+  border-color: var(--sx-danger);
+  color: var(--sx-on-accent);
+}
+.site .btn-danger-solid:hover {
+  background: var(--sx-danger);
+  border-color: var(--sx-danger);
+  color: var(--sx-on-accent);
+  filter: brightness(1.06);
 }
 .site .btn-sm {
-  --btn-pad-y: 7px;
-  --btn-pad-x: 13px;
-  font-size: 0.8125rem;
-  border-radius: 9px;
+  --btn-pad-y: 6px;
+  --btn-pad-x: 14px;
+  --ledge-h: 3px;
+  min-height: 36px;
+  font-size: 0.9375rem;
+  border-radius: 11px;
 }
 .site .btn-xs {
-  --btn-pad-y: 5px;
+  --btn-pad-y: 3px;
   --btn-pad-x: 10px;
-  font-size: 0.75rem;
+  --ledge-h: 2px;
+  min-height: 30px;
+  font-size: 0.8125rem;
   letter-spacing: 0;
-  border-radius: 8px;
+  border-radius: 9px;
 }
 .site .btn-lg {
   --btn-pad-y: 13px;
   --btn-pad-x: 24px;
-  font-size: 0.9375rem;
+  --ledge-h: 5px;
+  min-height: 54px;
+  font-size: 1.0625rem;
+  border-radius: 15px;
 }
 
 /* ============ Surfaces ============ */
+/* Panels are flat: a 2px edge and no shadow. Only things you can press get a ledge. */
 .site .card {
   background: var(--sx-surface);
-  border: 1px solid var(--sx-border);
-  border-radius: var(--radius-panel);
+  border: 2px solid var(--sx-border);
+  border-radius: var(--sx-r-lg);
   backdrop-filter: none;
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: none;
 }
 .site .card-pad {
-  padding: 32px;
+  padding: var(--sx-8);
 }
+/* Clickable tiles: a ledge in the border color. Hover lifts 2px and the edge darkens; press sinks. */
 .site .card-link {
-  transition: border-color 0.25s var(--sx-ease), transform 0.3s var(--sx-ease), box-shadow 0.3s var(--sx-ease);
+  box-shadow: 0 4px 0 var(--sx-border);
+  translate: 0 0;
+  transition:
+    border-color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
 }
 .site .card-link:hover {
   border-color: var(--sx-border-strong);
-  transform: translateY(-3px);
-  box-shadow: var(--sx-shadow-lg);
+  transform: none;
+  translate: 0 -2px;
+  box-shadow: 0 6px 0 var(--sx-border-strong);
+}
+.site .card-link:active {
+  translate: 0 3px;
+  box-shadow: 0 1px 0 var(--sx-border-strong);
+  transition-duration: 60ms;
 }
 .site .feature-card {
   background: var(--sx-surface);
-  border-color: var(--sx-border);
-  box-shadow: var(--sx-shadow);
+  border: 2px solid var(--sx-border);
+  box-shadow: none;
   color: var(--sx-text);
 }
 
-/* ============ Badges ============ */
+/* ============ Badges & chips ============ */
 .site .badge {
   font-family: var(--font-body);
-  font-size: 0.6875rem;
+  font-size: var(--sx-fs-xs);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   text-transform: none;
-  padding: 3px 9px;
+  padding: 3px 10px;
   border-color: transparent;
   background: var(--sx-sunken);
   color: var(--sx-muted);
@@ -368,23 +501,186 @@ body:has(> .site) {
   color: var(--sx-danger);
 }
 .site .chip {
-  font-weight: 500;
-  border-color: var(--sx-border);
+  padding: 4px 12px;
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  border: 2px solid var(--sx-border);
   background: var(--sx-surface-2);
   color: var(--sx-text);
+}
+
+/* Filter chips (a row of toggle buttons with counts). Used on the kit page and the dashboard finder. */
+.site .sx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0 0 3px;
+}
+.site .sx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--sx-border-strong);
+  background: var(--sx-surface);
+  box-shadow: 0 3px 0 var(--sx-border-strong);
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  color: var(--sx-text);
+  transition:
+    background-color var(--sx-t-hover) var(--sx-ease),
+    border-color var(--sx-t-hover) var(--sx-ease),
+    color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-press) var(--sx-ease),
+    translate var(--sx-t-press) var(--sx-ease);
+}
+.site .sx-chip:hover {
+  background: var(--sx-surface-2);
+}
+.site .sx-chip:active {
+  translate: 0 3px;
+  box-shadow: 0 0 0 var(--sx-border-strong);
+}
+.site .sx-chip[aria-pressed="true"] {
+  background: var(--sx-fill);
+  border-color: var(--sx-fill);
+  box-shadow: 0 3px 0 var(--sx-brand-ledge);
+  color: var(--sx-on-accent);
+}
+.site .sx-chip-count {
+  min-width: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--sx-sunken);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  text-align: center;
+  color: var(--sx-muted);
+}
+.site .sx-chip[aria-pressed="true"] .sx-chip-count {
+  background: var(--sx-on-brand-fill);
+  color: var(--sx-on-accent);
+}
+
+/* ============ Switch (assign / unassign) ============ */
+/* A chunky toggle: 50x30 track, the knob travels on the spring and squashes while pressed. */
+.site .sx-switch {
+  position: relative;
+  flex: none;
+  width: 50px;
+  height: 30px;
+  border-radius: 30px;
+  background: var(--sx-border-strong);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--sx-heading) 10%, transparent);
+  transition: background-color var(--sx-t-hover) var(--sx-ease);
+}
+.site .sx-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--sx-on-accent);
+  box-shadow: 0 2px 0 var(--sx-knob-shadow);
+  transition:
+    translate var(--sx-t-toggle) var(--sx-spring),
+    width var(--sx-t-press) var(--sx-ease);
+}
+.site .sx-switch:hover {
+  background: var(--sx-muted);
+}
+.site .sx-switch:active::after {
+  width: 29px;
+}
+.site .sx-switch[aria-pressed="true"] {
+  background: var(--sx-fill);
+}
+.site .sx-switch[aria-pressed="true"]:hover {
+  background: var(--sx-fill-hover);
+}
+.site .sx-switch[aria-pressed="true"]::after {
+  translate: 20px 0;
+}
+.site .sx-switch[aria-pressed="true"]:active::after {
+  translate: 15px 0;
+}
+.site .sx-switch[aria-busy="true"] {
+  opacity: 0.7;
+}
+
+/* ============ Code ticket ============ */
+/* Class and kit codes look like a tear-off ticket: teachers copy them to the board, students type them. */
+.site .sx-ticket {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  border-radius: 10px;
+  background: var(--sx-sky);
+  border: 2px dashed var(--sx-accent-ring);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: 0.18em;
+  color: var(--sx-heading);
+  white-space: nowrap;
+}
+.site .sx-ticket::before,
+.site .sx-ticket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--sx-surface);
+  border: 2px dashed var(--sx-accent-ring);
+  clip-path: inset(0 0 0 50%);
+}
+.site .sx-ticket::before {
+  left: -7px;
+}
+.site .sx-ticket::after {
+  right: -7px;
+  clip-path: inset(0 50% 0 0);
+}
+.site .sx-ticket-sm {
+  padding: 3px 10px;
+  font-size: 0.875rem;
+  letter-spacing: 0.14em;
+  border-width: 1.5px;
+}
+.site .sx-ticket-sm::before,
+.site .sx-ticket-sm::after {
+  display: none;
 }
 
 /* ============ Forms ============ */
 .site .input,
 .site .select,
 .site .textarea {
-  min-height: 44px;
-  border-radius: 10px;
-  border-color: var(--sx-border-strong);
-  background-color: var(--sx-surface);
+  min-height: 50px;
+  border: 2px solid var(--sx-border-strong);
+  border-radius: var(--sx-r-sm);
+  background-color: var(--sx-surface-2);
   color: var(--sx-heading);
-  font-size: 0.9375rem;
-  box-shadow: var(--sx-shadow-sm);
+  font-size: var(--sx-fs-ui);
+  box-shadow: none;
+  transition:
+    border-color var(--sx-t-hover) var(--sx-ease),
+    background-color var(--sx-t-hover) var(--sx-ease),
+    box-shadow var(--sx-t-hover) var(--sx-ease);
+}
+.site .input::placeholder,
+.site .textarea::placeholder {
+  color: color-mix(in srgb, var(--sx-muted) 75%, var(--sx-surface));
 }
 .site .input:hover,
 .site .select:hover,
@@ -394,20 +690,26 @@ body:has(> .site) {
 .site .input:focus-visible,
 .site .select:focus-visible,
 .site .textarea:focus-visible {
+  outline: none;
   border-color: var(--sx-accent);
+  background-color: var(--sx-surface);
   box-shadow: 0 0 0 4px var(--sx-accent-ring);
 }
 .site .input-code {
-  min-height: 56px;
-  font-size: 1.2rem;
+  min-height: 60px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.3rem;
 }
 .site .checkbox {
   color: var(--sx-text);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   align-items: flex-start;
   line-height: 1.5;
 }
 .site .checkbox input {
+  width: 18px;
+  height: 18px;
   margin-top: 2px;
   flex: none;
   accent-color: var(--sx-accent);
@@ -415,11 +717,12 @@ body:has(> .site) {
 
 /* ============ Alerts & tables ============ */
 .site .alert {
-  border-radius: 12px;
-  border-color: var(--sx-accent-ring);
-  background: var(--sx-accent-softer);
-  color: var(--sx-text);
-  font-size: 0.875rem;
+  border: 2px solid var(--sx-sky-line);
+  border-radius: var(--sx-r-md);
+  background: var(--sx-sky);
+  color: var(--sx-heading);
+  font-size: 0.9375rem;
+  animation: sx-in var(--sx-t-enter) var(--sx-ease) both;
 }
 .site .alert-success {
   border-color: transparent;
@@ -427,7 +730,7 @@ body:has(> .site) {
   color: var(--sx-success);
 }
 .site .alert-warning {
-  border: 1px solid transparent;
+  border-color: transparent;
   background: var(--sx-warning-soft);
   color: var(--sx-warning);
 }
@@ -437,15 +740,16 @@ body:has(> .site) {
   color: var(--sx-danger);
 }
 .site .table-wrap {
-  border-radius: var(--radius-card);
+  border: 2px solid var(--sx-border);
+  border-radius: var(--sx-r-md);
   background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
+  box-shadow: none;
 }
 .site .table th {
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: var(--sx-fs-xs);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   text-transform: none;
   color: var(--sx-muted);
   background: var(--sx-surface-2);
@@ -454,52 +758,188 @@ body:has(> .site) {
   color: var(--sx-text);
 }
 .site .table tbody tr {
-  transition: background-color 0.15s var(--sx-ease);
+  transition: background-color var(--sx-t-hover) var(--sx-ease);
 }
 .site .table tbody tr:hover {
   background: var(--sx-surface-2);
 }
 
+/* ============ Empty states ============ */
+/* An empty area says what goes here and offers the one action that fills it. */
+.site .sx-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--sx-2);
+  padding: var(--sx-6);
+  border-radius: var(--sx-r-lg);
+  border: 2px dashed var(--sx-sky-line);
+  background: var(--sx-surface-2);
+  color: var(--sx-muted);
+}
+.site .sx-empty strong {
+  font-family: var(--font-label);
+  font-size: var(--sx-fs-lg);
+  font-weight: 750;
+  color: var(--sx-heading);
+}
+.site .sx-empty > :last-child:is(a, button) {
+  margin-top: var(--sx-2);
+}
+
+/* ============ Dialog ============ */
+/* Native <dialog>: scales in from 0.94 on the spring; the scrim fades. Closing fades out quickly. */
+.site .sx-dialog {
+  width: min(460px, calc(100vw - 32px));
+  margin: auto;
+  padding: var(--sx-6);
+  border: 2px solid var(--sx-border);
+  border-radius: var(--sx-r-lg);
+  background: var(--sx-surface);
+  color: var(--sx-text);
+  box-shadow: var(--sx-shadow-lg);
+  opacity: 0;
+  scale: 0.94;
+  transition:
+    opacity 140ms var(--sx-ease-exit),
+    scale 140ms var(--sx-ease-exit),
+    overlay 140ms allow-discrete,
+    display 140ms allow-discrete;
+}
+.site .sx-dialog[open] {
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity 200ms var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring),
+    overlay var(--sx-t-toggle) allow-discrete,
+    display var(--sx-t-toggle) allow-discrete;
+}
+@starting-style {
+  .site .sx-dialog[open] {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+.site .sx-dialog::backdrop {
+  background: var(--sx-scrim);
+  opacity: 0;
+  transition: opacity 200ms var(--sx-ease), overlay 200ms allow-discrete, display 200ms allow-discrete;
+}
+.site .sx-dialog[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .site .sx-dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+.site .sx-dialog h2 {
+  font-size: var(--sx-fs-xl);
+}
+.site .sx-dialog p {
+  margin-top: var(--sx-2);
+  color: var(--sx-muted);
+}
+.site .sx-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--sx-3);
+  margin-top: var(--sx-6);
+}
+
+/* ============ Loading ============ */
+/* Skeleton blocks shimmer left to right. They only appear if loading takes over 150ms, so fast pages never flash. */
+.site .sx-skel {
+  display: block;
+  border-radius: var(--sx-r-sm);
+  background: linear-gradient(90deg, var(--sx-sunken) 0%, var(--sx-surface-2) 40%, var(--sx-sunken) 80%) 0 0 / 300% 100%;
+  animation: sx-shimmer 1.4s var(--sx-ease-in-out) infinite;
+}
+.site .sx-loading {
+  animation: sx-in var(--sx-t-enter) 150ms var(--sx-ease) both;
+}
+@keyframes sx-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
 /* ============ Motion ============ */
-/* Sections ease in the first time they scroll into view (RevealObserver adds .is-in). */
+/* Every navigation: (site)/template.tsx remounts this wrapper, so each page settles in (fade + 6px, 420ms). */
+.site .sx-enter {
+  animation: sx-page var(--sx-t-page) var(--sx-ease) both;
+}
+@keyframes sx-page {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes sx-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+/* Sections ease in once, the first time they scroll into view (RevealObserver adds .is-in). */
 .site .reveal {
-  transition: opacity 0.7s var(--sx-ease), transform 0.7s var(--sx-ease);
+  transition:
+    opacity 600ms var(--sx-ease),
+    transform 600ms var(--sx-ease);
 }
 html[data-reveal="on"] .site .reveal:not(.is-in) {
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(16px);
 }
-/* Cards in a row arrive one after another. */
 .site li.reveal:nth-child(2) {
-  transition-delay: 0.07s;
+  transition-delay: 60ms;
 }
 .site li.reveal:nth-child(3) {
-  transition-delay: 0.14s;
+  transition-delay: 120ms;
 }
 .site li.reveal:nth-child(4) {
-  transition-delay: 0.21s;
+  transition-delay: 180ms;
 }
 .site .rise,
 .site .rise-2,
 .site .rise-3,
 .site .rise-4 {
-  animation-duration: 0.6s;
+  animation-duration: 0.55s;
   animation-timing-function: var(--sx-ease);
+}
+/* Items that appear after filtering: fade up 4px, staggered by --i (set inline, capped at 8). */
+.site .sx-item-in {
+  animation: sx-in 280ms calc(min(var(--i, 0), 8) * 28ms) var(--sx-ease) both;
 }
 
 @media (max-width: 720px) {
   .site {
-    --header-h: 60px;
+    --header-h: 62px;
     --section-y: 64px;
+    --page-gutter: 16px;
   }
   .site .page-head {
-    padding-top: 36px;
+    padding-top: var(--sx-8);
   }
   .site .card-pad {
-    padding: 22px;
+    padding: var(--sx-5);
   }
 }
-/* The header isn't fixed any more, so anchors don't need room for it. */
+@media (prefers-reduced-motion: reduce) {
+  .site .sx-skel {
+    animation: none;
+  }
+  .site .btn,
+  .site .card-link,
+  .site .sx-chip {
+    translate: none !important;
+  }
+}
+/* The header isn't fixed, so anchors don't need room for it. */
 html:has(.site) {
   scroll-padding-top: 16px;
 }

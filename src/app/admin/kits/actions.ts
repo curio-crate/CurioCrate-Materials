@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/viewer";
 import { KIT_KINDS, type KitKind } from "@/lib/kit-parts";
-import { createKit, getStudioKit, updateKitIdentity } from "@/lib/kit-studio";
+import { createKit, deleteKit, getStudioKit, updateKitIdentity } from "@/lib/kit-studio";
 
 // Kits (Product Officers and Admins): create kits and keep what each one is.
 
@@ -26,6 +26,15 @@ export async function createKitAction(form: FormData) {
   revalidatePath("/admin", "layout");
   const next = kind === "online" ? "Upload its HTML5 / JavaScript activities below." : "Curriculum can now add its parts, materials and lessons.";
   redirect(`/admin/kits/${(r as { id: string }).id}?ok=${encodeURIComponent(`Kit created and added to the Materials library as a draft. ${next}`)}`);
+}
+
+export async function deleteKitAction(form: FormData) {
+  const actor = await requireAdmin("kits");
+  const id = s(form, "id");
+  if (!/^[0-9a-f-]{36}$/i.test(id)) redirect("/admin/kits");
+  const r = await deleteKit(actor, id);
+  revalidatePath("/", "layout");
+  redirect(`/admin/kits?${r ? `ok=${encodeURIComponent(`Deleted “${r.kit.name}”: ${r.items} lesson(s) and material(s), ${r.codes} code(s) and ${r.orders} order(s) removed.`)}` : `err=${encodeURIComponent("That kit no longer exists.")}`}`);
 }
 
 export async function saveKitIdentityAction(form: FormData) {

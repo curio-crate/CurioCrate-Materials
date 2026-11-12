@@ -1,152 +1,192 @@
+/*
+ * Landing page. Centered and quiet, so three things land: the headline, the product, the way in.
+ * Layout:
+ *   [ full-bleed CurioCrate blue: product name / headline / one line / two buttons ]
+ *   [ product shot: the example class, overlapping the blue's bottom edge         ]
+ *   [ Teachers tile ][ Students tile ]
+ *   [ Try a real lab tile (navy, tube art)                                        ]
+ *   [ 1 · 2 · 3 how it works ] [ promises ]
+ */
+
 /* ============ Hero ============ */
 .hero {
   position: relative;
-  overflow: hidden;
-  padding-block: 72px 88px;
-  background: var(--sx-glow), linear-gradient(180deg, var(--sx-bg-tint) 0%, var(--sx-bg) 100%);
-  border-bottom: 1px solid var(--sx-border);
+  isolation: isolate;
+  padding: var(--sx-24) var(--page-gutter) 300px;
+  background: var(--sx-hero);
+  color: var(--sx-on-accent);
+  text-align: center;
 }
-/* A faint blueprint grid behind the hero, fading out toward the edges. */
+/* Graph paper, fading out toward the bottom so the product sits on clean blue. */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(var(--sx-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--sx-grid-line) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(70% 70% at 60% 40%, var(--sx-heading) 0%, transparent 75%);
-  pointer-events: none;
-}
-.heroInner {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: 56px;
-  align-items: center;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--sx-on-brand-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sx-on-brand-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center -1px;
+  mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 85%);
 }
 .heroCopy {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-}
-.pill {
-  display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--sx-border);
-  background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--sx-success);
-  margin-bottom: 22px;
+  max-width: 920px;
+  margin-inline: auto;
 }
-.heroLead {
-  margin-top: 20px;
-  max-width: 520px;
+.product {
+  font-family: var(--font-label);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--sx-on-brand-muted);
+}
+/* The page's one big type moment. (Element in the selector so it outranks .site's heading color.) */
+.hero h1.display {
+  margin-top: var(--sx-3);
+  font-size: clamp(3rem, 7.4vw, var(--sx-fs-5xl));
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--sx-on-accent);
+  text-wrap: balance;
+}
+.hero p.heroLead {
+  max-width: 44ch;
+  text-wrap: balance;
+  margin-top: var(--sx-6);
+  font-size: clamp(1.0625rem, 1.6vw, 1.3125rem);
+  line-height: 1.5;
+  color: var(--sx-on-brand-muted);
 }
 .ctas {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
-}
-.studentNote {
-  margin-top: 22px;
-  font-size: 0.875rem;
-  color: var(--sx-muted);
-}
-.studentNote a {
-  font-weight: 600;
-  color: var(--sx-accent);
-  transition: color 0.2s var(--sx-ease);
-}
-.studentNote a:hover {
-  color: var(--sx-accent-hover);
-}
-.heroArt {
-  display: flex;
   justify-content: center;
+  gap: var(--sx-3);
+  margin-top: var(--sx-8);
 }
 
-/* ============ Interactive preview ============ */
-.previewWrap {
-  width: 100%;
-  max-width: 470px;
-  perspective: 1200px;
+/* ============ Product shot ============ */
+/* The example class, pulled up over the blue. Two panes: the class on the left, its assignments on the right. */
+.productShot {
+  position: relative;
+  margin-top: -232px;
 }
 .preview {
-  --rx: 0deg;
-  --ry: 0deg;
   display: grid;
-  gap: 16px;
-  padding: 22px;
-  border-radius: 20px;
-  border: 1px solid var(--sx-border);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  max-width: 940px;
+  margin-inline: auto;
+  border-radius: var(--sx-r-xl);
+  border: 2px solid var(--sx-border);
   background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-lg);
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.5s var(--sx-ease);
-  animation: float 7s ease-in-out infinite;
+  color: var(--sx-text);
+  box-shadow: var(--sx-shadow-float);
+  overflow: hidden;
+  text-align: left;
 }
-@keyframes float {
-  50% {
-    translate: 0 -6px;
-  }
-}
-.pvHead {
+.pvSide {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+  flex-direction: column;
+  gap: var(--sx-4);
+  padding: var(--sx-8);
+  background: var(--sx-surface-2);
+  border-right: 2px solid var(--sx-border);
 }
 .pvKicker {
-  display: block;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--sx-muted);
+  font-size: var(--sx-fs-sm);
+  font-weight: 600;
+  color: var(--sx-accent);
 }
 .pvTitle {
-  display: block;
-  margin-top: 3px;
-  font-size: 1rem;
+  margin-top: calc(-1 * var(--sx-3));
+  font-family: var(--font-label);
+  font-size: 1.625rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
   color: var(--sx-heading);
-  letter-spacing: -0.01em;
 }
-.pvCode {
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: 1px dashed var(--sx-border-strong);
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.18em;
-  color: var(--sx-heading);
+.pvCodeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sx-3);
+  font-size: var(--sx-fs-sm);
+  color: var(--sx-muted);
 }
 .pvSeats {
   display: grid;
   gap: 8px;
-  font-size: 0.8125rem;
+  margin-top: auto;
+  font-size: var(--sx-fs-sm);
   color: var(--sx-muted);
 }
 .pvSeats strong {
   color: var(--sx-heading);
   font-variant-numeric: tabular-nums;
 }
-.pvBar {
-  height: 6px;
-  border-radius: 6px;
-  background: var(--sx-sunken);
-  overflow: hidden;
+.pvSeatGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 4px;
 }
-.pvBar span {
-  display: block;
-  height: 100%;
-  border-radius: 6px;
-  background: linear-gradient(90deg, var(--sx-brand), var(--sx-accent));
-  transition: width 0.2s linear;
+.pvSeatGrid span {
+  aspect-ratio: 1;
+  border-radius: 7px;
+  background: var(--sx-sunken);
+  box-shadow: inset 0 0 0 2px var(--sx-border);
+  transition:
+    background-color 240ms var(--sx-ease),
+    box-shadow 240ms var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring);
+}
+.pvSeatGrid span.pvSeatOn {
+  background: var(--sx-brand);
+  box-shadow: inset 0 0 0 2px var(--sx-brand);
+  animation: seat 420ms var(--sx-spring);
+}
+@keyframes seat {
+  from {
+    scale: 0.4;
+  }
+}
+.pvMain {
+  display: grid;
+  gap: var(--sx-3);
+  align-content: start;
+  padding: var(--sx-6) var(--sx-8) var(--sx-8);
+}
+.pvMainHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sx-3);
+  font-size: var(--sx-fs-sm);
+  color: var(--sx-muted);
+}
+.pvMainHead > strong {
+  font-family: var(--font-label);
+  font-size: 1.0625rem;
+  font-weight: 750;
+  color: var(--sx-heading);
+}
+.pvCount {
+  display: inline-block;
+  color: var(--sx-heading);
+  font-variant-numeric: tabular-nums;
+  animation: tick 480ms var(--sx-spring);
+}
+@keyframes tick {
+  from {
+    translate: 0 -6px;
+    opacity: 0;
+  }
 }
 .pvList {
   list-style: none;
@@ -156,34 +196,44 @@
 }
 .pvList li {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--sx-border);
-  background: var(--sx-surface-2);
-  transition: border-color 0.25s var(--sx-ease), background-color 0.25s var(--sx-ease);
+  gap: var(--sx-3);
+  padding: 10px 12px 10px 10px;
+  border-radius: var(--sx-r-md);
+  border: 2px solid var(--sx-border);
+  transition:
+    border-color var(--sx-t-hover) var(--sx-ease),
+    background-color var(--sx-t-hover) var(--sx-ease);
 }
 .pvList li:has([aria-pressed="true"]) {
-  border-color: var(--sx-accent-ring);
-  background: var(--sx-accent-softer);
+  border-color: var(--sx-sky-line);
+  background: var(--sx-sky);
 }
 .pvIcon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: var(--sx-accent-soft);
   color: var(--sx-accent);
+  transition:
+    background-color var(--sx-t-hover) var(--sx-ease),
+    color var(--sx-t-hover) var(--sx-ease),
+    scale var(--sx-t-toggle) var(--sx-spring);
+}
+.pvList li:has([aria-pressed="true"]) .pvIcon {
+  background: var(--sx-fill);
+  color: var(--sx-on-accent);
+  scale: 1.06;
 }
 .pvItem {
   display: grid;
   min-width: 0;
 }
 .pvItemTitle {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--sx-heading);
   white-space: nowrap;
@@ -191,173 +241,244 @@
   text-overflow: ellipsis;
 }
 .pvMeta {
-  font-size: 0.75rem;
+  display: flex;
+  gap: 10px;
+  font-size: var(--sx-fs-xs);
   color: var(--sx-muted);
-}
-.pvToggle {
-  position: relative;
-  width: 38px;
-  height: 22px;
-  border-radius: 22px;
-  background: var(--sx-border-strong);
-  transition: background-color 0.3s var(--sx-ease);
-}
-.pvToggle[aria-pressed="true"] {
-  background: var(--sx-accent);
-}
-.pvKnob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
-  transition: transform 0.35s var(--sx-ease);
-}
-.pvToggle[aria-pressed="true"] .pvKnob {
-  transform: translateX(16px);
 }
 .pvFoot {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--sx-success);
+  gap: 8px;
+  margin-top: 4px;
+  font-size: var(--sx-fs-sm);
+  color: var(--sx-muted);
+}
+.pvFoot svg {
+  color: var(--sx-accent);
 }
 
-/* ============ Sections ============ */
-.section {
-  padding-block: 88px 0;
-}
-.head {
+/* ============ Where to start ============ */
+/* Apple-style tiles: one per kind of visitor, centered, a big name, one line, two buttons. */
+.paths {
   display: grid;
-  gap: 10px;
-  max-width: 640px;
-  margin-bottom: 36px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sx-5);
+  margin-top: var(--sx-24);
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sx-14) var(--sx-10);
+  border-radius: var(--sx-r-xl);
+  background: var(--sx-sky);
+  text-align: center;
+}
+.tileIcon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: var(--sx-5);
+  border-radius: 18px;
+  background: var(--sx-fill);
+  color: var(--sx-on-accent);
+}
+.tile h2.tileTitle {
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.tileText {
+  max-width: 36ch;
+  margin-top: var(--sx-4);
+  font-size: var(--sx-fs-md);
+  line-height: 1.55;
+  color: var(--sx-muted);
+}
+.tileCtas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sx-3);
+  margin-top: var(--sx-8);
+}
+/* The demo tile spans both columns: navy, copy on the left, the kit's glowing tubes on the right. */
+.tileDemo {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sx-10);
+  padding: var(--sx-14) var(--sx-14) var(--sx-14) var(--sx-18);
+  background: var(--sx-navy);
+  border: 2px solid var(--sx-navy-line);
+  text-align: left;
+}
+.demoCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.tileDemo h2.tileTitle {
+  color: var(--sx-on-navy);
+}
+.tileDemo .tileText {
+  color: var(--sx-on-navy-muted);
+}
+.tileDemo .tileCtas {
+  justify-content: flex-start;
+}
+.demoArt {
+  max-width: 420px;
+  justify-self: center;
+  width: 100%;
+}
+
+/* ============ How it works ============ */
+.how {
+  padding-top: var(--sx-32);
+}
+.how h2.howTitle {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  text-align: center;
 }
 .steps {
   list-style: none;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sx-10);
+  margin-top: var(--sx-14);
 }
 .step {
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 26px;
-  border-radius: var(--radius-panel);
-  border: 1px solid var(--sx-border);
-  background: var(--sx-surface);
-  box-shadow: var(--sx-shadow-sm);
-  transition: transform 0.35s var(--sx-ease), box-shadow 0.35s var(--sx-ease), border-color 0.35s var(--sx-ease);
-}
-.step:hover {
-  transform: translateY(-3px);
-  border-color: var(--sx-border-strong);
-  box-shadow: var(--sx-shadow-lg);
-}
-.stepIcon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  background: var(--sx-accent-soft);
-  color: var(--sx-accent);
-  transition: transform 0.4s var(--sx-ease);
-}
-.step:hover .stepIcon {
-  transform: scale(1.08) rotate(-4deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 .stepNum {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--sx-muted);
-}
-
-.students {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
-  gap: 40px;
-  align-items: center;
-}
-.studentsHead {
-  display: grid;
-  gap: 10px;
-}
-.studentCards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.studentCard {
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 24px;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--sx-4);
+  border-radius: 50%;
+  background: var(--sx-accent-soft);
+  font-family: var(--font-label);
+  font-size: 1.375rem;
+  font-weight: 800;
   color: var(--sx-accent);
 }
+.step h3.stepTitle {
+  font-size: var(--sx-fs-xl);
+  font-weight: 750;
+}
+.step p {
+  max-width: 30ch;
+  margin-top: var(--sx-2);
+  color: var(--sx-muted);
+}
+.stepThing {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin-top: var(--sx-5);
+}
 
+/* ============ Promises ============ */
 /* The last band sits directly on the footer (cancels the page's bottom padding). */
 .trust {
-  margin-top: 88px;
-  margin-bottom: -96px;
-  border-top: 1px solid var(--sx-border);
-  background: var(--sx-surface);
+  margin-top: var(--sx-32);
+  margin-bottom: calc(-1 * var(--sx-24));
+  border-top: 2px solid var(--sx-border);
 }
 .trustInner {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px 32px;
-  padding-block: 20px;
-  font-size: 0.875rem;
+  justify-content: center;
+  gap: var(--sx-3) var(--sx-10);
+  padding-block: var(--sx-8);
+  font-size: 0.9375rem;
   color: var(--sx-muted);
 }
 .trustInner p {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px 8px;
 }
-.trustInner svg {
+.trustInner p > svg {
+  flex: none;
   color: var(--sx-accent);
 }
 
-@media (max-width: 960px) {
-  .heroInner,
-  .students {
+@media (max-width: 900px) {
+  .preview {
     grid-template-columns: 1fr;
   }
-  .heroInner {
-    gap: 40px;
+  .pvSide {
+    border-right: 0;
+    border-bottom: 2px solid var(--sx-border);
+  }
+  .pvSeats {
+    margin-top: 0;
+  }
+  .pvSeatGrid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 4px;
+    max-width: 420px;
+  }
+  .pvSeatGrid span {
+    border-radius: 5px;
+  }
+  .paths {
+    grid-template-columns: 1fr;
+  }
+  .tileDemo {
+    grid-template-columns: 1fr;
+    padding: var(--sx-10) var(--sx-6);
+    text-align: center;
+  }
+  .demoCopy {
+    align-items: center;
+  }
+  .tileDemo .tileCtas {
+    justify-content: center;
   }
   .steps {
     grid-template-columns: 1fr;
+    gap: var(--sx-14);
   }
 }
 @media (max-width: 600px) {
   .hero {
-    padding-block: 44px 56px;
+    padding: var(--sx-14) var(--page-gutter) 200px;
   }
-  .studentCards {
-    grid-template-columns: 1fr;
+  .productShot {
+    margin-top: -160px;
   }
-  .section {
-    padding-top: 64px;
+  .pvSide,
+  .pvMain {
+    padding: var(--sx-5);
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .preview {
-    animation: none;
-    transform: none;
+  .tile {
+    padding: var(--sx-10) var(--sx-5);
+  }
+  .paths {
+    margin-top: var(--sx-14);
+  }
+  .how,
+  .trust {
+    padding-top: 0;
+    margin-top: var(--sx-24);
+  }
+  .how {
+    margin-top: var(--sx-18);
   }
 }

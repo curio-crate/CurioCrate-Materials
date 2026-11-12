@@ -1,8 +1,8 @@
 import "server-only";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { auditLog, contentItems, kitParts, kits, kitVersions } from "@/db/schema";
-import { LESSON_TYPES, slugify } from "./cms";
+import { auditLog, contentItems, entitlements, kitParts, kits, kitVersions, orderLines, orders, redemptionCodes } from "@/db/schema";
+import { deleteStoredMedia, LESSON_TYPES, slugify } from "./cms";
 import type { Actor } from "./entitlements";
 import { inTheBoxFrom, isDraftKit, partsTotal, type KitKind, type Part } from "./kit-parts";
 import { departmentIds, notify } from "./team/notify";
@@ -61,6 +61,37 @@ export async function setKitPublished(actor: Actor, id: string, published: boole
   const d = await db();
   await d.update(kits).set({ status: published ? "available" : "draft" }).where(eq(kits.id, id));
   await audit(actor, published ? "kit.publish" : "kit.unpublish", id);
+}
+
+/**
+ * Permanently deletes a kit with everything in it: lessons, materials (and their stored files), parts, versions,
+ * its redemption codes and order lines, and schools' access to it. Orders left with no kits are deleted too.
+ */
+export async function deleteKit(actor: Actor, id: string) {
+  const d = await db();
+  const [kit] = await d.select().from(kits).where(eq(kits.id, id));
+  if (!kit) return null;
+  const items = await d.select().from(contentItems).where(eq(contentItems.kitId, id));
+  const result = await d.transaction(async (tx) => {
+    const codes = await tx.select({ orderId: redemptionCodes.orderId }).from(redemptionCodes).where(eq(redemptionCodes.kitId, id));
+    const lines = await tx.select({ orderId: orderLines.orderId }).from(orderLines).where(eq(orderLines.kitId, id));
+    const orderIds = [...new Set([...codes, ...lines].map((r) => r.orderId))];
+    await tx.delete(entitlements).where(eq(entitlements.kitId, id));
+    await tx.delete(redemptionCodes).where(eq(redemptionCodes.kitId, id));
+    await tx.delete(orderLines).where(eq(orderLines.kitId, id));
+    let emptied = 0;
+    if (orderIds.length) {
+      const stillUsed = new Set((await tx.select({ orderId: orderLines.orderId }).from(orderLines).where(inArray(orderLines.orderId, orderIds))).map((r) => r.orderId));
+      const empty = orderIds.filter((o) => !stillUsed.has(o));
+      if (empty.length) await tx.delete(orders).where(inArray(orders.id, empty));
+      emptied = empty.length;
+    }
+    await tx.delete(kits).where(eq(kits.id, id)); // content, versions and parts cascade
+    return { codes: codes.length, orders: emptied };
+  });
+  await Promise.all(items.map(deleteStoredMedia));
+  await audit(actor, "kit.delete", id, { name: kit.name, items: items.length, ...result });
+  return { kit, items: items.length, ...result };
 }
 
 /** Replaces a kit's parts list, and keeps the teacher-facing "In the box" list (names only) in step. */

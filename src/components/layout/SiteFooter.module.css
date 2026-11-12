@@ -1,43 +1,44 @@
+/* A navy band: the page ends on something solid. White text, blue-white links. */
 .footer {
-  border-top: 1px solid var(--sx-border);
-  background: var(--sx-surface);
-  font-size: 0.875rem;
+  background: var(--sx-footer);
+  color: var(--sx-on-navy-muted);
+  font-size: 0.9375rem;
 }
 .inner {
   display: grid;
-  grid-template-columns: 1.6fr repeat(3, 1fr);
-  gap: 40px;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+  gap: var(--sx-10);
   max-width: calc(var(--page-wide) + 2 * var(--page-gutter));
   margin-inline: auto;
-  padding: 48px var(--page-gutter) 32px;
+  padding: var(--sx-14) var(--page-gutter) var(--sx-10);
 }
 .brandCol {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--sx-3);
   align-items: flex-start;
 }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-family: var(--font-label);
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--sx-heading);
+  color: var(--sx-on-accent);
 }
 .tagline {
-  max-width: 280px;
-  color: var(--sx-muted);
+  max-width: 30ch;
   line-height: 1.6;
 }
-.label {
-  margin-bottom: 12px;
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--sx-heading);
+.footer h2.label {
+  margin-bottom: var(--sx-3);
+  font-family: var(--font-label);
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  color: var(--sx-on-accent);
 }
 .list {
   list-style: none;
@@ -46,34 +47,37 @@
   gap: 8px;
 }
 .link {
-  color: var(--sx-muted);
-  transition: color 0.2s var(--sx-ease);
+  color: var(--sx-on-navy-muted);
+  transition: color var(--sx-t-hover) var(--sx-ease);
 }
 .link:hover {
-  color: var(--sx-accent);
+  color: var(--sx-on-accent);
 }
 .bottom {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--sx-3);
   max-width: calc(var(--page-wide) + 2 * var(--page-gutter));
   margin-inline: auto;
-  padding: 18px var(--page-gutter) 28px;
-  border-top: 1px solid var(--sx-border);
-  font-size: 0.8125rem;
-  color: var(--sx-muted);
+  padding: var(--sx-5) var(--page-gutter) var(--sx-8);
+  border-top: 1px solid var(--sx-navy-line);
+  font-size: 0.875rem;
 }
 .bottomLinks {
   display: flex;
-  gap: 20px;
+  gap: var(--sx-5);
+}
+.bottomLinks a {
+  transition: color var(--sx-t-hover) var(--sx-ease);
 }
 .bottomLinks a:hover {
-  color: var(--sx-accent);
+  color: var(--sx-on-accent);
 }
 @media (max-width: 820px) {
   .inner {
     grid-template-columns: 1fr 1fr;
+    gap: var(--sx-8) var(--sx-5);
   }
   .brandCol {
     grid-column: 1 / -1;

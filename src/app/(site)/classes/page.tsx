@@ -18,16 +18,21 @@ export default async function ClassesPage(props: PageProps<"/classes">) {
   const atLimit = rows.length >= MAX_CLASSES_PER_TEACHER;
   return (
     <div className="container-wide">
-      <PageHead eyebrow={`${rows.length} of ${MAX_CLASSES_PER_TEACHER} classes`} size="h1" title="Your classes" lead={`Each class has its own join code and seats up to ${MAX_STUDENTS_PER_CLASS} students. Students never need an account, a name or an email.`} />
+      <PageHead eyebrow={`${rows.length} of ${MAX_CLASSES_PER_TEACHER} classes used`} size="h1" title="Your classes" lead={`Each class has its own join code and seats up to ${MAX_STUDENTS_PER_CLASS} students. Students never need an account, a name or an email.`} />
       <Notice sp={sp} />
       <div className={styles.listLayout}>
         <ul className={styles.classGrid}>
           {rows.map(({ c, students }) => (
-            <li key={c.id} className="reveal">
+            <li key={c.id}>
               <ClassCard id={c.id} name={c.name} code={c.classCode} students={students} assigned={counts.get(c.id) ?? 0} />
             </li>
           ))}
-          {!rows.length && <li className="muted">No classes yet. Create your first one.</li>}
+          {!rows.length && (
+            <li className="sx-empty" style={{ gridColumn: "1 / -1" }}>
+              <strong>No classes yet.</strong>
+              <span>Name your first class on the right. It gets its own join code straight away.</span>
+            </li>
+          )}
         </ul>
         <form action={createClassAction} className={`card ${styles.newForm}`} id="new" aria-labelledby="new-h">
           <h2 id="new-h" className="h3">

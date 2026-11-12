@@ -1,7 +1,7 @@
 # Curiocrate Materials
 
 Online labs, lessons, videos and teacher training for Curiocrate science kits (grades 4–10).
-Live at **materials.curiocrate.org** (Vercel, DNS on Cloudflare; every push to `main` deploys, see `docs/deployment.md`).
+Live at **materials.curiocrate.org** (Vercel, DNS on Cloudflare; every push to `main` deploys).
 
 ## Two sides
 
@@ -16,7 +16,7 @@ Live at **materials.curiocrate.org** (Vercel, DNS on Cloudflare; every push to `
 Studio login: on a developer's computer the account `CurioCrateAdmin` exists for testing. On the live site the first
 account comes from `ADMIN_USERNAME` / `ADMIN_PASSWORD` in Vercel; add more people in Studio → Team.
 
-**Going live** needs four accounts set up by a person (steps in `docs/deployment.md`): Neon Postgres, a Cloudflare R2
+**Going live** needs four accounts set up by a person: Neon Postgres, a Cloudflare R2
 bucket, a Google OAuth client, and the first Studio password. The live site refuses to start without the database and
 bucket, so no upload or account can end up on a temporary server disk.
 
@@ -34,10 +34,6 @@ stand-in when its keys are missing. All variables are listed in `.env.example`.
 ## Check it
 
 ```bash
-npm run check      # eslint + theme check + typecheck + unit tests
-npm run build && npm run test:e2e   # end-to-end, accessibility (axe), brand, keyboard, Chromebook simulation
-npm run vpat       # regenerate docs/vpat.md from the accessibility results
+npm run check   # eslint + typecheck
+npm run build
 ```
-
-Project docs: `PROGRESS.md` (what was built and every gate result), `DECISIONS.md`, `design/brand.md`,
-`docs/deployment.md`, `docs/domains.md` (web-filter allow-list), `docs/vpat.md`.

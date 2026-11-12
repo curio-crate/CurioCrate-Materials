@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { Icon } from "@/components/ui/Icon";
+import { greetingName } from "@/lib/names";
 import styles from "./SiteHeader.module.css";
 
 export type HeaderViewer =
@@ -57,14 +59,14 @@ export function SiteHeader({ viewer }: { viewer: HeaderViewer }) {
     viewer?.kind === "teacher" ? (
       <>
         <Link href="/redeem" className="btn btn-sm btn-ghost">
-          Redeem code
+          <Icon name="key" size={15} /> Redeem code
         </Link>
         <Link href="/account" className={styles.me}>
           <span className={styles.avatar} aria-hidden="true">
             {viewer.name.trim().charAt(0).toUpperCase() || "T"}
           </span>
           <span className="sr-only">Account: </span>
-          <span className={styles.meName}>{viewer.name.split(" ")[0]}</span>
+          <span className={styles.meName}>{greetingName(viewer.name)}</span>
         </Link>
       </>
     ) : viewer ? (
@@ -98,7 +100,7 @@ export function SiteHeader({ viewer }: { viewer: HeaderViewer }) {
     <header className={styles.header}>
       <nav className={styles.nav} aria-label="Main">
         <Link href={home} className={styles.brand} aria-label="CurioCrate Materials home">
-          <Image src="/brand/cclogosmall.png" alt="" width={30} height={30} priority unoptimized className={styles.mark} />
+          <Image src="/brand/cclogosmall.png" alt="" width={28} height={28} priority unoptimized className={styles.mark} />
           <span className={styles.brandName}>CurioCrate</span> <span className={styles.brandTag}>Materials</span>
         </Link>
 

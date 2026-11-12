@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { formatCode } from "@/lib/codes";
 import { getOrderWithCodes } from "@/lib/orders";
-import { reissueAction, voidAction } from "../../actions";
+import { deleteOrderAction, reissueAction, voidAction } from "../../actions";
+import { ConfirmSubmit } from "../../Confirm";
 import styles from "../../admin.module.css";
 import { Notice } from "../../Notice";
 import { requireAdmin } from "@/lib/auth/viewer";
@@ -38,6 +39,17 @@ export default async function OrderPage(props: PageProps<"/admin/orders/[id]">) 
         </div>
       </div>
       <div className={`card ${styles.panel}`}>
+        <form action={deleteOrderAction} className={styles.inline} style={{ justifyContent: "flex-end" }}>
+          <input type="hidden" name="orderId" value={id} />
+          <ConfirmSubmit
+            className="btn btn-sm btn-danger"
+            title={`Are you sure you want to delete ${order.reference ?? "this order"}?`}
+            message={`All ${codes.length} code(s) stop working and are removed. ${redeemed ? `${redeemed} already redeemed, so those schools lose the kit access they got from them. ` : ""}This can't be undone.`}
+            confirmLabel="Delete order"
+          >
+            <Icon name="trash" size={15} /> Delete order
+          </ConfirmSubmit>
+        </form>
         <dl className={styles.kv}>
           <dt>Customer</dt>
           <dd>

@@ -1,5 +1,11 @@
 // Facts the Terms of Use and Privacy Policy depend on, kept in one place so the pages can't contradict each other
 // or the code. Change these only together with /terms and /privacy, and have counsel review before launch.
+//
+// Before taking live payments, the Terms require, in Stripe → Settings → Billing:
+// - Customer portal ON, with "cancel subscriptions" and payment-method updates allowed (/api/billing/portal).
+// - Emails about upcoming renewals ON (the Terms promise an email before each renewal).
+// Refunds within REFUND_DAYS are issued from the Stripe dashboard. When a school's contract ends, delete its data
+// in Studio → Schools → Danger zone within CONTRACT_END_DELETE_DAYS (the Privacy Policy promises it).
 
 /** The legal entity that runs CurioCrate Materials. Not a 501(c)(3): don't describe it as one. */
 export const LEGAL_NAME = "Curiocrate";

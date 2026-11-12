@@ -29,10 +29,10 @@ export function RedeemForm({ initialCode }: { initialCode: string }) {
               : "Your account can now open the full online kit: lessons, labs, videos, manuals and the teacher guide."}
           </p>
           <div className="row">
-            <Link href={`/kits/${state.kit.slug}`} className="btn btn-kit">
-              Open the kit →
+            <Link href={`/kits/${state.kit.slug}`} className="btn btn-solid">
+              Open the kit
             </Link>
-            <Link href="/dashboard" className="btn btn-kit-ghost">
+            <Link href="/dashboard" className="btn">
               Go to dashboard
             </Link>
           </div>
